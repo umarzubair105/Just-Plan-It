@@ -1,0 +1,118 @@
+package com.uz.justplan.resources;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import org.springframework.data.jpa.domain.AbstractPersistable;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+
+@Entity
+public class CompanyWorkingHour extends AbstractPersistable<Long> implements Cloneable {
+
+    @Column(nullable = false)
+    private Long companyId;
+
+    @Column(nullable = false)
+    private Integer minutes;
+
+    @Column(nullable = true)
+    private LocalDate eventDate;
+    @Column(nullable = true)
+    private DayOfWeek dayOfWeek;
+    @Column(nullable = false)
+    private boolean recurring; // For recurring events like annual holidays
+    @Column(nullable = true)
+    private LocalDate startDate;
+    @Column(nullable = true)
+    private LocalDate endDate;
+
+    @Column(nullable = false)
+    private String description;
+    @Column(nullable = false)
+    private boolean active;
+
+    public CompanyWorkingHour() {
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        //Person cloned = (Person) super.clone();
+        //cloned.setAddress(new Address(this.address.getCity())); // Deep copy
+        CompanyWorkingHour cloned = (CompanyWorkingHour) super.clone();
+        cloned.setId(null);
+        return cloned;
+    }
+
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
+    }
+
+    public Integer getMinutes() {
+        return minutes;
+    }
+
+    public void setMinutes(Integer minutes) {
+        this.minutes = minutes;
+    }
+
+    public LocalDate getEventDate() {
+        return eventDate;
+    }
+
+    public void setEventDate(LocalDate eventDate) {
+        this.eventDate = eventDate;
+    }
+
+    public DayOfWeek getDayOfWeek() {
+        return dayOfWeek;
+    }
+
+    public void setDayOfWeek(DayOfWeek dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
+    }
+
+    public boolean isRecurring() {
+        return recurring;
+    }
+
+    public void setRecurring(boolean recurring) {
+        this.recurring = recurring;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+}
