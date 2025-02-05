@@ -12,13 +12,13 @@ public class Epic extends AbstractPersistable<Long> {
     private String description;
     @Column(nullable = false)
     private Long productId;
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Long raisedByResourceId;
     @Column(nullable = true)
     private Long componentId;
     private LocalDate requiredBy;
     @Column(nullable = true)
-    private Integer priorityId;
+    private Long priorityId;
     private String comments;
     private String risks;
     private double valueGain;
@@ -73,11 +73,11 @@ public class Epic extends AbstractPersistable<Long> {
         this.requiredBy = requiredBy;
     }
 
-    public Integer getPriorityId() {
+    public Long getPriorityId() {
         return priorityId;
     }
 
-    public void setPriorityId(Integer priorityId) {
+    public void setPriorityId(Long priorityId) {
         this.priorityId = priorityId;
     }
 

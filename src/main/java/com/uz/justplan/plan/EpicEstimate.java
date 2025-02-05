@@ -12,7 +12,7 @@ public class EpicEstimate extends AbstractPersistable<Long> {
     @Column(nullable = false)
     private int resources;
     @Column(nullable = false)
-    private double days;
+    private double hours;
     @Column(nullable = false)
     private Long roleId;
     @Column(nullable = false)
@@ -34,12 +34,12 @@ public class EpicEstimate extends AbstractPersistable<Long> {
         this.resources = resources;
     }
 
-    public double getDays() {
-        return days;
+    public double getHours() {
+        return hours;
     }
 
-    public void setDays(double days) {
-        this.days = days;
+    public void setHours(double hours) {
+        this.hours = hours;
     }
 
     public Long getRoleId() {

@@ -6,17 +6,22 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
+import java.time.LocalDate;
+
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"companyId", "loginId"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"companyId", "email"}))
 public class Resource extends AbstractPersistable<Long> {
     @Column(nullable = false)
     private String email;
     @Column(nullable = false)
-    private String firstName;
-    private String secondName;
+    private String name;
+    private String mobileNumber;
+    private LocalDate dateOfBirth;
     @Column(nullable = false)
-    private String lastName;
-    private String designation;
+    private int countryId;
+
+    @Column(nullable = true)
+    private Long designationId;
 
     @Column(name = "isLead", nullable = false)
     private boolean lead;
@@ -35,28 +40,52 @@ public class Resource extends AbstractPersistable<Long> {
     public Resource() {
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getEmail() {
+        return email;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getSecondName() {
-        return secondName;
+    public String getName() {
+        return name;
     }
 
-    public void setSecondName(String secondName) {
-        this.secondName = secondName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getMobileNumber() {
+        return mobileNumber;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
+    }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public int getCountryId() {
+        return countryId;
+    }
+
+    public void setCountryId(int countryId) {
+        this.countryId = countryId;
+    }
+
+    public Long getDesignationId() {
+        return designationId;
+    }
+
+    public void setDesignationId(Long designationId) {
+        this.designationId = designationId;
     }
 
     public boolean isLead() {
@@ -97,21 +126,5 @@ public class Resource extends AbstractPersistable<Long> {
 
     public void setActive(boolean active) {
         this.active = active;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getDesignation() {
-        return designation;
-    }
-
-    public void setDesignation(String designation) {
-        this.designation = designation;
     }
 }

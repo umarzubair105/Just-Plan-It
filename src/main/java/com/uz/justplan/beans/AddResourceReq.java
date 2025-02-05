@@ -6,12 +6,17 @@ public class AddResourceReq {
 
     @NotBlank(message = "It is required.")
     private Long companyId;
+    private Long productId;
 
     @NotBlank(message = "It is required.")
     private String email;
-    @NotBlank(message = "It is required.")
-    private Long roleId;
+    private String name;
+    private String designation;
 
+    private String mobileNumber;
+    private String dateOfBirth;
+    private String lead;
+    private String dateFormat;
     public Long getCompanyId() {
         return companyId;
     }
@@ -24,15 +29,64 @@ public class AddResourceReq {
         return email;
     }
 
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
     public void setEmail(String email) {
         this.email = email;
     }
 
-    public Long getRoleId() {
-        return roleId;
+    public String getName() {
+        return name;
     }
 
-    public void setRoleId(Long roleId) {
-        this.roleId = roleId;
+    public void setName(String name) {
+        this.name = name;
     }
+
+    public String getDesignation() {
+        return designation;
+    }
+
+    public void setDesignation(String designation) {
+        this.designation = designation;
+    }
+
+    public String getMobileNumber() {
+        return mobileNumber;
+    }
+
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
+    }
+
+    public String getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(String dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getLead() {
+        return lead;
+    }
+
+    public void setLead(String lead) {
+        this.lead = lead;
+    }
+
+    public String getDateFormat() {
+        return dateFormat;
+    }
+
+    public void setDateFormat(String dateFormat) {
+        this.dateFormat = dateFormat;
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.uz.justplan.core;
 
+import com.uz.justplan.utils.Utils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,8 @@ public class CompanyCalendarIntegrationTest {
 
     @Test
     public void testGetWeekends_success() throws Exception {
+        System.out.println(Utils.getNameFromEmail("umar-zubair.@ttsme.com"));
+        System.out.println(Utils.getNameFromEmail("umar.m_zubair@ttsme.com"));
         mockMvc.perform(get("/companies?page=0&size=20")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

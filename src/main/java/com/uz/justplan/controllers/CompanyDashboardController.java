@@ -1,8 +1,6 @@
 package com.uz.justplan.controllers;
 
-import com.uz.justplan.beans.AddCompanyReq;
-import com.uz.justplan.beans.AddResourceReq;
-import com.uz.justplan.beans.CommonResp;
+import com.uz.justplan.beans.*;
 import com.uz.justplan.services.CompanyDashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,8 +25,27 @@ public class CompanyDashboardController {
         return service.addCompany(req);
     }
 
+    @PostMapping("/add-product")
+    public CommonResp addProduct(@RequestBody AddProductReq req) {
+        return service.addProduct(req);
+    }
+
+    @PostMapping("/add-epics")
+    public List<CommonResp> addEpics(@RequestBody List<AddEpicReq> list) {
+        return service.addEpics(list);
+    }
     @PostMapping("/add-resource")
     public List<CommonResp> addResource(@RequestBody AddResourceReq req) {
-        return service.addResource(req);
+        return service.addResourceSimple(req);
+    }
+
+    @PostMapping("/add-resources")
+    public List<CommonResp> addResources(@RequestBody List<AddResourceReq> req) {
+        return service.addResources(req);
+    }
+
+    @PostMapping("/map-designation")
+    public CommonResp mapDesignation(@RequestBody MapDesignationReq req) {
+        return service.mapDesignation(req);
     }
 }

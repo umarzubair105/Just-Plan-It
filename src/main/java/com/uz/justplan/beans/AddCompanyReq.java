@@ -6,10 +6,7 @@ public class AddCompanyReq {
     @NotBlank(message = "It is required.")
     private String email;
     @NotBlank(message = "It is required.")
-    private String firstName;
-    private String secondName;
-    @NotBlank(message = "It is required.")
-    private String lastName;
+    private String resourceName;
     @NotBlank(message = "It is required.")
     private String name;
     @NotBlank(message = "It is required.")
@@ -27,28 +24,12 @@ public class AddCompanyReq {
         this.email = email;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getResourceName() {
+        return resourceName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getSecondName() {
-        return secondName;
-    }
-
-    public void setSecondName(String secondName) {
-        this.secondName = secondName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
     }
 
     public String getName() {

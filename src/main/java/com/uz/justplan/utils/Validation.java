@@ -14,4 +14,8 @@ public class Validation {
         }
         return pattern.matcher(email).matches();
     }
+
+    public static boolean isEmpty(String str) {
+        return str == null || str.isBlank();
+    }
 }
