@@ -8,8 +8,12 @@ import java.time.LocalDate;
 
 @Entity
 public class Epic extends AbstractPersistable<Long> {
+
     @Column(nullable = false)
-    private String description;
+    private String title;
+
+    @Column(nullable = true)
+    private String details;
     @Column(nullable = false)
     private Long productId;
     @Column(nullable = true)
@@ -33,12 +37,20 @@ public class Epic extends AbstractPersistable<Long> {
     public Epic() {
     }
 
-    public String getDescription() {
-        return description;
+    public String getTitle() {
+        return title;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
     }
 
     public Long getProductId() {

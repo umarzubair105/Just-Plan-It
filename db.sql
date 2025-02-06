@@ -19,12 +19,12 @@ insert into `companyweekend` (id, day, companyId, active)
 values (2, 'SUNDAY', 1, 1);
 
 update companyweekend_seq
-set next_val=(select max(id) + 1 from companyweekend);
+set next_val=1000;
 
 update country_seq
-set next_val=(select max(id) + 1 from country);
+set next_val=1000;
 
 update company_seq
-set next_val=(select max(id) + 1 from company);
+set next_val=1000;
 update role_seq
-set next_val=(select max(id) + 1 from role);
+set next_val=1000;

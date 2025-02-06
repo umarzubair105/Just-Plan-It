@@ -1,7 +1,8 @@
 package com.uz.justplan.beans;
 
 public class AddEpicReq {
-    private String description;
+    private String title;
+    private String details;
     private Long productId;
     private String component;
     private String requiredBy;
@@ -11,12 +12,20 @@ public class AddEpicReq {
     private String risks;
     private String valueGain;
 
-    public String getDescription() {
-        return description;
+    public String getTitle() {
+        return title;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
     }
 
     public Long getProductId() {

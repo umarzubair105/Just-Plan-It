@@ -12,6 +12,7 @@ import com.uz.justplan.utils.Utils;
 import com.uz.justplan.utils.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -58,6 +59,7 @@ public class CompanyDashboardService {
         this.prodResourceRepo = prodResourceRepo;
     }
 
+    @Transactional
     public CommonResp addCompany(final AddCompanyReq req) {
         final CommonResp resp = new CommonResp();
         final Company comp = new Company();
@@ -105,6 +107,7 @@ public class CompanyDashboardService {
         return resp;
     }
 
+    @Transactional
     public CommonResp addProduct(final AddProductReq req) {
         CommonResp resp = new CommonResp();
         final Product model = new Product();
@@ -132,6 +135,7 @@ public class CompanyDashboardService {
         return resp;
     }
 
+    @Transactional
     public List<CommonResp> addEpics(final List<AddEpicReq> reqs) {
         List<CommonResp> responseList = new ArrayList<>();
         if (reqs.isEmpty()) {
@@ -144,6 +148,8 @@ public class CompanyDashboardService {
                     components.put(comp.toLowerCase(), findOrCreateNewComponent(comp, product.getCompanyId()));
                 });
         Map<String, Long> priorities = new HashMap<>();
+        System.out.println("Creating --------- new priority: " + reqs.get(0).getPriority());
+
         reqs.stream().filter(req -> !Validation.isEmpty(req.getPriority()))
                 .map(req -> req.getPriority().trim()).distinct().forEach(pr -> {
                     priorities.put(pr.toLowerCase(), findOrCreateNewPriority(pr, product.getCompanyId()));
@@ -154,6 +160,7 @@ public class CompanyDashboardService {
         return responseList;
     }
 
+    @Transactional
     public List<CommonResp> addResources(final List<AddResourceReq> reqs) {
         List<CommonResp> responseList = new ArrayList<>();
         if (reqs.isEmpty()) {
@@ -172,20 +179,30 @@ public class CompanyDashboardService {
         return responseList;
     }
 
+    @Transactional
     public CommonResp mapDesignation(MapDesignationReq req) {
         CommonResp resp = new CommonResp();
         Designation designation = designRepo.findById(req.getDesignationId()).get();
-        designation.setRoleId(req.getRoleId());
-        designRepo.save(designation);
-        resp.setMessage("Designation updated.");
-        resourceRepo.findByDesignationId(req.getDesignationId()).forEach(
-                r -> {
-                    assignNewResourceRoleIfNotExist(
-                            r.getId(), req.getRoleId());
-                }
-        );
+
+        if (req.getRoleId() != null &&
+                (designation.getRoleId() == null
+                        || !designation.getRoleId().equals(req.getRoleId()))) {
+            designation.setRoleId(req.getRoleId());
+            designRepo.save(designation);
+            resp.setMessage("Designation updated.");
+            resourceRepo.findByDesignationId(req.getDesignationId()).forEach(
+                    r -> {
+                        assignNewResourceRoleIfNotExist(
+                                r.getId(), req.getRoleId());
+                    }
+            );
+        } else {
+            resp.setMessage("Designation already having same role.");
+        }
+
         return resp;
     }
+
 
     private CommonResp findOrCreateNewResource(AddResourceReq req, Map<String, Designation> designations) {
         CommonResp resp = new CommonResp();
@@ -222,7 +239,7 @@ public class CompanyDashboardService {
             model.setDateOfBirth(Utils.getLocalDateFromString(req.getDateOfBirth(), req.getDateFormat()));
         }
         resourceRepo.save(model);
-        if (design != null) {
+        if (design != null && design.getRoleId() != null) {
             assignNewResourceRoleIfNotExist(model.getId(), design.getRoleId());
         }
         if (req.getProductId() != null) {
@@ -234,15 +251,16 @@ public class CompanyDashboardService {
 
     private CommonResp findOrCreateNewEpic(AddEpicReq req, Map<String, Long> components, Map<String, Long> priorities) {
         CommonResp resp = new CommonResp();
-        Optional<Epic> modelO = epicRepo.findByProductIdAndDescriptionIgnoreCase(req.getProductId(),
-                req.getDescription().trim());
+        Optional<Epic> modelO = epicRepo.findByProductIdAndTitleIgnoreCase(req.getProductId(),
+                req.getTitle().trim());
         Epic model = null;
         if (!modelO.isEmpty()) {
             model = modelO.get();
             resp.setMessage("Updated");
         } else {
             model = new Epic();
-            model.setDescription(req.getDescription().trim());
+            model.setTitle(req.getTitle().trim());
+            model.setDetails(req.getDetails());
             model.setProductId(req.getProductId());
             resp.setMessage("Added");
         }
@@ -280,6 +298,7 @@ public class CompanyDashboardService {
     }
 
     private long findOrCreateNewPriority(String name, long companyId) {
+        System.out.println("Creating new priority: " + name);
         Optional<Priority> modelO = priorityRepo.findByCompanyIdAndNameIgnoreCase(companyId, name);
         if (!modelO.isEmpty()) {
             return modelO.get().getId();
@@ -306,6 +325,7 @@ public class CompanyDashboardService {
         return model;
     }
 
+    @Transactional
     public List<CommonResp> addResourceSimple(final AddResourceReq req) {
         List<CommonResp> responseList = new ArrayList<>();
 

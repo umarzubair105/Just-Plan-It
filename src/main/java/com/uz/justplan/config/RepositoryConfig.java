@@ -19,7 +19,10 @@ public class RepositoryConfig implements RepositoryRestConfigurer {
     @Override
     public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
         RepositoryRestConfigurer.super.configureRepositoryRestConfiguration(config, cors);
-        config.exposeIdsFor(Country.class, Company.class, Component.class, Product.class, Epic.class, Release.class, ReleaseEpic.class, Resource.class, Role.class, EpicEstimate.class, ReleaseEpicAssignment.class, ReleaseStatus.class, CompanyCalendar.class, CompanyWeekend.class, ResourceRole.class, Priority.class, ProductResource.class, Resource.class, ResourceLeave.class, Role.class);
+        config.exposeIdsFor(Country.class, Company.class, Component.class, Product.class, Epic.class, Release.class,
+                ReleaseEpic.class, Resource.class, Role.class, EpicEstimate.class, Designation.class,
+                ReleaseEpicAssignment.class, ReleaseStatus.class, CompanyCalendar.class, CompanyWeekend.class,
+                ResourceRole.class, Priority.class, ProductResource.class, Resource.class, ResourceLeave.class, Role.class);
 
     }
 
