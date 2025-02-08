@@ -1,15 +1,15 @@
 package com.uz.justplan.resources;
 
+import com.uz.justplan.core.Auditable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import java.time.DayOfWeek;
 
 @Entity
-public class CompanyWeekend extends AbstractPersistable<Long> implements Cloneable {
+public class CompanyWeekend extends Auditable implements Cloneable {
 
     @Column(nullable = false)
     private Long companyId;

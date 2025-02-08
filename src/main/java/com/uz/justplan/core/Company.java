@@ -2,14 +2,15 @@ package com.uz.justplan.core;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import java.util.Objects;
 
 @Entity
-public class Company extends AbstractPersistable<Long> {
+public class Company extends Auditable {
     @Column(nullable = false, unique = true)
     private String name;
+    @Column(nullable = false)
+    private String code;
 
     @Column(nullable = false)
     private boolean sample;
@@ -63,5 +64,13 @@ public class Company extends AbstractPersistable<Long> {
 
     public void setCountryId(Integer countryId) {
         this.countryId = countryId;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

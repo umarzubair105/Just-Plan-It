@@ -4,11 +4,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"companyId", "name"}))
-public class Product extends AbstractPersistable<Long> {
+public class Product extends Auditable {
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)

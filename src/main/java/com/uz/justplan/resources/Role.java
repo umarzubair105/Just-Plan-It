@@ -1,12 +1,12 @@
 package com.uz.justplan.resources;
 
+import com.uz.justplan.core.Auditable;
 import com.uz.justplan.lookup.RoleEnum;
 import jakarta.persistence.*;
-import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"companyId", "code"}))
-public class Role extends AbstractPersistable<Long> implements Cloneable {
+public class Role extends Auditable implements Cloneable {
     @Column(nullable = false)
     private String name;
 

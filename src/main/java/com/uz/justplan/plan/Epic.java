@@ -1,13 +1,13 @@
 package com.uz.justplan.plan;
 
+import com.uz.justplan.core.Auditable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import java.time.LocalDate;
 
 @Entity
-public class Epic extends AbstractPersistable<Long> {
+public class Epic extends Auditable {
 
     @Column(nullable = false)
     private String title;

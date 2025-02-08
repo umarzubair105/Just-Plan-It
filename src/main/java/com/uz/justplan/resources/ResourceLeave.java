@@ -1,18 +1,18 @@
 package com.uz.justplan.resources;
 
+import com.uz.justplan.core.Auditable;
 import com.uz.justplan.lookup.LeaveStatus;
 import com.uz.justplan.lookup.LeaveType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-public class ResourceLeave extends AbstractPersistable<Long> {
+public class ResourceLeave extends Auditable {
     @Column(nullable = false)
     private Long resourceId;
 

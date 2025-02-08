@@ -13,4 +13,7 @@ public interface ResourceRepository extends CrudRepository<Resource, Long>,
     List<Resource> findByDesignationId(long designationId);
 
     Optional<Resource> findByCompanyIdAndEmailIgnoreCase(long companyId, String email);
+
+    Optional<Resource> findByCompanyIdAndEmailIgnoreCaseAndActive(
+            long companyId, String email, boolean active);
 }

@@ -1,14 +1,14 @@
 package com.uz.justplan.plan;
 
+import com.uz.justplan.core.Auditable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"epicId", "roleId"}))
-public class EpicEstimate extends AbstractPersistable<Long> {
+public class EpicEstimate extends Auditable {
     @Column(nullable = false)
     private int resources;
     @Column(nullable = false)

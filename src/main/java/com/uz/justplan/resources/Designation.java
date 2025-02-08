@@ -1,14 +1,14 @@
 package com.uz.justplan.resources;
 
+import com.uz.justplan.core.Auditable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"companyId", "name"}))
-public class Designation extends AbstractPersistable<Long> {
+public class Designation extends Auditable {
     @Column(nullable = false)
     private String name;
 

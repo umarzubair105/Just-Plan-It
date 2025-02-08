@@ -1,17 +1,16 @@
 package com.uz.justplan.plan;
 
+import com.uz.justplan.core.Auditable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "Releases",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"productId", "name", "version"}))
-public class Release extends AbstractPersistable<Long> {
+@Table(name = "Releases", uniqueConstraints = @UniqueConstraint(columnNames = {"productId", "name", "version"}))
+public class Release extends Auditable {
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)

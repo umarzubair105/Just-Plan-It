@@ -1,16 +1,16 @@
 package com.uz.justplan.plan;
 
+import com.uz.justplan.core.Auditable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"releaseId", "epicId"}))
-public class ReleaseEpic extends AbstractPersistable<Long> {
+public class ReleaseEpic extends Auditable {
     private String comments;
     private String risks;
 

@@ -1,20 +1,22 @@
 package com.uz.justplan.resources;
 
+import com.uz.justplan.core.Auditable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"companyId", "email"}))
-public class Resource extends AbstractPersistable<Long> {
+public class Resource extends Auditable {
     @Column(nullable = false)
     private String email;
     @Column(nullable = false)
     private String name;
+    @Column(nullable = false)
+    private String password;
     private String mobileNumber;
     private LocalDate dateOfBirth;
     @Column(nullable = false)
@@ -126,5 +128,13 @@ public class Resource extends AbstractPersistable<Long> {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

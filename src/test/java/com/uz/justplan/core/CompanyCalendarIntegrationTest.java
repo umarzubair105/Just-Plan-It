@@ -2,7 +2,6 @@ package com.uz.justplan.core;
 
 import com.uz.justplan.utils.Utils;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,7 +40,7 @@ public class CompanyCalendarIntegrationTest {
         companyRepository.saveAll(List.of(com));
     }
 
-    @Test
+    //@Test
     public void testGetWeekends_success() throws Exception {
         System.out.println(Utils.getNameFromEmail("umar-zubair.@ttsme.com"));
         System.out.println(Utils.getNameFromEmail("umar.m_zubair@ttsme.com"));

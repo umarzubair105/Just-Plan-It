@@ -67,6 +67,7 @@ public class CompanyDashboardService {
         comp.setActive(true);
         comp.setName(req.getName());
         comp.setCountryId(req.getCountryId());
+        comp.setCode(Utils.generateCode());
         compRepo.save(comp);
         resp.setId(comp.getId());
         Long resourceId = createNewResource(req.getEmail(), req.getResourceName(), req.getDesignation(), comp);
@@ -103,7 +104,7 @@ public class CompanyDashboardService {
                         throw new RuntimeException(e);
                     }
                 });
-        resp.setMessage("Company is added.");
+        resp.setMessage("Company is added with code: " + comp.getCode());
         return resp;
     }
 
@@ -222,6 +223,7 @@ public class CompanyDashboardService {
             model.setEmail(req.getEmail().trim());
             model.setActive(true);
             model.setCompanyId(req.getCompanyId());
+            model.setPassword("password");
             resp.setMessage("Added");
         }
         Designation design = null;
@@ -418,6 +420,7 @@ public class CompanyDashboardService {
         } else {
             resource.setName(name);
         }
+        resource.setPassword("password");
         Designation design = null;
         if (!Validation.isEmpty(designation)) {
             design = findOrCreateNewDesignation(designation, company.getId());

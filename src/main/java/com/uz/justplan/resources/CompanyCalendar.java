@@ -1,16 +1,16 @@
 package com.uz.justplan.resources;
 
+import com.uz.justplan.core.Auditable;
 import com.uz.justplan.lookup.EventType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import java.time.LocalDate;
 
 @Entity
-public class CompanyCalendar extends AbstractPersistable<Long> {
+public class CompanyCalendar extends Auditable {
 
     @Column(nullable = false)
     private Long companyId;

@@ -1,11 +1,11 @@
 package com.uz.justplan.lookup;
 
+import com.uz.justplan.core.Auditable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Entity
-public class ReleaseStatus extends AbstractPersistable<Integer> {
+public class ReleaseStatus extends Auditable {
     @Column(nullable = false)
     private String name;
 

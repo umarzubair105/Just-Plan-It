@@ -1,5 +1,6 @@
 package com.uz.justplan.utils;
 
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -7,6 +8,11 @@ import java.util.stream.Collectors;
 
 public final class Utils {
 
+    public static String generateCode() {
+        SecureRandom secureRandom = new SecureRandom();
+        int otp = 100000 + secureRandom.nextInt(900000);
+        return String.format("%06d", otp);
+    }
     public static LocalDate getLocalDateFromString(String dateStr, String pattern) {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
