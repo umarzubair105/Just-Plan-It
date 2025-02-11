@@ -2,6 +2,7 @@ package com.uz.justplan.services;
 
 import com.uz.justplan.beans.*;
 import com.uz.justplan.core.*;
+import com.uz.justplan.lookup.CountryRepository;
 import com.uz.justplan.lookup.Priority;
 import com.uz.justplan.lookup.PriorityRepository;
 import com.uz.justplan.lookup.RoleEnum;
@@ -13,6 +14,7 @@ import com.uz.justplan.utils.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,6 +33,7 @@ public class CompanyDashboardService {
     private DesignationRepository designRepo;
     private CompanyWeekendRepository companyWeekendRepository;
     private CompanyWorkingHourRepository companyWorkingHourRepository;
+    private CountryRepository countryRepository;
 
     @Autowired
     public CompanyDashboardService(CompanyRepository compRepo,
@@ -44,7 +47,8 @@ public class CompanyDashboardService {
                                    PriorityRepository priorityRepo,
                                    EpicRepository epicRepo,
                                    DesignationRepository designRepo,
-                                   ProductResourceRepository prodResourceRepo) {
+                                   ProductResourceRepository prodResourceRepo,
+                                   CountryRepository countryRepository) {
         this.compRepo = compRepo;
         this.resourceRepo = resourceRepo;
         this.resourceRoleRepo = resourceRoleRepo;
@@ -57,10 +61,14 @@ public class CompanyDashboardService {
         this.epicRepo = epicRepo;
         this.designRepo = designRepo;
         this.prodResourceRepo = prodResourceRepo;
+        this.countryRepository = countryRepository;
     }
 
     @Transactional
     public CommonResp addCompany(final AddCompanyReq req) {
+        Assert.isTrue(
+                compRepo.findByNameIgnoreCaseAndActive(req.getName(), true)
+                        .isEmpty(), "Company already exists with the same name");
         final CommonResp resp = new CommonResp();
         final Company comp = new Company();
         comp.setSample(false);
@@ -70,7 +78,8 @@ public class CompanyDashboardService {
         comp.setCode(Utils.generateCode());
         compRepo.save(comp);
         resp.setId(comp.getId());
-        Long resourceId = createNewResource(req.getEmail(), req.getResourceName(), req.getDesignation(), comp);
+        Long resourceId = createNewResource(req.getEmail(), req.getResourceName(),
+                req.getDesignation(), req.getPassword(), req.getMobileNumber(), comp);
         roleRepo.findByCompanyIdAndActive(req.getSampleCompanyId(), true)
                 .forEach(role -> {
                     final Role newRole = new Role();
@@ -104,6 +113,7 @@ public class CompanyDashboardService {
                         throw new RuntimeException(e);
                     }
                 });
+        resp.setContext(comp.getCode());
         resp.setMessage("Company is added with code: " + comp.getCode());
         return resp;
     }
@@ -156,7 +166,9 @@ public class CompanyDashboardService {
                     priorities.put(pr.toLowerCase(), findOrCreateNewPriority(pr, product.getCompanyId()));
                 });
         for (AddEpicReq req : reqs) {
-            responseList.add(findOrCreateNewEpic(req, components, priorities));
+            if (!Validation.isEmpty(req.getTitle())) {
+                responseList.add(findOrCreateNewEpic(req, components, priorities));
+            }
         }
         return responseList;
     }
@@ -375,7 +387,8 @@ public class CompanyDashboardService {
         long resourceId = (existingResource != null) ? existingResource.getId() : 0L;
 
         if (existingResource == null) {
-            resourceId = createNewResource(email, Utils.getNameFromEmail(email), "", company);
+            resourceId = createNewResource(email, Utils.getNameFromEmail(email), "",
+                    "password", "", company);
             response.setId(resourceId);
             response.setMessage("Resource is added with role.");
         } else {
@@ -408,19 +421,23 @@ public class CompanyDashboardService {
         if (!resource.isEmpty()) {
             return resource.get().getId();
         }
-        return createNewResource(email, name, designation, company);
+        return createNewResource(email, name, designation,
+                "password", "", company);
     }
 
-    private long createNewResource(String email, String name, String designation, Company company) {
+    private long createNewResource(String email, String name, String designation,
+                                   String password, String mobileNumber,
+                                   Company company) {
         Resource resource = new Resource();
         resource.setCompanyId(company.getId());
         resource.setEmail(email.toLowerCase());
+        resource.setMobileNumber(mobileNumber);
         if (Validation.isEmpty(name)) {
             resource.setName(Utils.getNameFromEmail(email));
         } else {
             resource.setName(name);
         }
-        resource.setPassword("password");
+        resource.setPassword(password);
         Designation design = null;
         if (!Validation.isEmpty(designation)) {
             design = findOrCreateNewDesignation(designation, company.getId());
@@ -430,7 +447,7 @@ public class CompanyDashboardService {
         resource.setActive(true);
         resource.setIndividualCapacity(true);
         resourceRepo.save(resource);
-        if (design != null) {
+        if (design != null && design.getRoleId() != null) {
             assignNewResourceRoleIfNotExist(resource.getId(), design.getRoleId());
         }
         return resource.getId();
@@ -466,5 +483,17 @@ public class CompanyDashboardService {
         }
     }
 
+    public Map<String, Object> getMetadata() {
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("countries", countryRepository.findAllByActive(true));
+        metadata.put("sampleCompanies", compRepo.findAllBySample(true));
+        return metadata;
+    }
 
+    public LoggedInDetails getLoggedInDetails(long resourceId) {
+        Resource resource = resourceRepo.findById(resourceId).orElseThrow(() -> new RuntimeException("Resource not found"));
+        LoggedInDetails details = new LoggedInDetails();
+        details.setCompany(compRepo.findProjectionById(resource.getCompanyId()));
+        return details;
+    }
 }

@@ -23,6 +23,7 @@ public class JwtUtil {
     public String generateToken(CustomUserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("name", userDetails.getName());
+        claims.put("id", userDetails.getId());
         if (userDetails.getAuthorities() != null) {
             String roles = userDetails.getAuthorities().stream()
                     .map(authority -> authority.getAuthority())
@@ -63,6 +64,10 @@ public class JwtUtil {
 
     public String extractName(String token) {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().get("name", String.class);
+    }
+
+    public Long extractId(String token) {
+        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().get("id", Long.class);
     }
 
     public Date extractExpiration(String token) {

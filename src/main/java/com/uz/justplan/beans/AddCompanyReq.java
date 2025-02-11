@@ -11,10 +11,28 @@ public class AddCompanyReq {
     private String name;
     @NotBlank(message = "It is required.")
     private String designation;
+    private String password;
+    private String mobileNumber;
     @NotBlank(message = "It is required.")
     private Integer countryId;
     @NotBlank(message = "It is required.")
     private Long sampleCompanyId;
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getMobileNumber() {
+        return mobileNumber;
+    }
+
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
+    }
 
     public String getEmail() {
         return email;

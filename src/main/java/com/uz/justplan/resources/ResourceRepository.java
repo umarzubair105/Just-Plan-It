@@ -16,4 +16,7 @@ public interface ResourceRepository extends CrudRepository<Resource, Long>,
 
     Optional<Resource> findByCompanyIdAndEmailIgnoreCaseAndActive(
             long companyId, String email, boolean active);
+
+    List<Resource> findByEmailIgnoreCaseAndActive(String email, boolean active);
+
 }
