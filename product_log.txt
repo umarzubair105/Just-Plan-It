@@ -1,0 +1,5 @@
+-- Release Time - use Annual Holidays
+-- Release Time - advance options like Every Third week of Month, 2 days etc
+-- minDaysInIteration
+
+Based on Country populate Company Calender, working days, minutes

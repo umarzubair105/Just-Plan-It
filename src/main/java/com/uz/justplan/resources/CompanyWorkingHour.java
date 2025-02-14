@@ -1,8 +1,11 @@
 package com.uz.justplan.resources;
 
 import com.uz.justplan.core.Auditable;
+import com.uz.justplan.lookup.WorkingHourScope;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -16,6 +19,9 @@ public class CompanyWorkingHour extends Auditable implements Cloneable {
     @Column(nullable = false)
     private Integer minutes;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private WorkingHourScope scope;
     @Column(nullable = true)
     private LocalDate eventDate;
     @Column(nullable = true)
@@ -42,6 +48,14 @@ public class CompanyWorkingHour extends Auditable implements Cloneable {
         CompanyWorkingHour cloned = (CompanyWorkingHour) super.clone();
         cloned.setId(null);
         return cloned;
+    }
+
+    public WorkingHourScope getScope() {
+        return scope;
+    }
+
+    public void setScope(WorkingHourScope scope) {
+        this.scope = scope;
     }
 
     public Long getCompanyId() {

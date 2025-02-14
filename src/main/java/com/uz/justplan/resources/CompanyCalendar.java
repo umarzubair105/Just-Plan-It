@@ -14,37 +14,24 @@ public class CompanyCalendar extends Auditable {
 
     @Column(nullable = false)
     private Long companyId;
-
-    @Column(nullable = false)
-    private String eventName; // Example: "Public Holiday", "Annual Meeting"
-
-    @Column(nullable = false)
-    private LocalDate eventDate;
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private EventType eventType;
 
     @Column(nullable = false)
-    private String description;
+    private String eventName; // Example: "Public Holiday", "Annual Meeting"
+
+    @Column(nullable = false)
+    private LocalDate startDate;
+    @Column(nullable = false)
+    private LocalDate endDate;
 
     @Column(nullable = false)
     private boolean recurring; // For recurring events like annual holidays
-
-    @Column(nullable = false)
-    private boolean weekend;
     @Column(nullable = false)
     private boolean active;
 
     public CompanyCalendar() {
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 
     public Long getCompanyId() {
@@ -55,22 +42,6 @@ public class CompanyCalendar extends Auditable {
         this.companyId = companyId;
     }
 
-    public String getEventName() {
-        return eventName;
-    }
-
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
-    }
-
-    public LocalDate getEventDate() {
-        return eventDate;
-    }
-
-    public void setEventDate(LocalDate eventDate) {
-        this.eventDate = eventDate;
-    }
-
     public EventType getEventType() {
         return eventType;
     }
@@ -79,12 +50,28 @@ public class CompanyCalendar extends Auditable {
         this.eventType = eventType;
     }
 
-    public String getDescription() {
-        return description;
+    public String getEventName() {
+        return eventName;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 
     public boolean isRecurring() {
@@ -95,11 +82,11 @@ public class CompanyCalendar extends Auditable {
         this.recurring = recurring;
     }
 
-    public boolean isWeekend() {
-        return weekend;
+    public boolean isActive() {
+        return active;
     }
 
-    public void setWeekend(boolean weekend) {
-        this.weekend = weekend;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

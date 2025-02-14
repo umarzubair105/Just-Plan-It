@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"companyId", "name"}))
 public class Product extends Auditable {
@@ -18,6 +20,13 @@ public class Product extends Auditable {
 
     @Column(nullable = false)
     private Long companyId;
+
+    @Column(nullable = false)
+    private LocalDate startDate;
+
+    @Column(nullable = true)
+    private LocalDate endDate;
+
     @Column(nullable = false)
     private boolean active;
 

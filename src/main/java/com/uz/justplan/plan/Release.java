@@ -1,12 +1,10 @@
 package com.uz.justplan.plan;
 
 import com.uz.justplan.core.Auditable;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "Releases", uniqueConstraints = @UniqueConstraint(columnNames = {"productId", "name", "version"}))
@@ -14,7 +12,9 @@ public class Release extends Auditable {
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)
-    private String version;
+    private int version;
+    @Column(nullable = false)
+    private int workingDays;
     @Column(nullable = false)
     private LocalDate startDate;
     @Column(nullable = false)
@@ -27,6 +27,8 @@ public class Release extends Auditable {
     @Column(nullable = false)
     private boolean active;
 
+    @Transient
+    private List<ReleaseWorkingDay> workingDaysList;
     public Release() {
     }
 
@@ -38,11 +40,11 @@ public class Release extends Auditable {
         this.name = name;
     }
 
-    public String getVersion() {
+    public int getVersion() {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(int version) {
         this.version = version;
     }
 
@@ -84,5 +86,21 @@ public class Release extends Auditable {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public int getWorkingDays() {
+        return workingDays;
+    }
+
+    public void setWorkingDays(int workingDays) {
+        this.workingDays = workingDays;
+    }
+
+    public List<ReleaseWorkingDay> getWorkingDaysList() {
+        return workingDaysList;
+    }
+
+    public void setWorkingDaysList(List<ReleaseWorkingDay> workingDaysList) {
+        this.workingDaysList = workingDaysList;
     }
 }

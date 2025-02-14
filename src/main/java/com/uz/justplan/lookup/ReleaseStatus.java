@@ -3,6 +3,8 @@ package com.uz.justplan.lookup;
 import com.uz.justplan.core.Auditable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 @Entity
 public class ReleaseStatus extends Auditable {
@@ -10,6 +12,7 @@ public class ReleaseStatus extends Auditable {
     private String name;
 
     @Column(nullable = false, unique = true)
+    @Enumerated(EnumType.STRING)
     private ReleaseStatusEnum code;
 
     @Column(nullable = false)
