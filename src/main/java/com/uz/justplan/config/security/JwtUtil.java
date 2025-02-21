@@ -24,6 +24,7 @@ public class JwtUtil {
         Map<String, Object> claims = new HashMap<>();
         claims.put("name", userDetails.getName());
         claims.put("id", userDetails.getId());
+        claims.put("companyId", userDetails.getCompanyId());
         if (userDetails.getAuthorities() != null) {
             String roles = userDetails.getAuthorities().stream()
                     .map(authority -> authority.getAuthority())

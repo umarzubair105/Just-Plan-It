@@ -120,11 +120,16 @@ public class CompanyDashboardService {
 
     @Transactional
     public CommonResp addProduct(final AddProductReq req) {
+        System.out.println("-----req:" + req.toString() + "--------------------------------");
         CommonResp resp = new CommonResp();
         final Product model = new Product();
         model.setActive(true);
         model.setName(req.getName());
         model.setCompanyId(req.getCompanyId());
+        model.setReleaseIteration(req.getReleaseIteration());
+        model.setStartDate(req.getStartDate());
+        model.setEndDate(req.getEndDate());
+        model.setOtherActivitiesPercentTime(req.getOtherActivitiesPercentTime());
         Company company = compRepo.findById(req.getCompanyId()).orElseThrow(() -> new RuntimeException("Company not found"));
         List<Role> roles = roleRepo.findByCompanyIdAndActive(req.getCompanyId(), true);
         roles.forEach(role -> {
@@ -139,8 +144,12 @@ public class CompanyDashboardService {
             }
         });
         productRepo.save(model);
-        assignNewProductResourceIfNotExist(model.getProductManagerId(), model.getId());
-        assignNewProductResourceIfNotExist(model.getProductOwnerId(), model.getId());
+        assignNewProductResourceIfNotExist(model.getProductManagerId(),
+                roles.stream().filter(role -> role.getCode().equals(RoleEnum.PM)).findFirst().get().getId(),
+                model.getId());
+        assignNewProductResourceIfNotExist(model.getProductOwnerId(),
+                roles.stream().filter(role -> role.getCode().equals(RoleEnum.PO)).findFirst().get().getId(),
+                model.getId());
         resp.setMessage("Product is added.");
         resp.setId(model.getId());
         return resp;
@@ -255,10 +264,11 @@ public class CompanyDashboardService {
         resourceRepo.save(model);
         if (design != null && design.getRoleId() != null) {
             assignNewResourceRoleIfNotExist(model.getId(), design.getRoleId());
+            if (req.getProductId() != null) {
+                assignNewProductResourceIfNotExist(model.getId(), design.getRoleId(), req.getProductId());
+            }
         }
-        if (req.getProductId() != null) {
-            assignNewProductResourceIfNotExist(model.getId(), req.getProductId());
-        }
+
         resp.setId(model.getId());
         return resp;
     }
@@ -460,18 +470,18 @@ public class CompanyDashboardService {
             ResourceRole resourceRole = new ResourceRole();
             resourceRole.setResourceId(resourceId);
             resourceRole.setActive(true);
-            resourceRole.setParticipationPercentTime(100);
             resourceRole.setRoleId(roleId);
             resourceRoleRepo.save(resourceRole);
         }
     }
 
-    private void assignNewProductResourceIfNotExist(long resourceId, long productId) {
+    private void assignNewProductResourceIfNotExist(long resourceId, long roleId, long productId) {
         List<ProductResource> existingRole = prodResourceRepo.findByResourceId(resourceId);
         if (existingRole.isEmpty() || existingRole.stream().noneMatch(
-                pr -> pr.getProductId().equals(productId))) {
+                pr -> pr.getProductId().equals(productId) && pr.getRoleId().equals(roleId))) {
             ProductResource model = new ProductResource();
             model.setResourceId(resourceId);
+            model.setRoleId(roleId);
             model.setActive(true);
             if (existingRole.isEmpty()) {
                 model.setParticipationPercentTime(100);

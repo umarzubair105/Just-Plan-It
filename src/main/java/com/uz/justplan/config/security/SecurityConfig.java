@@ -25,6 +25,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight requests
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/company-dashboard/add-company").permitAll()
+                        //   .requestMatchers("/**").permitAll()
+                        // .requestMatchers("**").permitAll()
                         //.requestMatchers().permitAll()
                         .anyRequest().authenticated() //.authenticated()
                 )

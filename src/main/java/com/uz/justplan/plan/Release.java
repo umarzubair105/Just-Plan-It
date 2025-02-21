@@ -1,6 +1,7 @@
 package com.uz.justplan.plan;
 
 import com.uz.justplan.core.Auditable;
+import com.uz.justplan.lookup.ReleaseStatusEnum;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -23,7 +24,8 @@ public class Release extends Auditable {
     private Long productId;
 
     @Column(nullable = false)
-    private Integer releaseStatusId;
+    @Enumerated(EnumType.STRING)
+    private ReleaseStatusEnum status;
     @Column(nullable = false)
     private boolean active;
 
@@ -32,6 +34,9 @@ public class Release extends Auditable {
     public Release() {
     }
 
+    public boolean isWithinRelease(LocalDate date) {
+        return startDate != null && endDate != null && !date.isBefore(startDate) && !date.isAfter(endDate);
+    }
     public String getName() {
         return name;
     }
@@ -72,12 +77,12 @@ public class Release extends Auditable {
         this.productId = productId;
     }
 
-    public Integer getReleaseStatusId() {
-        return releaseStatusId;
+    public ReleaseStatusEnum getStatus() {
+        return status;
     }
 
-    public void setReleaseStatusId(Integer releaseStatusId) {
-        this.releaseStatusId = releaseStatusId;
+    public void setStatus(ReleaseStatusEnum status) {
+        this.status = status;
     }
 
     public boolean isActive() {

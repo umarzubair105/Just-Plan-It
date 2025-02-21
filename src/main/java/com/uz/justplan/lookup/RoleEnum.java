@@ -7,11 +7,12 @@ public enum RoleEnum {
     PO("PO"),
     SA("SA"),
     DBA("DBA"),
-    SE("SE"),
+    BSE("BSE"),
+    FSE("FSE"),
     QAE("QAE"),
     UID("UID"),
-    BA("BA");
-
+    BA("BA"),
+    SM("SM");
     private final String value;
 
     RoleEnum(String value) {

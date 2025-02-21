@@ -11,6 +11,8 @@ public class ProductResource extends Auditable {
 
     @Column(nullable = false)
     private Long resourceId;
+    @Column(nullable = false)
+    private Long roleId;
 
     private int participationPercentTime;
     @Column(nullable = false)
@@ -35,19 +37,27 @@ public class ProductResource extends Auditable {
         this.resourceId = resourceId;
     }
 
-    public int getParticipationPercentTime() {
-        return participationPercentTime;
-    }
-
-    public void setParticipationPercentTime(int participationPercentTime) {
-        this.participationPercentTime = participationPercentTime;
-    }
-
     public boolean isActive() {
         return active;
     }
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
+    }
+
+    public int getParticipationPercentTime() {
+        return participationPercentTime;
+    }
+
+    public void setParticipationPercentTime(int participationPercentTime) {
+        this.participationPercentTime = participationPercentTime;
     }
 }

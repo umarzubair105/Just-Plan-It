@@ -6,13 +6,22 @@ import org.springframework.security.core.userdetails.User;
 import java.util.List;
 
 public class CustomUserDetails extends User {
-    private Long id;
+    private Long id, companyId;
     private String name;
 
-    public CustomUserDetails(Long id, String username, String password, String name, List<GrantedAuthority> authorities) {
+    public CustomUserDetails(Long id, String username, String password, String name, long companyId, List<GrantedAuthority> authorities) {
         super(username, password, authorities);
         this.name = name;
         this.id = id;
+        this.companyId = companyId;
+    }
+
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
     }
 
     public Long getId() {

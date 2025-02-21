@@ -91,12 +91,12 @@ public class Utils {
 
     public static List<Release> nextReleases(LocalDate productStartDate,
                                              LocalDate productEndDate,//nullable
-                                             ReleaseIteration interval, List<DayOfWeek> weekends,
-                                             List<LocalDate> holidays,
-                                             List<LocalDate> forcedWorkingDays,
-                                             List<CompanyWorkingHour> companyWorkingHours,
+                                             ReleaseIteration interval, Set<DayOfWeek> weekends,
+                                             Set<LocalDate> holidays,
+                                             Set<LocalDate> forcedWorkingDays,
+                                             Set<CompanyWorkingHour> companyWorkingHours,
                                              LocalDate lastReleaseEndDate,//nullable
-                                             int lastRleaseVersion) {
+                                             int lastReleaseVersion) {
 
         //Period step = Period.ofMonths(1);
         //        can be used with untill
@@ -111,7 +111,7 @@ public class Utils {
                 .stream().collect(Collectors.groupingBy(CompanyWorkingHour::getScope));
 
         List<Release> releases = new ArrayList<>();
-        int nextReleaseRequiredCount = 10;
+        int nextReleaseRequiredCount = 6;
         for (int i = 0; i < nextReleaseRequiredCount; i++) { // Generate 10 iterations
 
             LocalDate iterationStartDate = productStartDate.plusMonths(i * 1);
@@ -177,7 +177,7 @@ public class Utils {
             release.setActive(true);
             release.setName(iterationStartDate.getMonth().name() + "-" + iterationStartDate.getDayOfMonth()
                     + " to " + iterationEndDate.getMonth().name() + "-" + iterationEndDate.getDayOfMonth());
-            release.setVersion(releases.size() + lastRleaseVersion + 1);
+            release.setVersion(releases.size() + lastReleaseVersion + 1);
             //release.setProductId();
 
             // find working days and exclude holidays between start and end dates
@@ -188,7 +188,7 @@ public class Utils {
                     .forEach(expectedWorkingDay -> {
                         ReleaseWorkingDay day = new ReleaseWorkingDay();
                         day.setWorkingDate(expectedWorkingDay);
-                        day.setMinDate(getWorkingMinutes(expectedWorkingDay, companyWorkingHourMap));
+                        day.setMinutes(getWorkingMinutes(expectedWorkingDay, companyWorkingHourMap));
                         workingDays.add(day);
                     });
             release.setWorkingDays(workingDays.size());
@@ -209,9 +209,9 @@ public class Utils {
         return releases;
     }
 
-    private static boolean isWorkingDay(LocalDate date, List<DayOfWeek> weekends,
-                                        List<LocalDate> holidays,
-                                        List<LocalDate> forcedWorkingDays) {
+    private static boolean isWorkingDay(LocalDate date, Set<DayOfWeek> weekends,
+                                        Set<LocalDate> holidays,
+                                        Set<LocalDate> forcedWorkingDays) {
         if (forcedWorkingDays.contains(date)) {
             return true;
         }
@@ -226,8 +226,7 @@ public class Utils {
             return minutes;
         }
         minutes = workingMinutes.get(WorkingHourScope.DATE_RANGE).stream().filter(r ->
-                        (r.getStartDate().isBefore(date) || r.getStartDate().equals(date))
-                                && (r.getEndDate().isAfter(date) || r.getEndDate().equals(date)))
+                        !date.isBefore(r.getStartDate()) && !date.isAfter(r.getEndDate()))
                 .findFirst().orElse(new CompanyWorkingHour()).getMinutes();
         if (minutes > 0) {
             return minutes;
@@ -240,6 +239,12 @@ public class Utils {
         }
         minutes = workingMinutes.get(WorkingHourScope.DEFAULT).get(0).getMinutes();
         return minutes;
+    }
+
+    public static boolean isWithinOrEqualToStartEndDates(LocalDate date, LocalDate startDate,
+                                                         LocalDate endDate) {
+        return date.isEqual(startDate) || date.isEqual(endDate)
+                || (date.isAfter(startDate) && date.isBefore(endDate));
     }
 
     public static String generateCode() {
@@ -281,4 +286,6 @@ public class Utils {
                         + word.substring(1))
                 .collect(Collectors.joining(" "));
     }
+
+
 }

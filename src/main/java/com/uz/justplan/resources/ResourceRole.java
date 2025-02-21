@@ -11,7 +11,6 @@ public class ResourceRole extends Auditable {
 
     @Column(nullable = false)
     private Long roleId;
-    private int participationPercentTime;
     @Column(nullable = false)
     private boolean active;
 
@@ -34,13 +33,6 @@ public class ResourceRole extends Auditable {
         this.roleId = roleId;
     }
 
-    public int getParticipationPercentTime() {
-        return participationPercentTime;
-    }
-
-    public void setParticipationPercentTime(int participationPercentTime) {
-        this.participationPercentTime = participationPercentTime;
-    }
 
     public boolean isActive() {
         return active;

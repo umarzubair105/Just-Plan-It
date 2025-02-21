@@ -1,9 +1,7 @@
 package com.uz.justplan.core;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import com.uz.justplan.lookup.ReleaseIteration;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
@@ -27,11 +25,41 @@ public class Product extends Auditable {
     @Column(nullable = true)
     private LocalDate endDate;
 
+    private int otherActivitiesPercentTime;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ReleaseIteration releaseIteration;
+
     @Column(nullable = false)
     private boolean active;
 
 
     public Product() {
+    }
+
+    public ReleaseIteration getReleaseIteration() {
+        return releaseIteration;
+    }
+
+    public void setReleaseIteration(ReleaseIteration releaseIteration) {
+        this.releaseIteration = releaseIteration;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 
     public String getName() {
@@ -72,5 +100,13 @@ public class Product extends Auditable {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public int getOtherActivitiesPercentTime() {
+        return otherActivitiesPercentTime;
+    }
+
+    public void setOtherActivitiesPercentTime(int otherActivitiesPercentTime) {
+        this.otherActivitiesPercentTime = otherActivitiesPercentTime;
     }
 }

@@ -12,23 +12,23 @@ import java.time.LocalDate;
 @Table(name = "ReleaseWorkingDay", uniqueConstraints = @UniqueConstraint(columnNames = {"releaseId", "workingDate"}))
 public class ReleaseWorkingDay extends Auditable {
     @Column(nullable = false)
-    private Long release;
+    private Long releaseId;
     @Column(nullable = false)
     private LocalDate workingDate;
     @Column(nullable = false)
-    private int minDate;
+    private int minutes;
     @Column(nullable = false)
     private boolean active;
 
     public ReleaseWorkingDay() {
     }
 
-    public Long getRelease() {
-        return release;
+    public Long getReleaseId() {
+        return releaseId;
     }
 
-    public void setRelease(Long release) {
-        this.release = release;
+    public void setReleaseId(Long releaseId) {
+        this.releaseId = releaseId;
     }
 
     public LocalDate getWorkingDate() {
@@ -39,12 +39,12 @@ public class ReleaseWorkingDay extends Auditable {
         this.workingDate = workingDate;
     }
 
-    public int getMinDate() {
-        return minDate;
+    public int getMinutes() {
+        return minutes;
     }
 
-    public void setMinDate(int minDate) {
-        this.minDate = minDate;
+    public void setMinutes(int minutes) {
+        this.minutes = minutes;
     }
 
     public boolean isActive() {

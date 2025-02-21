@@ -3,3 +3,9 @@
 -- minDaysInIteration
 
 Based on Country populate Company Calender, working days, minutes
+
+resource Upload to DesignMapping
+Company Working days, Company Calender
+and then to Porduct -> Log -> Priority
+
+Product Resource Working time

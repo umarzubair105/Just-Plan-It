@@ -20,7 +20,8 @@ public class ReleaseEpic extends Auditable {
     @Column(nullable = false)
     private Long epicId;
 
-
+    @Column(nullable = false)
+    private boolean forcefullyAdded;
     @Column(nullable = true)
     private Long dependOnEpicId;
 
@@ -97,5 +98,13 @@ public class ReleaseEpic extends Auditable {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public boolean isForcefullyAdded() {
+        return forcefullyAdded;
+    }
+
+    public void setForcefullyAdded(boolean forcefullyAdded) {
+        this.forcefullyAdded = forcefullyAdded;
     }
 }

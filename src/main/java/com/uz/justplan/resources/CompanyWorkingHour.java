@@ -1,5 +1,7 @@
 package com.uz.justplan.resources;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.uz.justplan.config.DayOfWeekDeserializer;
 import com.uz.justplan.core.Auditable;
 import com.uz.justplan.lookup.WorkingHourScope;
 import jakarta.persistence.Column;
@@ -25,6 +27,8 @@ public class CompanyWorkingHour extends Auditable implements Cloneable {
     @Column(nullable = true)
     private LocalDate eventDate;
     @Column(nullable = true)
+    @Enumerated(EnumType.STRING)
+    @JsonDeserialize(using = DayOfWeekDeserializer.class)
     private DayOfWeek dayOfWeek;
     @Column(nullable = false)
     private boolean recurring; // For recurring events like annual holidays

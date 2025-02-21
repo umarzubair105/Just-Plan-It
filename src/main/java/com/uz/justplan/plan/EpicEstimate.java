@@ -18,6 +18,9 @@ public class EpicEstimate extends Auditable {
     @Column(nullable = false)
     private Long epicId;
 
+
+    @Column(nullable = false)
+    private boolean changedManually;
     @Column(nullable = true)
     private Long resourceId;
     @Column(nullable = false)
@@ -72,5 +75,13 @@ public class EpicEstimate extends Auditable {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public boolean isChangedManually() {
+        return changedManually;
+    }
+
+    public void setChangedManually(boolean changedManually) {
+        this.changedManually = changedManually;
     }
 }

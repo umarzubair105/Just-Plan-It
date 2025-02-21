@@ -62,6 +62,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 username.trim().toLowerCase(),
                 user.getPassword(),
                 user.getName(),
+                user.getCompanyId(),
                 authorities
                 //List.of(authorities.iterator().next())
                 //List.of(new SimpleGrantedAuthority("BA"))
