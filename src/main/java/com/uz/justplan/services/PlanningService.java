@@ -7,6 +7,7 @@ import com.uz.justplan.plan.Epic;
 import com.uz.justplan.plan.EpicEstimate;
 import com.uz.justplan.plan.Release;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Service
 public class PlanningService {
 
     Map<Long, EpicEstimatePS> epicEstimateMap = new HashMap<>();// by epic Id

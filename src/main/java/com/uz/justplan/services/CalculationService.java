@@ -128,7 +128,7 @@ public class CalculationService {
             capacity = (capacity / 100) * prodResource.getParticipationPercentTime();
             bean.minutesForOtherActivities = (capacity / 100) * product.getOtherActivitiesPercentTime();
             bean.minutesCapacity = capacity - bean.minutesForOtherActivities;
-            bean.minutesOccupied = epicEstRepo.calculateTotalHoursByEpicIdAndResourceIdAndRoleId(releaseId,
+            bean.minutesOccupied = epicEstRepo.calculateTotalHoursByReleaseIdAndResourceIdAndRoleId(releaseId,
                     prodResource.getResourceId(), prodResource.getRoleId()).intValue() * 60;
             // check if capacity is more than 0 (to avoid division by zero error and to avoid adding empty bean to the list 100% capacity resources will be excluded by default in the frontend))
             //if (bean.minutesCapacity>0) {

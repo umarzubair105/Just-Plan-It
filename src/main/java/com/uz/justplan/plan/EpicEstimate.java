@@ -18,7 +18,6 @@ public class EpicEstimate extends Auditable {
     @Column(nullable = false)
     private Long epicId;
 
-
     @Column(nullable = false)
     private boolean changedManually;
     @Column(nullable = true)

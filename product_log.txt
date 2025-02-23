@@ -8,4 +8,6 @@ resource Upload to DesignMapping
 Company Working days, Company Calender
 and then to Porduct -> Log -> Priority
 
+Company Claendar add dates filter by date on UI to show relevant Working hours and Holidays, use "Find All"
+
 Product Resource Working time

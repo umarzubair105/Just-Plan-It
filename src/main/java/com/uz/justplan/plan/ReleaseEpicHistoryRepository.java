@@ -3,7 +3,7 @@ package com.uz.justplan.plan;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.ListPagingAndSortingRepository;
 
-public interface ReleaseEpicRepository extends CrudRepository<ReleaseEpic, Long>,
-        ListPagingAndSortingRepository<ReleaseEpic, Long> {
+public interface ReleaseEpicHistoryRepository extends CrudRepository<ReleaseEpicHistory, Long>,
+        ListPagingAndSortingRepository<ReleaseEpicHistory, Long> {
 
 }

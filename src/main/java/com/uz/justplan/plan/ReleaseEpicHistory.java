@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"releaseId", "epicId"}))
-public class ReleaseEpic extends Auditable {
+public class ReleaseEpicHistory extends Auditable {
     private String comments;
     private String risks;
 
@@ -33,7 +33,7 @@ public class ReleaseEpic extends Auditable {
     @Column(nullable = false)
     private boolean active;
 
-    public ReleaseEpic() {
+    public ReleaseEpicHistory() {
     }
 
     public String getComments() {

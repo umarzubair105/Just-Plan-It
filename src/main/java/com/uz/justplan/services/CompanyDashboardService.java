@@ -297,8 +297,7 @@ public class CompanyDashboardService {
         model.setComments(req.getComments());
         model.setRisks(req.getRisks());
         model.setActive(true);
-        model.setPlanned(false);
-        model.setCompleteByReleaseId(null);
+        //model.setCompleteByReleaseId(null);
         model.setRaisedByResourceId(null);
         model.setValueGain(Utils.getDoubleValue(req.getValueGain()));
         if (!Validation.isEmpty(req.getDateFormat())) {

@@ -8,14 +8,16 @@ import java.time.LocalDate;
 
 @Entity
 public class Epic extends Auditable {
-
-    @Column(nullable = false)
-    private String title;
-
-    @Column(nullable = true)
-    private String details;
     @Column(nullable = false)
     private Long productId;
+    @Column(nullable = false)
+    private String code;
+    @Column(nullable = false)
+    private String title;
+    @Column(nullable = true)
+    private String details;
+    @Column(nullable = true)
+    private Long dependOnEpicId;
     @Column(nullable = true)
     private Long raisedByResourceId;
     @Column(nullable = true)
@@ -27,14 +29,34 @@ public class Epic extends Auditable {
     private String risks;
     private double valueGain;
     @Column(nullable = false)
-    private boolean planned;
-    @Column(nullable = true)
-    private Long completeByReleaseId;
-
-    @Column(nullable = false)
     private boolean active;
 
+
+    @Column(nullable = true)
+    private Long releaseId;
+    @Column(nullable = false)
+    private boolean forcefullyAdded;
+    @Column(nullable = true)
+    private LocalDate startDate;
+    @Column(nullable = true)
+    private LocalDate endDate;
     public Epic() {
+    }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getTitle() {
@@ -53,12 +75,12 @@ public class Epic extends Auditable {
         this.details = details;
     }
 
-    public Long getProductId() {
-        return productId;
+    public Long getDependOnEpicId() {
+        return dependOnEpicId;
     }
 
-    public void setProductId(Long productId) {
-        this.productId = productId;
+    public void setDependOnEpicId(Long dependOnEpicId) {
+        this.dependOnEpicId = dependOnEpicId;
     }
 
     public Long getRaisedByResourceId() {
@@ -117,21 +139,6 @@ public class Epic extends Auditable {
         this.valueGain = valueGain;
     }
 
-    public boolean isPlanned() {
-        return planned;
-    }
-
-    public void setPlanned(boolean planned) {
-        this.planned = planned;
-    }
-
-    public Long getCompleteByReleaseId() {
-        return completeByReleaseId;
-    }
-
-    public void setCompleteByReleaseId(Long completeByReleaseId) {
-        this.completeByReleaseId = completeByReleaseId;
-    }
 
     public boolean isActive() {
         return active;
@@ -139,5 +146,37 @@ public class Epic extends Auditable {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public Long getReleaseId() {
+        return releaseId;
+    }
+
+    public void setReleaseId(Long releaseId) {
+        this.releaseId = releaseId;
+    }
+
+    public boolean isForcefullyAdded() {
+        return forcefullyAdded;
+    }
+
+    public void setForcefullyAdded(boolean forcefullyAdded) {
+        this.forcefullyAdded = forcefullyAdded;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 }

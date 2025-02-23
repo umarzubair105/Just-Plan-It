@@ -9,6 +9,8 @@ import java.time.LocalDate;
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"companyId", "name"}))
 public class Product extends Auditable {
     @Column(nullable = false)
+    private String code;
+    @Column(nullable = false)
     private String name;
     @Column(nullable = false)
     private Long productManagerId;
@@ -36,6 +38,14 @@ public class Product extends Auditable {
 
 
     public Product() {
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public ReleaseIteration getReleaseIteration() {

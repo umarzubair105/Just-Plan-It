@@ -11,6 +11,8 @@ public interface ResourceRepository extends CrudRepository<Resource, Long>,
         ListPagingAndSortingRepository<Resource, Long> {
     List<Resource> findByCompanyId(long companyId);
 
+    List<Resource> findByCompanyIdAndActiveIsTrue(long companyId);
+
     List<Resource> findByIdInAndActive(Collection<Long> ids, boolean active);
     List<Resource> findByDesignationId(long designationId);
 
