@@ -59,6 +59,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
+    @ExceptionHandler(org.springframework.security.authentication.BadCredentialsException.class)
+    public ResponseEntity<Map<String, String>> handleBadCredentialsException(Exception ex) {
+        log.error(ex.getMessage(), ex);
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", "Credentials are not correct.");
+        errorResponse.put("error", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGeneralException(Exception ex) {
         log.error(ex.getMessage(), ex);

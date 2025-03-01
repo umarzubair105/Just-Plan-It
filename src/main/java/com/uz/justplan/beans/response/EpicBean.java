@@ -5,6 +5,7 @@ import com.uz.justplan.lookup.Priority;
 import com.uz.justplan.plan.Epic;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -14,7 +15,9 @@ public class EpicBean {
     Long dependOnEpicId;
     LocalDate requiredBy;
     Long priorityId;
+    Long releaseId;
     Long componentId;
+    Long productId;
     String risks;
     boolean forcefullyAdded;
 
@@ -26,13 +29,17 @@ public class EpicBean {
     String priorityName;
     String componentName;
     int priorityLevel = 100;
+    boolean active;
 
     List<EpicEstimateBean> estimates;
 
     public EpicBean(Epic epic, Priority p, String depEpicCode, String raisedByResource, String component,
                     List<EpicEstimateBean> estimates) {
         this.id = epic.getId();
+        this.productId = epic.getProductId();
+        this.releaseId = epic.getReleaseId();
         this.code = epic.getCode();
+        this.active = epic.isActive();
         this.title = epic.getTitle();
         this.details = epic.getDetails();
         this.dependOnEpicId = epic.getDependOnEpicId();
@@ -50,7 +57,31 @@ public class EpicBean {
         }
         this.dependOnEpicCode = depEpicCode;
         this.raisedByResourceName = raisedByResource;
-        this.estimates = estimates;
+        this.estimates = estimates == null ? new ArrayList<>() : estimates;
+    }
+
+    public Long getReleaseId() {
+        return releaseId;
+    }
+
+    public void setReleaseId(Long releaseId) {
+        this.releaseId = releaseId;
+    }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public Long getId() {
