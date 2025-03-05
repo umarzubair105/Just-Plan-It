@@ -126,6 +126,7 @@ public class CompanyDashboardService {
         model.setActive(true);
         model.setName(req.getName());
         model.setCompanyId(req.getCompanyId());
+        model.setCode(req.getCode());
         model.setReleaseIteration(req.getReleaseIteration());
         model.setStartDate(req.getStartDate());
         model.setEndDate(req.getEndDate());

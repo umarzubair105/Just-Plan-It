@@ -1,5 +1,6 @@
 package com.uz.justplan.resources;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.ListPagingAndSortingRepository;
 
@@ -22,5 +23,9 @@ public interface ResourceRepository extends CrudRepository<Resource, Long>,
             long companyId, String email, boolean active);
 
     List<Resource> findByEmailIgnoreCaseAndActive(String email, boolean active);
+
+    @Query("select r from ProductResource pr, Resource r where pr.productId=:productId and pr.active=true" +
+            " and pr.resourceId=r.id and r.active=true")
+    List<Resource> findResourcesByProductId(long productId);
 
 }

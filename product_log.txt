@@ -11,3 +11,5 @@ and then to Porduct -> Log -> Priority
 Company Claendar add dates filter by date on UI to show relevant Working hours and Holidays, use "Find All"
 
 Product Resource Working time
+
+ <T> List<T> findByPriceGreaterThan(double price, Class<T> type);

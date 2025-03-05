@@ -13,6 +13,7 @@ public class AddProductReq {
     @NotBlank(message = "It is required.")
     private Long companyId;
     private String name;
+    private String code;
     private String emailProductManager;
     private String emailProductOwner;
 
@@ -51,6 +52,14 @@ public class AddProductReq {
 
     public void setOtherActivitiesPercentTime(int otherActivitiesPercentTime) {
         this.otherActivitiesPercentTime = otherActivitiesPercentTime;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public ReleaseIteration getReleaseIteration() {
