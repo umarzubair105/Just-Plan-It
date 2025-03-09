@@ -1,10 +1,8 @@
 package com.uz.justplan.resources;
 
 import com.uz.justplan.core.Auditable;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import com.uz.justplan.lookup.ResourceStatus;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
@@ -34,8 +32,14 @@ public class Resource extends Auditable {
     private Long companyId;
 
     @Column(nullable = true)
+    private LocalDate lastWorkingDate;
+
+    @Column(nullable = true)
     private Long leadResourceId;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ResourceStatus status;
     @Column(nullable = false)
     private boolean active;
 
@@ -136,5 +140,21 @@ public class Resource extends Auditable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public LocalDate getLastWorkingDate() {
+        return lastWorkingDate;
+    }
+
+    public void setLastWorkingDate(LocalDate lastWorkingDate) {
+        this.lastWorkingDate = lastWorkingDate;
+    }
+
+    public ResourceStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ResourceStatus status) {
+        this.status = status;
     }
 }

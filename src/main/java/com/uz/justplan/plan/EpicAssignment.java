@@ -7,10 +7,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"epicId", "roleId"}))
-public class EpicEstimate extends Auditable {
-    @Column(nullable = false)
-    private int resources;
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"epicId", "resourceId", "roleId"}))
+public class EpicAssignment extends Auditable {
     @Column(nullable = false)
     private double hours;
     @Column(nullable = false)
@@ -18,29 +16,13 @@ public class EpicEstimate extends Auditable {
     @Column(nullable = false)
     private Long epicId;
     @Column(nullable = false)
+    private boolean changedManually;
+    @Column(nullable = false)
+    private Long resourceId;
+    @Column(nullable = false)
     private boolean active;
 
-    public EpicEstimate() {
-    }
-
-    public int getMinutes() {
-        return Double.valueOf(hours * 60).intValue();
-    }
-    public int getResources() {
-        return resources;
-    }
-
-    public void setResources(int resources) {
-        this.resources = resources;
-    }
-
-    public double getHours() {
-        return hours;
-    }
-
-
-    public void setHours(double hours) {
-        this.hours = hours;
+    public EpicAssignment() {
     }
 
     public Long getRoleId() {
@@ -51,12 +33,28 @@ public class EpicEstimate extends Auditable {
         this.roleId = roleId;
     }
 
+    public double getHours() {
+        return hours;
+    }
+
+    public void setHours(double hours) {
+        this.hours = hours;
+    }
+
     public Long getEpicId() {
         return epicId;
     }
 
     public void setEpicId(Long epicId) {
         this.epicId = epicId;
+    }
+
+    public Long getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(Long resourceId) {
+        this.resourceId = resourceId;
     }
 
     public boolean isActive() {
@@ -67,4 +65,11 @@ public class EpicEstimate extends Auditable {
         this.active = active;
     }
 
+    public boolean isChangedManually() {
+        return changedManually;
+    }
+
+    public void setChangedManually(boolean changedManually) {
+        this.changedManually = changedManually;
+    }
 }

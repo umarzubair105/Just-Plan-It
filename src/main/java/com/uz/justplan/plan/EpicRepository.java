@@ -14,6 +14,9 @@ public interface EpicRepository extends CrudRepository<Epic, Long> {
 
     List<Epic> findByReleaseIdAndActiveIsTrue(long releaseId);
 
+    Long countByReleaseIdAndActiveTrue(Long releaseId);
+
+
     @Query("select code from Epic where id=:id")
     Optional<String> findCodeById(long id);
 

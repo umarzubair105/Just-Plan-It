@@ -19,7 +19,7 @@ public class CompanyWorkingHour extends Auditable implements Cloneable {
     private Long companyId;
 
     @Column(nullable = false)
-    private Integer minutes;
+    private int minutes;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -70,11 +70,11 @@ public class CompanyWorkingHour extends Auditable implements Cloneable {
         this.companyId = companyId;
     }
 
-    public Integer getMinutes() {
+    public int getMinutes() {
         return minutes;
     }
 
-    public void setMinutes(Integer minutes) {
+    public void setMinutes(int minutes) {
         this.minutes = minutes;
     }
 

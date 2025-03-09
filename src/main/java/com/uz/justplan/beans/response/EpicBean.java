@@ -32,6 +32,7 @@ public class EpicBean {
     boolean active;
 
     List<EpicEstimateBean> estimates;
+    List<EpicAssignmentBean> assignments;
 
     public EpicBean(Epic epic, Priority p, String depEpicCode, String raisedByResource, String component,
                     List<EpicEstimateBean> estimates) {
@@ -58,6 +59,19 @@ public class EpicBean {
         this.dependOnEpicCode = depEpicCode;
         this.raisedByResourceName = raisedByResource;
         this.estimates = estimates == null ? new ArrayList<>() : estimates;
+    }
+
+    public EpicBean(List<EpicAssignmentBean> assignments, Epic epic, Priority p, String depEpicCode, String raisedByResource, String component) {
+        this(epic, p, depEpicCode, raisedByResource, component, null);
+        this.assignments = assignments == null ? new ArrayList<>() : assignments;
+    }
+
+    public List<EpicAssignmentBean> getAssignments() {
+        return assignments;
+    }
+
+    public void setAssignments(List<EpicAssignmentBean> assignments) {
+        this.assignments = assignments;
     }
 
     public Long getReleaseId() {

@@ -11,8 +11,10 @@ import java.util.List;
 public interface ResourceLeaveRepository extends CrudRepository<ResourceLeave, Long>,
         ListPagingAndSortingRepository<ResourceLeave, Long> {
 
-    List<ResourceLeave> findResourceLeavesByResourceIdInAndActiveAndEndDateGreaterThanEqualAndStatus(
-            Collection<Long> resourceIds, boolean active, LocalDate endDateGreaterThanEqual,
+    List<ResourceLeave> findResourceLeavesByResourceIdInAndActiveAndEndDateGreaterThanEqualAndStartDateLessThanEqualAndStatus(
+            Collection<Long> resourceIds, boolean active, LocalDate endDateGreaterThanEqual, LocalDate startDateLessThanEqual,
             LeaveStatus status);
 
+
+    List<ResourceLeave> findByResourceIdAndActiveIsTrue(Long resourceId);
 }

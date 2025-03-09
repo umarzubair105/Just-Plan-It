@@ -1,5 +1,7 @@
 package com.uz.justplan.beans;
 
+import com.uz.justplan.plan.Release;
+
 import java.util.List;
 
 public class ScheduleEpic {
@@ -8,7 +10,7 @@ public class ScheduleEpic {
     public static final String ASSIGN_UPDATE = "update";
 
     Long epicId;
-    Long releaseIdToAddIn;
+    Release releaseToAddIn;
 
     List<Assignment> assignments;
     List<Detail> effectedAreas;
@@ -29,12 +31,12 @@ public class ScheduleEpic {
         this.assignments = assignments;
     }
 
-    public Long getReleaseIdToAddIn() {
-        return releaseIdToAddIn;
+    public Release getReleaseToAddIn() {
+        return releaseToAddIn;
     }
 
-    public void setReleaseIdToAddIn(Long releaseIdToAddIn) {
-        this.releaseIdToAddIn = releaseIdToAddIn;
+    public void setReleaseToAddIn(Release releaseToAddIn) {
+        this.releaseToAddIn = releaseToAddIn;
     }
 
     public List<Detail> getEffectedAreas() {
@@ -46,24 +48,16 @@ public class ScheduleEpic {
     }
 
     public static class Assignment {
-        Long id; //epicEstimateId
         Long roleId;
         Long resourceId;
+        int minutes;
         String action;
 
-        public Assignment(Long id, Long roleId, Long resourceId, String action) {
-            this.id = id;
+        public Assignment(Long roleId, Long resourceId, String action, int minutes) {
             this.roleId = roleId;
             this.resourceId = resourceId;
             this.action = action;
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
+            this.minutes = minutes;
         }
 
         public Long getRoleId() {
@@ -88,6 +82,14 @@ public class ScheduleEpic {
 
         public void setAction(String action) {
             this.action = action;
+        }
+
+        public int getMinutes() {
+            return minutes;
+        }
+
+        public void setMinutes(int minutes) {
+            this.minutes = minutes;
         }
     }
 

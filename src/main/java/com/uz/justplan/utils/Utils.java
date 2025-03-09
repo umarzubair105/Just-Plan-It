@@ -111,8 +111,8 @@ public class Utils {
                 .stream().collect(Collectors.groupingBy(CompanyWorkingHour::getScope));
 
         List<Release> releases = new ArrayList<>();
-        int nextReleaseRequiredCount = 6;
-        for (int i = 0; i < nextReleaseRequiredCount; i++) { // Generate 10 iterations
+        int nextReleaseRequiredCount = 1;// Generate so many iterations
+        for (int i = 0; i < nextReleaseRequiredCount; i++) {
 
             LocalDate iterationStartDate = productStartDate.plusMonths(i * 1);
             if (lastReleaseEndDate != null && iterationStartDate.isBefore(lastReleaseEndDate)) {
@@ -220,24 +220,25 @@ public class Utils {
 
     private static int getWorkingMinutes(LocalDate date, Map<WorkingHourScope, List<CompanyWorkingHour>> workingMinutes) {
 
-        int minutes = workingMinutes.get(WorkingHourScope.SPECIFIC_DATE).stream().filter(r -> r.getEventDate().equals(date))
+        int minutes = workingMinutes.getOrDefault(WorkingHourScope.SPECIFIC_DATE, new ArrayList<>()).stream()
+                .filter(r -> r.getEventDate().equals(date))
                 .findFirst().orElse(new CompanyWorkingHour()).getMinutes();
         if (minutes > 0) {
             return minutes;
         }
-        minutes = workingMinutes.get(WorkingHourScope.DATE_RANGE).stream().filter(r ->
+        minutes = workingMinutes.getOrDefault(WorkingHourScope.DATE_RANGE, new ArrayList<>()).stream().filter(r ->
                         !date.isBefore(r.getStartDate()) && !date.isAfter(r.getEndDate()))
                 .findFirst().orElse(new CompanyWorkingHour()).getMinutes();
         if (minutes > 0) {
             return minutes;
         }
-        minutes = workingMinutes.get(WorkingHourScope.WEEK_DAY).stream().filter(r ->
+        minutes = workingMinutes.getOrDefault(WorkingHourScope.WEEK_DAY, new ArrayList<>()).stream().filter(r ->
                         r.getDayOfWeek().equals(date.getDayOfWeek()))
                 .findFirst().orElse(new CompanyWorkingHour()).getMinutes();
         if (minutes > 0) {
             return minutes;
         }
-        minutes = workingMinutes.get(WorkingHourScope.DEFAULT).get(0).getMinutes();
+        minutes = workingMinutes.getOrDefault(WorkingHourScope.DEFAULT, new ArrayList<>()).get(0).getMinutes();
         return minutes;
     }
 

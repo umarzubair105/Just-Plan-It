@@ -12,5 +12,6 @@ public interface ReleaseRepository extends CrudRepository<Release, Long>,
         ListPagingAndSortingRepository<Release, Long> {
     Optional<Release> findTopOneByProductIdAndActiveOrderByStartDateDesc(long productId, boolean active);
 
+    List<Release> findByProductIdAndStatusAndActiveIsTrueOrderByStartDateAsc(long productId, ReleaseStatusEnum status);
     List<Release> findByProductIdAndStatusInAndActiveIsTrueOrderByStartDateAsc(long productId, Collection<ReleaseStatusEnum> status);
 }

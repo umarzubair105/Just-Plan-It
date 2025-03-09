@@ -1,5 +1,6 @@
 package com.uz.justplan.resources;
 
+import com.uz.justplan.lookup.ResourceStatus;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.ListPagingAndSortingRepository;
@@ -14,7 +15,7 @@ public interface ResourceRepository extends CrudRepository<Resource, Long>,
 
     List<Resource> findByCompanyIdAndActiveIsTrue(long companyId);
 
-    List<Resource> findByIdInAndActive(Collection<Long> ids, boolean active);
+    List<Resource> findByIdInAndStatusAndActive(Collection<Long> ids, ResourceStatus status, boolean active);
     List<Resource> findByDesignationId(long designationId);
 
     Optional<Resource> findByCompanyIdAndEmailIgnoreCase(long companyId, String email);

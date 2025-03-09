@@ -1,26 +1,28 @@
 package com.uz.justplan.beans.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.uz.justplan.plan.EpicEstimate;
+import com.uz.justplan.plan.EpicAssignment;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class EpicEstimateBean {
+public class EpicAssignmentBean {
     Long id;
-    int resources;
     double hours;
     Long roleId;
     String roleName;
+    Long resourceId;
+    String resourceName;
     Boolean active;
     Long epicId;
 
-    public EpicEstimateBean(EpicEstimate ee, String role) {
+    public EpicAssignmentBean(EpicAssignment ee, String role, String resource) {
         this.id = ee.getId();
         this.active = ee.isActive();
         this.epicId = ee.getEpicId();
-        this.resources = ee.getResources();
+        this.resourceId = ee.getResourceId();
         this.hours = ee.getHours();
         this.roleId = ee.getRoleId();
         this.roleName = role;
+        this.resourceName = resource;
     }
 
     public Boolean getActive() {
@@ -47,12 +49,20 @@ public class EpicEstimateBean {
         this.id = id;
     }
 
-    public int getResources() {
-        return resources;
+    public Long getResourceId() {
+        return resourceId;
     }
 
-    public void setResources(int resources) {
-        this.resources = resources;
+    public void setResourceId(Long resourceId) {
+        this.resourceId = resourceId;
+    }
+
+    public String getResourceName() {
+        return resourceName;
+    }
+
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
     }
 
     public double getHours() {
