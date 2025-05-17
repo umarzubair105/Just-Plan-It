@@ -9,6 +9,7 @@ import com.uz.justplan.core.Component;
 import com.uz.justplan.core.ComponentRepository;
 import com.uz.justplan.core.Product;
 import com.uz.justplan.core.ProductRepository;
+import com.uz.justplan.lookup.AssignmentStatus;
 import com.uz.justplan.lookup.Priority;
 import com.uz.justplan.lookup.PriorityRepository;
 import com.uz.justplan.lookup.ReleaseStatusEnum;
@@ -51,6 +52,8 @@ public class PlanningDashboardService {
     RoleRepository roleRepository;
     @Autowired
     ReleaseRepository releaseRepository;
+    @Autowired
+    TimeLoggingRepository timeLoggingRepository;
 
     public List<EpicBean> getUnplannedEpics(long companyId, long productId) {
         List<EpicBean> beans = new ArrayList<>();
@@ -131,6 +134,7 @@ public class PlanningDashboardService {
                 epicAssignment.setRoleId(assignment.getRoleId());
                 epicAssignment.setHours(assignment.getMinutes() / 60);
                 epicAssignment.setActive(true);
+                epicAssignment.setStatus(AssignmentStatus.OPEN);
                 epicAssignmentRepository.save(epicAssignment);
             });
         }
@@ -164,7 +168,11 @@ public class PlanningDashboardService {
             if (epicAssignmentMap.containsKey(e.getId())) {
                 esList = epicAssignmentMap.get(e.getId()).stream().map(ee ->
                                 new EpicAssignmentBean(ee, roleMap.get(ee.getRoleId()),
-                                        resourceMap.get(ee.getResourceId())))
+                                        resourceMap.get(ee.getResourceId()),
+                                        release.getStatus() != ReleaseStatusEnum.UNPLANNED && release.getStatus() != ReleaseStatusEnum.PLANNED ?
+                                                timeLoggingRepository.findTotalMinutesByReleaseIdAndEpicIdAndResourceId(releaseId, e.getId(), ee.getResourceId()) :
+                                                timeLoggingRepository.findTotalMinutesByEpicIdAndResourceId(e.getId(), ee.getResourceId())
+                                ))
                         .collect(Collectors.toList());
             }
 
@@ -182,6 +190,35 @@ public class PlanningDashboardService {
     }
 
     public List<ReleaseDetailBean> getUnplannedReleases(long productId) {
+        return getReleases(productId, ReleaseStatusEnum.UNPLANNED);
+    }
+
+    public List<ReleaseDetailBean> getPlannedReleases(long productId) {
+        return getReleases(productId, ReleaseStatusEnum.PLANNED);
+    }
+
+    public List<ReleaseDetailBean> getStartedReleases(long productId) {
+        return getReleases(productId, ReleaseStatusEnum.STARTED);
+    }
+
+    public List<ReleaseDetailBean> getOldReleases(long productId) {
+        List<ReleaseStatusEnum> statuses = new ArrayList<>();
+        statuses.add(ReleaseStatusEnum.OVERDUE);
+        statuses.add(ReleaseStatusEnum.COMPLETED);
+        List<Release> releases = releaseRepository.findByProductIdAndStatusInAndActiveIsTrueOrderByStartDateAsc(productId,
+                statuses);
+        List<ReleaseDetailBean> details = new ArrayList<>();
+        releases.forEach(release -> {
+            ReleaseDetailBean releaseBean = new ReleaseDetailBean();
+            releaseBean.setRelease(release);
+            details.add(releaseBean);
+        });
+        return details;
+    }
+
+    private List<ReleaseDetailBean> getReleases(long productId, ReleaseStatusEnum status) {
+        List<Release> releases = releaseRepository.findByProductIdAndStatusAndActiveIsTrueOrderByStartDateAsc(productId,
+                status);
         Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
         long companyId = product.getCompanyId();
         Map<Long, Priority> priorityMap = priorityRepository.findByCompanyIdAndActiveIsTrue(companyId).stream()
@@ -192,8 +229,6 @@ public class PlanningDashboardService {
                 .collect(Collectors.toMap(Role::getId, Role::getName));
         Map<Long, String> compMap = componentRepository.findByCompanyIdAndActiveIsTrue(companyId).stream()
                 .collect(Collectors.toMap(Component::getId, Component::getName));
-        List<Release> releases = releaseRepository.findByProductIdAndStatusAndActiveIsTrueOrderByStartDateAsc(productId,
-                ReleaseStatusEnum.UNPLANNED);
         List<ReleaseDetailBean> details = new ArrayList<>();
         releases.forEach(release -> {
             ReleaseDetailBean releaseBean = new ReleaseDetailBean();
@@ -216,7 +251,11 @@ public class PlanningDashboardService {
                 if (epicAssignmentMap.containsKey(e.getId())) {
                     esList = epicAssignmentMap.get(e.getId()).stream().map(ee ->
                                     new EpicAssignmentBean(ee, roleMap.get(ee.getRoleId()),
-                                            resourceMap.get(ee.getResourceId())))
+                                            resourceMap.get(ee.getResourceId()),
+                                            release.getStatus() != ReleaseStatusEnum.UNPLANNED && release.getStatus() != ReleaseStatusEnum.PLANNED ?
+                                                    timeLoggingRepository.findTotalMinutesByReleaseIdAndEpicIdAndResourceId(releaseId, e.getId(), ee.getResourceId()) :
+                                                    timeLoggingRepository.findTotalMinutesByEpicIdAndResourceId(e.getId(), ee.getResourceId())
+                                    ))
                             .collect(Collectors.toList());
                 }
 

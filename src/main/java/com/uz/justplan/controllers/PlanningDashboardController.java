@@ -34,4 +34,19 @@ public class PlanningDashboardController {
     public List<ReleaseDetailBean> findUnplannedReleasesByProductId(@RequestParam long productId) {
         return service.getUnplannedReleases(productId);
     }
+
+    @GetMapping("/findPlannedReleasesByProductId")
+    public List<ReleaseDetailBean> findPlannedReleasesByProductId(@RequestParam long productId) {
+        return service.getPlannedReleases(productId);
+    }
+
+    @GetMapping("/findStartedReleasesByProductId")
+    public List<ReleaseDetailBean> findStartedReleasesByProductId(@RequestParam long productId) {
+        return service.getStartedReleases(productId);
+    }
+
+    @GetMapping("/findOldReleasesByProductId")
+    public List<ReleaseDetailBean> findOldReleasesByProductId(@RequestParam long productId) {
+        return service.getOldReleases(productId);
+    }
 }

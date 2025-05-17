@@ -1,10 +1,8 @@
 package com.uz.justplan.plan;
 
 import com.uz.justplan.core.Auditable;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import com.uz.justplan.lookup.AssignmentStatus;
+import jakarta.persistence.*;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"epicId", "resourceId", "roleId"}))
@@ -19,6 +17,9 @@ public class EpicAssignment extends Auditable {
     private boolean changedManually;
     @Column(nullable = false)
     private Long resourceId;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private AssignmentStatus status;
     @Column(nullable = false)
     private boolean active;
 
@@ -71,5 +72,13 @@ public class EpicAssignment extends Auditable {
 
     public void setChangedManually(boolean changedManually) {
         this.changedManually = changedManually;
+    }
+
+    public AssignmentStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(AssignmentStatus status) {
+        this.status = status;
     }
 }

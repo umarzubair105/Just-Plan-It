@@ -11,6 +11,7 @@ public class ResourceCapInRelease {
     public Integer prodBasedAssignableTime;
     public Integer prodBasedAssignedTime;
     public Integer prodBasedExtraTime;
+    public Long loggedTime;
 
     //public Integer assignableTime;
     //public Integer assignedTime;
@@ -28,6 +29,7 @@ public class ResourceCapInRelease {
                 ", prodBasedAssignableTime=" + prodBasedAssignableTime +
                 ", prodBasedAssignedTime=" + prodBasedAssignedTime +
                 ", prodBasedExtraTime=" + prodBasedExtraTime +
+                ", loggedTime=" + loggedTime +
                 '}';
     }
 }

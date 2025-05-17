@@ -1,6 +1,7 @@
 package com.uz.justplan.beans.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.uz.justplan.lookup.AssignmentStatus;
 import com.uz.justplan.plan.EpicAssignment;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -13,8 +14,10 @@ public class EpicAssignmentBean {
     String resourceName;
     Boolean active;
     Long epicId;
+    AssignmentStatus status;
+    long minutesLogged;
 
-    public EpicAssignmentBean(EpicAssignment ee, String role, String resource) {
+    public EpicAssignmentBean(EpicAssignment ee, String role, String resource, Long minutesLogged) {
         this.id = ee.getId();
         this.active = ee.isActive();
         this.epicId = ee.getEpicId();
@@ -23,6 +26,8 @@ public class EpicAssignmentBean {
         this.roleId = ee.getRoleId();
         this.roleName = role;
         this.resourceName = resource;
+        this.status = ee.getStatus();
+        this.minutesLogged = minutesLogged == null ? 0 : minutesLogged.longValue();
     }
 
     public Boolean getActive() {
@@ -90,4 +95,19 @@ public class EpicAssignmentBean {
         this.roleName = roleName;
     }
 
+    public AssignmentStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(AssignmentStatus status) {
+        this.status = status;
+    }
+
+    public long getMinutesLogged() {
+        return minutesLogged;
+    }
+
+    public void setMinutesLogged(long minutesLogged) {
+        this.minutesLogged = minutesLogged;
+    }
 }

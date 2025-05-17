@@ -14,4 +14,6 @@ public interface ReleaseRepository extends CrudRepository<Release, Long>,
 
     List<Release> findByProductIdAndStatusAndActiveIsTrueOrderByStartDateAsc(long productId, ReleaseStatusEnum status);
     List<Release> findByProductIdAndStatusInAndActiveIsTrueOrderByStartDateAsc(long productId, Collection<ReleaseStatusEnum> status);
+
+
 }

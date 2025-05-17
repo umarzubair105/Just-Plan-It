@@ -61,6 +61,8 @@ public class ReleaseService {
     private ResourceLeaveRepository resourceLeavesRepository;
     @Autowired
     private ReleaseWorkingDayRepository releaseWorkingDayRepository;
+    @Autowired
+    private TimeLoggingRepository timeLoggingRepository;
 
     public List<ResourceCapInRelease> getResourceCapInRelease(long releaseId) {
         //find the release
@@ -145,6 +147,8 @@ public class ReleaseService {
             bean.prodBasedAssignableTime = capacityForProd - bean.prodBasedExtraTime;
             bean.prodBasedAssignedTime = epicAssignmentRepository.calculateTotalHoursByReleaseIdAndResourceIdAndRoleId(releaseId,
                     prodResource.getResourceId(), prodResource.getRoleId()).intValue() * 60;
+
+            bean.loggedTime = timeLoggingRepository.findTotalMinutesByReleaseIdAndResourceId(releaseId, bean.resourceId);
             // check if capacity is more than 0 (to avoid division by zero error and to avoid adding empty bean to the list 100% capacity resources will be excluded by default in the frontend))
             //if (bean.minutesCapacity>0) {
             beans.add(bean);

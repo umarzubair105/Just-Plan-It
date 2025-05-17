@@ -34,6 +34,8 @@ public class CompanyDashboardService {
     private CompanyWeekendRepository companyWeekendRepository;
     private CompanyWorkingHourRepository companyWorkingHourRepository;
     private CountryRepository countryRepository;
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     public CompanyDashboardService(CompanyRepository compRepo,
@@ -245,7 +247,7 @@ public class CompanyDashboardService {
             model.setEmail(req.getEmail().trim());
             model.setActive(true);
             model.setCompanyId(req.getCompanyId());
-            model.setPassword("password");
+            model.setPassword(UUID.randomUUID().toString());
             resp.setMessage("Added");
         }
         Designation design = null;
@@ -263,6 +265,7 @@ public class CompanyDashboardService {
             model.setDateOfBirth(Utils.getLocalDateFromString(req.getDateOfBirth(), req.getDateFormat()));
         }
         resourceRepo.save(model);
+        emailService.sendEmailNewUser(model.getEmail(), model.getName(), model.getPassword());
         if (design != null && design.getRoleId() != null) {
             assignNewResourceRoleIfNotExist(model.getId(), design.getRoleId());
             if (req.getProductId() != null) {
@@ -398,7 +401,7 @@ public class CompanyDashboardService {
 
         if (existingResource == null) {
             resourceId = createNewResource(email, Utils.getNameFromEmail(email), "",
-                    "password", "", company);
+                    UUID.randomUUID().toString(), "", company);
             response.setId(resourceId);
             response.setMessage("Resource is added with role.");
         } else {
@@ -432,7 +435,7 @@ public class CompanyDashboardService {
             return resource.get().getId();
         }
         return createNewResource(email, name, designation,
-                "password", "", company);
+                UUID.randomUUID().toString(), "", company);
     }
 
     private long createNewResource(String email, String name, String designation,
@@ -457,6 +460,8 @@ public class CompanyDashboardService {
         resource.setActive(true);
         resource.setIndividualCapacity(true);
         resourceRepo.save(resource);
+        emailService.sendEmailNewUser(resource.getEmail(), resource.getName(), resource.getPassword());
+
         if (design != null && design.getRoleId() != null) {
             assignNewResourceRoleIfNotExist(resource.getId(), design.getRoleId());
         }
