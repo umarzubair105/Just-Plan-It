@@ -132,7 +132,7 @@ public class PlanningDashboardService {
                 epicAssignment.setEpicId(epic.getId());
                 epicAssignment.setResourceId(assignment.getResourceId());
                 epicAssignment.setRoleId(assignment.getRoleId());
-                epicAssignment.setHours(assignment.getMinutes() / 60);
+                epicAssignment.setEstimate(assignment.getMinutes());
                 epicAssignment.setActive(true);
                 epicAssignment.setStatus(AssignmentStatus.OPEN);
                 epicAssignmentRepository.save(epicAssignment);

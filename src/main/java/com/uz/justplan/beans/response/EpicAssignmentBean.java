@@ -7,7 +7,7 @@ import com.uz.justplan.plan.EpicAssignment;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class EpicAssignmentBean {
     Long id;
-    double hours;
+    int estimate;
     Long roleId;
     String roleName;
     Long resourceId;
@@ -22,7 +22,7 @@ public class EpicAssignmentBean {
         this.active = ee.isActive();
         this.epicId = ee.getEpicId();
         this.resourceId = ee.getResourceId();
-        this.hours = ee.getHours();
+        this.estimate = ee.getEstimate();
         this.roleId = ee.getRoleId();
         this.roleName = role;
         this.resourceName = resource;
@@ -70,12 +70,12 @@ public class EpicAssignmentBean {
         this.resourceName = resourceName;
     }
 
-    public double getHours() {
-        return hours;
+    public int getEstimate() {
+        return estimate;
     }
 
-    public void setHours(double hours) {
-        this.hours = hours;
+    public void setEstimate(int estimate) {
+        this.estimate = estimate;
     }
 
     public Long getRoleId() {

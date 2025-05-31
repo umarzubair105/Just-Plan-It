@@ -29,4 +29,20 @@ public abstract class Auditable extends AbstractPersistable<Long> {
 
     @LastModifiedDate
     private LocalDateTime updatedDate; // Stores the date of last update
+
+    public Long getCreatedById() {
+        return createdById;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public Long getUpdatedById() {
+        return updatedById;
+    }
+
+    public LocalDateTime getUpdatedDate() {
+        return updatedDate;
+    }
 }

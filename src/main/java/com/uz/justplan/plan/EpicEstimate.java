@@ -12,7 +12,7 @@ public class EpicEstimate extends Auditable {
     @Column(nullable = false)
     private int resources;
     @Column(nullable = false)
-    private double hours;
+    private int estimate;
     @Column(nullable = false)
     private Long roleId;
     @Column(nullable = false)
@@ -22,10 +22,6 @@ public class EpicEstimate extends Auditable {
 
     public EpicEstimate() {
     }
-
-    public int getMinutes() {
-        return Double.valueOf(hours * 60).intValue();
-    }
     public int getResources() {
         return resources;
     }
@@ -34,13 +30,12 @@ public class EpicEstimate extends Auditable {
         this.resources = resources;
     }
 
-    public double getHours() {
-        return hours;
+    public int getEstimate() {
+        return estimate;
     }
 
-
-    public void setHours(double hours) {
-        this.hours = hours;
+    public void setEstimate(int estimate) {
+        this.estimate = estimate;
     }
 
     public Long getRoleId() {

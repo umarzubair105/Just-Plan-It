@@ -12,10 +12,14 @@ public interface EpicRepository extends CrudRepository<Epic, Long> {
     // left join query with epicrelease
     List<Epic> findByProductIdAndReleaseIdIsNullAndActiveIsTrue(long productId);
 
+    @Query("select e from Epic e, Product p where e.productId=p.id and p.companyId=:companyId and e.code=:code")
+    List<Epic> findByCompanyIdAndCode(long companyId, String code);
+
     List<Epic> findByReleaseIdAndActiveIsTrue(long releaseId);
 
     Long countByReleaseIdAndActiveTrue(Long releaseId);
 
+    Long countByProductId(Long productId);
 
     @Query("select code from Epic where id=:id")
     Optional<String> findCodeById(long id);

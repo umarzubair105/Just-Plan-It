@@ -69,14 +69,14 @@ public class EpicService {
     private void addEpicEstimateIfMissing(Epic epic) {
         if (!epicEstimateMap.containsKey(epic.getId())) {
             List<EpicEstimate> estimates = epicEstRepo.findByEpicIdAndActiveIsTrue(epic.getId())
-                    .stream().filter(e -> e.getMinutes() > 0).collect(Collectors.toList());
+                    .stream().filter(e -> e.getEstimate() > 0).collect(Collectors.toList());
             ;
             List<EpicRoleEstimatePS> estimateBean = new ArrayList<>();
             AtomicInteger index = new AtomicInteger();
             estimates.forEach(e -> {
                 for (int i = 0; i < e.getResources(); i++) {
                     index.getAndIncrement();
-                    estimateBean.add(new EpicRoleEstimatePS(index.get(), e.getRoleId(), e.getMinutes() / e.getResources()));
+                    estimateBean.add(new EpicRoleEstimatePS(index.get(), e.getRoleId(), e.getEstimate() / e.getResources()));
                 }
             });
             // fill it from repository ** using epic estimates

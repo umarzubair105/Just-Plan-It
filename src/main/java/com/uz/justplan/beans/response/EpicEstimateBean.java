@@ -7,7 +7,7 @@ import com.uz.justplan.plan.EpicEstimate;
 public class EpicEstimateBean {
     Long id;
     int resources;
-    double hours;
+    int estimate;
     Long roleId;
     String roleName;
     Boolean active;
@@ -18,7 +18,7 @@ public class EpicEstimateBean {
         this.active = ee.isActive();
         this.epicId = ee.getEpicId();
         this.resources = ee.getResources();
-        this.hours = ee.getHours();
+        this.estimate = ee.getEstimate();
         this.roleId = ee.getRoleId();
         this.roleName = role;
     }
@@ -55,12 +55,12 @@ public class EpicEstimateBean {
         this.resources = resources;
     }
 
-    public double getHours() {
-        return hours;
+    public int getEstimate() {
+        return estimate;
     }
 
-    public void setHours(double hours) {
-        this.hours = hours;
+    public void setEstimate(int estimate) {
+        this.estimate = estimate;
     }
 
     public Long getRoleId() {

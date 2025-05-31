@@ -13,7 +13,9 @@ import java.net.URL;
 import java.security.SecureRandom;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -88,7 +90,66 @@ public class Utils {
         //scheduledDates.forEach(System.out::println);
     }
 
+    private static LocalDate getLastDateOfMonth(LocalDate date) {
+        YearMonth yearMonth = YearMonth.of(date.getYear(), date.getMonth());
+        LocalDate lastDay = yearMonth.atEndOfMonth();
+        System.out.println("Last day of month: " + lastDay); // Output: 2025-05-31
+        return lastDay;
+    }
 
+    private static LocalDate getLastDateOfQuarter(LocalDate date) {
+        int month = date.getMonthValue();
+        int year = date.getYear();
+        int lastMonthOfQuarter;
+        if (month <= 3) {
+            lastMonthOfQuarter = 3; // Q1
+        } else if (month <= 6) {
+            lastMonthOfQuarter = 6; // Q2
+        } else if (month <= 9) {
+            lastMonthOfQuarter = 9; // Q3
+        } else {
+            lastMonthOfQuarter = 12; // Q4
+        }
+        YearMonth endMonth = YearMonth.of(year, lastMonthOfQuarter);
+        LocalDate lastDay = endMonth.atEndOfMonth();
+        System.out.println("Last day of quarter: " + lastDay); // Output: 2025-05-31
+        return lastDay;
+    }
+
+    private static LocalDate getLastDateOfSemiYear(LocalDate date) {
+        int month = date.getMonthValue();
+        int year = date.getYear();
+        int lastMonthOfQuarter;
+        if (month <= 6) {
+            lastMonthOfQuarter = 6; // Q2
+        } else {
+            lastMonthOfQuarter = 12; // Q4
+        }
+        YearMonth endMonth = YearMonth.of(year, lastMonthOfQuarter);
+        LocalDate lastDay = endMonth.atEndOfMonth();
+        System.out.println("Last day of semi year: " + lastDay); // Output: 2025-05-31
+        return lastDay;
+    }
+
+    private static LocalDate getLastDateOfYear(LocalDate date) {
+        int year = date.getYear(); // or specify a year like 2025
+        LocalDate lastDay = LocalDate.of(year, 12, 31);
+        System.out.println("Last day of year: " + lastDay); // Output: 2025-05-31
+        return lastDay;
+    }
+
+    private static LocalDate getLastDateOfWeek(LocalDate date, Set<DayOfWeek> weekends) {
+        DayOfWeek weekend = weekends.stream().findFirst().orElse(DayOfWeek.SUNDAY);
+        LocalDate endOfWeek = date.with(TemporalAdjusters.nextOrSame(weekend));
+        System.out.println("End of Week: " + endOfWeek);
+        return endOfWeek;
+    }
+
+    /*    private static LocalDate getStartDateOfWeek(LocalDate date, Set<DayOfWeek> weekends) {
+            LocalDate startOfWeek = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+            System.out.println("Start of Week: " + startOfWeek);
+            return startOfWeek;
+        }*/
     public static List<Release> nextReleases(LocalDate productStartDate,
                                              LocalDate productEndDate,//nullable
                                              ReleaseIteration interval, Set<DayOfWeek> weekends,
@@ -111,10 +172,120 @@ public class Utils {
                 .stream().collect(Collectors.groupingBy(CompanyWorkingHour::getScope));
 
         List<Release> releases = new ArrayList<>();
+        //int nextReleaseRequiredCount = 1;// Generate so many iterations
+        //for (int i = 0; i < nextReleaseRequiredCount; i++) {
+
+        LocalDate iterationStartDate = lastReleaseEndDate == null ? productStartDate : lastReleaseEndDate.plusDays(1);
+        while (!isWorkingDay(iterationStartDate, weekends, holidays, forcedWorkingDays)) {
+            iterationStartDate = iterationStartDate.plusDays(1);
+        }
+        System.out.println("iterationStartDate:" + iterationStartDate);
+        LocalDate iterationEndDate = null;
+        switch (interval) {
+            case BI_MONTHLY:
+                iterationEndDate = getLastDateOfMonth(iterationStartDate.plusMonths(1));
+                break;
+            case MONTHLY:
+                iterationEndDate = getLastDateOfMonth(iterationStartDate);
+                break;
+            case QUARTERLY:
+                iterationEndDate = getLastDateOfQuarter(iterationStartDate);
+                break;
+            case ANNUAL:
+                iterationEndDate = getLastDateOfYear(iterationStartDate);
+                break;
+            case SEMI_ANNUAL:
+                iterationEndDate = getLastDateOfSemiYear(iterationStartDate);
+                break;
+            case WEEKLY:
+                iterationEndDate = getLastDateOfWeek(iterationStartDate, weekends);
+                break;
+            case BI_WEEKLY:
+                iterationEndDate = getLastDateOfWeek(iterationStartDate.plusWeeks(1), weekends);
+                break;
+            case TRI_WEEKLY:
+                iterationEndDate = getLastDateOfWeek(iterationStartDate.plusWeeks(2), weekends);
+                break;
+            default:
+                break;
+        }
+        if (iterationEndDate != null) {
+            iterationEndDate = iterationEndDate.plusDays(-1);
+            while (!isWorkingDay(iterationEndDate, weekends, holidays, forcedWorkingDays)
+                    || (productEndDate != null && iterationEndDate.isAfter(productEndDate))) {
+                iterationEndDate = iterationEndDate.plusDays(-1);
+            }
+        }
+
+        if (productEndDate != null && (iterationStartDate.equals(productEndDate) || iterationStartDate.isAfter(productEndDate))) {
+            Assert.isTrue(false, "Release can not be started after Product end date.");
+        }
+        Release release = new Release();
+        release.setStartDate(iterationStartDate);
+        release.setEndDate(iterationEndDate);
+        release.setActive(true);
+        release.setName(iterationStartDate.getMonth().name() + "-" + iterationStartDate.getDayOfMonth()
+                + " to " + iterationEndDate.getMonth().name() + "-" + iterationEndDate.getDayOfMonth());
+        release.setVersion(releases.size() + lastReleaseVersion + 1);
+        //release.setProductId();
+
+        // find working days and exclude holidays between start and end dates
+        //LocalDate tempDate = iterationStartDate;
+        List<ReleaseWorkingDay> workingDays = new ArrayList<>();
+        iterationStartDate.datesUntil(iterationEndDate.plusDays(1))
+                .filter(expectedWorkingDay -> isWorkingDay(expectedWorkingDay, weekends, holidays, forcedWorkingDays))
+                .forEach(expectedWorkingDay -> {
+                    ReleaseWorkingDay day = new ReleaseWorkingDay();
+                    day.setWorkingDate(expectedWorkingDay);
+                    day.setMinutes(getWorkingMinutes(expectedWorkingDay, companyWorkingHourMap));
+                    workingDays.add(day);
+                });
+        release.setWorkingDays(workingDays.size());
+        release.setWorkingDaysList(workingDays);
+        releases.add(release);
+        // Print the next start date and iteration date for debugging purposes.
+        // This will help you visualize the generated dates.
+        // Note: This will not be visible in the final output.
+        System.out.println("Next Start Date: " + iterationStartDate);
+        System.out.println("Next Iteration Date: " + iterationEndDate);
+        System.out.println("Working days: " + workingDays.size());
+        //if (productEndDate != null && iterationEndDate.equals(productEndDate)) {
+        //  break;
+        //}
+
+        //}
+        System.out.println("Releases: " + releases);
+        return releases;
+    }
+
+    public static List<Release> nextReleasesDepr(LocalDate productStartDate,
+                                                 LocalDate productEndDate,//nullable
+                                                 ReleaseIteration interval, Set<DayOfWeek> weekends,
+                                                 Set<LocalDate> holidays,
+                                                 Set<LocalDate> forcedWorkingDays,
+                                                 Set<CompanyWorkingHour> companyWorkingHours,
+                                                 LocalDate lastReleaseEndDate,//nullable
+                                                 int lastReleaseVersion) {
+
+        //Period step = Period.ofMonths(1);
+        //        can be used with untill
+        Assert.notNull(productStartDate, "productStartDate is required");
+        Assert.notNull(weekends, "weekends is required");
+        Assert.notNull(holidays, "holidays is required");
+        Assert.notNull(interval, "interval is required");
+        Assert.notNull(forcedWorkingDays, "forcedWorkingDays is required");
+        Assert.notNull(companyWorkingHours, "companyWorkingHours is required");
+
+        Map<WorkingHourScope, List<CompanyWorkingHour>> companyWorkingHourMap = companyWorkingHours
+                .stream().collect(Collectors.groupingBy(CompanyWorkingHour::getScope));
+
+        List<Release> releases = new ArrayList<>();
         int nextReleaseRequiredCount = 1;// Generate so many iterations
         for (int i = 0; i < nextReleaseRequiredCount; i++) {
 
             LocalDate iterationStartDate = productStartDate.plusMonths(i * 1);
+            System.out.println("iterationStartDate:" + iterationStartDate);
+            System.out.println("lastReleaseEndDate:" + lastReleaseEndDate);
             if (lastReleaseEndDate != null && iterationStartDate.isBefore(lastReleaseEndDate)) {
                 nextReleaseRequiredCount++;
                 continue;
@@ -124,6 +295,7 @@ public class Utils {
                 case BI_MONTHLY:
                     iterationStartDate = productStartDate.plusMonths(i * 2);
                     iterationEndDate = iterationStartDate.plusMonths(2);
+                    break;
                 case MONTHLY:
                     iterationStartDate = productStartDate.plusMonths(i * 1);
                     iterationEndDate = iterationStartDate.plusMonths(1);

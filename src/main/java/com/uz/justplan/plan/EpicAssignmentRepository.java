@@ -9,7 +9,7 @@ import java.util.List;
 public interface EpicAssignmentRepository extends CrudRepository<EpicAssignment, Long>,
         ListPagingAndSortingRepository<EpicAssignment, Long> {
 
-    @Query("select COALESCE(SUM(ee.hours), 0) from Epic re, EpicAssignment ee where re.releaseId=:releaseId and re.active=true " +
+    @Query("select COALESCE(SUM(ee.estimate), 0) from Epic re, EpicAssignment ee where re.releaseId=:releaseId and re.active=true " +
             " and re.id=ee.epicId and ee.resourceId=:resourceId and ee.roleId=:roleId and ee.active=true")
     Double calculateTotalHoursByReleaseIdAndResourceIdAndRoleId(Long releaseId, Long resourceId, Long roleId);
 

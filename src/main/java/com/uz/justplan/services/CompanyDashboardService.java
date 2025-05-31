@@ -290,6 +290,7 @@ public class CompanyDashboardService {
             model.setTitle(req.getTitle().trim());
             model.setDetails(req.getDetails());
             model.setProductId(req.getProductId());
+            model.setCode(getEpicCodeForNewEpic(req.getProductId()));
             resp.setMessage("Added");
         }
         if (!Validation.isEmpty(req.getComponent())) {
@@ -312,6 +313,11 @@ public class CompanyDashboardService {
         return resp;
     }
 
+    public String getEpicCodeForNewEpic(long productId) {
+        String prodCode = productRepo.findById(productId).get().getCode();
+        long count = epicRepo.countByProductId(productId);
+        return prodCode + "-" + (count + 1);
+    }
     private long findOrCreateNewComponent(String name, long companyId) {
         Optional<Component> modelO = componentRepo.findByCompanyIdAndNameIgnoreCase(companyId, name);
         if (!modelO.isEmpty()) {

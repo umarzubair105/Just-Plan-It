@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ProductRepository extends CrudRepository<Product, Long>,
         ListPagingAndSortingRepository<Product, Long> {
-    List<Product> findByCompanyIdAndActiveIsTrue(long productId);
+    List<Product> findByCompanyIdAndActiveIsTrue(long companyId);
 }

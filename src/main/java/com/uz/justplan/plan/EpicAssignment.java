@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"epicId", "resourceId", "roleId"}))
 public class EpicAssignment extends Auditable {
     @Column(nullable = false)
-    private double hours;
+    private int estimate;
     @Column(nullable = false)
     private Long roleId;
     @Column(nullable = false)
@@ -34,12 +34,12 @@ public class EpicAssignment extends Auditable {
         this.roleId = roleId;
     }
 
-    public double getHours() {
-        return hours;
+    public int getEstimate() {
+        return estimate;
     }
 
-    public void setHours(double hours) {
-        this.hours = hours;
+    public void setEstimate(int estimate) {
+        this.estimate = estimate;
     }
 
     public Long getEpicId() {
