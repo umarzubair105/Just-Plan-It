@@ -3,6 +3,7 @@ package com.uz.justplan.services;
 import com.uz.justplan.config.security.CustomUserDetails;
 import com.uz.justplan.core.Company;
 import com.uz.justplan.core.CompanyRepository;
+import com.uz.justplan.lookup.ResourceStatus;
 import com.uz.justplan.resources.Resource;
 import com.uz.justplan.resources.ResourceRepository;
 import com.uz.justplan.resources.RoleRepository;
@@ -36,16 +37,16 @@ public class CustomUserDetailsService implements UserDetailsService {
         String[] values = username.split(";");
         Resource user = null;
         if (values.length == 1) {
-            List<Resource> resources = resourceRepository.findByEmailIgnoreCaseAndActive(
-                    values[0], true);
+            List<Resource> resources = resourceRepository.findByEmailIgnoreCaseAndStatus(
+                    values[0], ResourceStatus.ACTIVE);
             Assert.isTrue(!resources.isEmpty(), "User does not exist..");
             Assert.isTrue(resources.size() == 1, "There are many users with the same email. Specify company code, please.");
             user = resources.get(0); // Assuming the first user is the one with active status
         } else {
             Optional<Company> company = compRepository.findByCodeAndActive(values[1], true);
             Assert.isTrue(company.isPresent(), "Company code does not exist.");
-            Optional<Resource> userOpt = resourceRepository.findByCompanyIdAndEmailIgnoreCaseAndActive(
-                    company.get().getId(), values[0], true);
+            Optional<Resource> userOpt = resourceRepository.findOneByCompanyIdAndEmailIgnoreCaseAndStatus(
+                    company.get().getId(), values[0], ResourceStatus.ACTIVE);
 //                    .orElseThrow(() -> new UsernameNotFoundException("User does not exist."));
             Assert.isTrue(userOpt.isPresent(), "User does not exist..");
             user = userOpt.get();
@@ -57,6 +58,8 @@ public class CustomUserDetailsService implements UserDetailsService {
                                 Collections::unmodifiableList));
         //List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(""));
         //return new org.springframework.security.core.userdetails.User(
+        System.out.println("-----------------------");
+        System.out.println("-----------------------" + user.getPassword());
         return new CustomUserDetails(
                 user.getId(),
                 username.trim().toLowerCase(),

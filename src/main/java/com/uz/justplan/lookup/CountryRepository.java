@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface CountryRepository extends CrudRepository<Country, Integer>, ListPagingAndSortingRepository<Country, Integer> {
     List<Country> findAllByActive(boolean active);
+
+    List<Country> findAllByActiveOrderByName(boolean active);
 }

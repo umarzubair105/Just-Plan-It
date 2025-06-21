@@ -1,11 +1,14 @@
 package com.uz.justplan.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uz.justplan.lookup.ReleaseIteration;
 import com.uz.justplan.lookup.WorkingHourScope;
 import com.uz.justplan.plan.Release;
 import com.uz.justplan.plan.ReleaseWorkingDay;
 import com.uz.justplan.resources.CompanyWorkingHour;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -21,33 +24,60 @@ import java.util.stream.Collectors;
 
 public class Utils {
     public static void getcountriesdata() {
-        String apiUrl = "https://restcountries.com/v3.1/all";
-
         try {
-            HttpURLConnection conn = (HttpURLConnection) new URL(apiUrl).openConnection();
-            conn.setRequestMethod("GET");
-            conn.connect();
+            RestTemplate restTemplate = new RestTemplate();
+            String url = "https://restcountries.com/v3.1/all?fields=name,cca2,cca3,region,flags,subregion,currencies,languages,idd";
 
-            Scanner scanner = new Scanner(conn.getInputStream());
-            while (scanner.hasNext()) {
-                System.out.println(scanner.nextLine()); // Prints JSON response
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+            ObjectMapper mapper = new ObjectMapper();
+            Map[] countries = mapper.readValue(response.getBody(), Map[].class);
+            String sql = "insert into `country` (id, name, countryCode,countryCode3, phoneCode, region," +
+                    "subRegion,flag,currency,language,active) values ";
+            String values = " (%s,'%s','%s','%s','%s','%s','%s','%s','%s','%s',1), ";
+            int i = 1;
+            for (Map c : countries) {
+                //{flags={png=https://flagcdn.com/w320/tg.png,
+                // svg=https://flagcdn.com/tg.svg, alt=The flag of Togo is composed of five equal horizontal bands of green alternating with yellow. A red square bearing a five-pointed white star is superimposed in the canton.},
+                // name={common=Togo, official=Togolese Republic, nativeName={fra={official=République togolaise, common=Togo}}},
+                // cca2=TG, cca3=TGO, currencies={XOF={name=West African CFA franc, symbol=Fr}},
+                // region=Africa, subregion=Western Africa, languages={fra=French}}
+                //"idd": {  "root": "+2","suffixes": [
+                //                "38"]        },
+                Map name = (Map) c.get("name");
+                String cca2 = (String) c.get("cca2");
+                String cca3 = (String) c.get("cca3");
+                Map idd = (Map) c.get("idd");
+                String phoneCode = idd == null ? "" : idd.toString();
+                String region = (String) c.get("region");
+                String subregion = (String) c.get("subregion");
+                Map flags = (Map) c.get("flags");
+                Map currencies = (Map) c.get("currencies");
+                String currency = currencies == null ? "" : currencies.toString();
+                Map languages = (Map) c.get("languages");
+                String language = languages == null ? "" : languages.toString();
+                String line = String.format(values, i++,
+                        name == null ? "" : (String) name.get("common"),
+                        cca2, cca3, phoneCode, region,
+                        subregion,
+                        flags == null ? "" : (String) flags.get("png"),
+                        currency.replaceAll("'", "''"),
+                        language.replaceAll("'", "''"));
+
+                //System.out.println(c);
+                //System.out.println(line);
+                sql += line;
             }
-            scanner.close();
-        } catch (IOException e) {
+            System.out.println(sql);
+
+            System.out.println("Status: " + response.getStatusCode());
+            System.out.println("Response: ");
+            //System.out.println(response.getBody());
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static List<Object> getCountries() {
-        // Fetch all countries with  2 char code, 3 char code, name, region
-        // population, area, capital, tld, currency, nativeName, numericCode,
-        // and officialName
-        //...
-        return new ArrayList<>(); // Replace with actual data
 
-        // phone code, currency, language, and capital and weekends, holidays
-        //...
-    }
 
     public static void getPublicHolidays(String countryCode, int year) {
         String apiUrl = "https://date.nager.at/api/v3/PublicHolidays/" + year + "/" + countryCode;
@@ -79,13 +109,65 @@ public class Utils {
     }
 
     public static void main(String[] args) {
-        LocalDate startDate = LocalDate.of(2024, 1, 1);
+        //getcountriesdata();
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            String url = "https://restcountries.com/v3.1/all?fields=name,cca2,cca3,region,flags,subregion,currencies,languages,idd";
+
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+            ObjectMapper mapper = new ObjectMapper();
+            Map[] countries = mapper.readValue(response.getBody(), Map[].class);
+            String sql = "insert into `country` (id, name, countryCode,countryCode3, phoneCode, region," +
+                    "subRegion,flag,currency,language,active) values ";
+            String values = " (%s,'%s','%s','%s','%s','%s','%s','%s','%s','%s',1), ";
+            int i = 1;
+            for (Map c : countries) {
+                //{flags={png=https://flagcdn.com/w320/tg.png,
+                // svg=https://flagcdn.com/tg.svg, alt=The flag of Togo is composed of five equal horizontal bands of green alternating with yellow. A red square bearing a five-pointed white star is superimposed in the canton.},
+                // name={common=Togo, official=Togolese Republic, nativeName={fra={official=République togolaise, common=Togo}}},
+                // cca2=TG, cca3=TGO, currencies={XOF={name=West African CFA franc, symbol=Fr}},
+                // region=Africa, subregion=Western Africa, languages={fra=French}}
+                //"idd": {  "root": "+2","suffixes": [
+                //                "38"]        },
+                Map name = (Map) c.get("name");
+                String cca2 = (String) c.get("cca2");
+                String cca3 = (String) c.get("cca3");
+                Map idd = (Map) c.get("idd");
+                String phoneCode = idd == null ? "" : idd.toString();
+                String region = (String) c.get("region");
+                String subregion = (String) c.get("subregion");
+                Map flags = (Map) c.get("flags");
+                Map currencies = (Map) c.get("currencies");
+                String currency = currencies == null ? "" : currencies.toString();
+                Map languages = (Map) c.get("languages");
+                String language = languages == null ? "" : languages.toString();
+                String line = String.format(values, i++,
+                        name == null ? "" : (String) name.get("common"),
+                        cca2, cca3, phoneCode, region,
+                        subregion,
+                        flags == null ? "" : (String) flags.get("png"),
+                        currency.replaceAll("'", "''"),
+                        language.replaceAll("'", "''"));
+
+                //System.out.println(c);
+                //System.out.println(line);
+                sql += line;
+            }
+            System.out.println(sql);
+
+            System.out.println("Status: " + response.getStatusCode());
+            System.out.println("Response: ");
+            //System.out.println(response.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        /*LocalDate startDate = LocalDate.of(2024, 1, 1);
         LocalDate endDate = LocalDate.of(2024, 12, 31);
         ReleaseIteration interval = ReleaseIteration.MONTHLY;
         List<DayOfWeek> weekends = Arrays.asList(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY);
         List<LocalDate> holidays = Arrays.asList(LocalDate.of(2024, 1, 1),
                 LocalDate.of(2024, 12, 25));
-
+*/
         //List<Release> scheduledDates = nextReleases(startDate, endDate, interval, weekends, holidays);
         //scheduledDates.forEach(System.out::println);
     }

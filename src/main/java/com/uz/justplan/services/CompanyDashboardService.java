@@ -2,13 +2,11 @@ package com.uz.justplan.services;
 
 import com.uz.justplan.beans.*;
 import com.uz.justplan.core.*;
-import com.uz.justplan.lookup.CountryRepository;
-import com.uz.justplan.lookup.Priority;
-import com.uz.justplan.lookup.PriorityRepository;
-import com.uz.justplan.lookup.RoleEnum;
+import com.uz.justplan.lookup.*;
 import com.uz.justplan.plan.Epic;
 import com.uz.justplan.plan.EpicRepository;
 import com.uz.justplan.resources.*;
+import com.uz.justplan.utils.SecurePasswordGenerator;
 import com.uz.justplan.utils.Utils;
 import com.uz.justplan.utils.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,23 +32,24 @@ public class CompanyDashboardService {
     private CompanyWeekendRepository companyWeekendRepository;
     private CompanyWorkingHourRepository companyWorkingHourRepository;
     private CountryRepository countryRepository;
-    @Autowired
+
     private EmailService emailService;
 
     @Autowired
-    public CompanyDashboardService(CompanyRepository compRepo,
-                                   ResourceRepository resourceRepo,
-                                   ResourceRoleRepository resourceRoleRepo,
-                                   RoleRepository roleRepo,
-                                   CompanyWeekendRepository companyWeekendRepository,
-                                   CompanyWorkingHourRepository companyWorkingHourRepository,
-                                   ProductRepository productRepo,
-                                   ComponentRepository componentRepo,
-                                   PriorityRepository priorityRepo,
-                                   EpicRepository epicRepo,
-                                   DesignationRepository designRepo,
-                                   ProductResourceRepository prodResourceRepo,
-                                   CountryRepository countryRepository) {
+    public CompanyDashboardService(final CompanyRepository compRepo,
+                                   final ResourceRepository resourceRepo,
+                                   final ResourceRoleRepository resourceRoleRepo,
+                                   final RoleRepository roleRepo,
+                                   final CompanyWeekendRepository companyWeekendRepository,
+                                   final CompanyWorkingHourRepository companyWorkingHourRepository,
+                                   final ProductRepository productRepo,
+                                   final ComponentRepository componentRepo,
+                                   final PriorityRepository priorityRepo,
+                                   final EpicRepository epicRepo,
+                                   final DesignationRepository designRepo,
+                                   final ProductResourceRepository prodResourceRepo,
+                                   final CountryRepository countryRepository,
+                                   final EmailService emailService) {
         this.compRepo = compRepo;
         this.resourceRepo = resourceRepo;
         this.resourceRoleRepo = resourceRoleRepo;
@@ -64,6 +63,7 @@ public class CompanyDashboardService {
         this.designRepo = designRepo;
         this.prodResourceRepo = prodResourceRepo;
         this.countryRepository = countryRepository;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -71,6 +71,9 @@ public class CompanyDashboardService {
         Assert.isTrue(
                 compRepo.findByNameIgnoreCaseAndActive(req.getName(), true)
                         .isEmpty(), "Company already exists with the same name");
+        Assert.isTrue(
+                resourceRepo.findByEmailIgnoreCase(req.getEmail()).isEmpty(),
+                "This email is already registered.");
         final CommonResp resp = new CommonResp();
         final Company comp = new Company();
         comp.setSample(false);
@@ -80,8 +83,9 @@ public class CompanyDashboardService {
         comp.setCode(Utils.generateCode());
         compRepo.save(comp);
         resp.setId(comp.getId());
+        String password = SecurePasswordGenerator.generatePassword();
         Long resourceId = createNewResource(req.getEmail(), req.getResourceName(),
-                req.getDesignation(), req.getPassword(), req.getMobileNumber(), comp);
+                req.getDesignation(), req.getMobileNumber(), comp, password);
         roleRepo.findByCompanyIdAndActive(req.getSampleCompanyId(), true)
                 .forEach(role -> {
                     final Role newRole = new Role();
@@ -115,7 +119,8 @@ public class CompanyDashboardService {
                         throw new RuntimeException(e);
                     }
                 });
-        resp.setContext(comp.getCode());
+        //resp.setContext(comp.getCode());
+        resp.setContext("password_0c" + password + "password_@c" + SecurePasswordGenerator.generatePassword());
         resp.setMessage("Company is added with code: " + comp.getCode());
         return resp;
     }
@@ -236,18 +241,21 @@ public class CompanyDashboardService {
             resp.setMessage("Invalid email: " + req.getEmail());
             return resp;
         }
-        Optional<Resource> modelO = resourceRepo.findByCompanyIdAndEmailIgnoreCase(req.getCompanyId(),
-                req.getEmail().trim());
+        Optional<Resource> modelO = resourceRepo.findOneByEmailIgnoreCase(req.getEmail().trim());
         Resource model = null;
+        String password = null;
         if (!modelO.isEmpty()) {
             model = modelO.get();
+            Assert.isTrue(model.getCompanyId() != req.getCompanyId(), "User with email " + req.getEmail() + " already registered with some other company.");
             resp.setMessage("Updated");
         } else {
             model = new Resource();
             model.setEmail(req.getEmail().trim());
             model.setActive(true);
             model.setCompanyId(req.getCompanyId());
-            model.setPassword(UUID.randomUUID().toString());
+            password = SecurePasswordGenerator.generatePassword();
+            model.setPassword(SecurePasswordGenerator.encryptPassword(password));
+            model.setStatus(ResourceStatus.ACTIVE);
             resp.setMessage("Added");
         }
         Designation design = null;
@@ -265,7 +273,9 @@ public class CompanyDashboardService {
             model.setDateOfBirth(Utils.getLocalDateFromString(req.getDateOfBirth(), req.getDateFormat()));
         }
         resourceRepo.save(model);
-        emailService.sendEmailNewUser(model.getEmail(), model.getName(), model.getPassword());
+        if (password != null) {
+            emailService.sendEmailNewUser(model.getEmail(), model.getName(), password);
+        }
         if (design != null && design.getRoleId() != null) {
             assignNewResourceRoleIfNotExist(model.getId(), design.getRoleId());
             if (req.getProductId() != null) {
@@ -388,8 +398,8 @@ public class CompanyDashboardService {
                 .collect(Collectors.toMap(resource -> resource.getEmail().toLowerCase(), resource -> resource));
     }
 
-    private Optional<Resource> getExistingResource(Long companyId, String email) {
-        return resourceRepo.findByCompanyIdAndEmailIgnoreCase(companyId, email.toLowerCase());
+    private Optional<Resource> getExistingResource(String email) {
+        return resourceRepo.findOneByEmailIgnoreCase(email.toLowerCase());
     }
 
     // ✅ Extracted: Processing Each Email
@@ -407,7 +417,7 @@ public class CompanyDashboardService {
 
         if (existingResource == null) {
             resourceId = createNewResource(email, Utils.getNameFromEmail(email), "",
-                    UUID.randomUUID().toString(), "", company);
+                    "", company, SecurePasswordGenerator.generatePassword());
             response.setId(resourceId);
             response.setMessage("Resource is added with role.");
         } else {
@@ -436,17 +446,18 @@ public class CompanyDashboardService {
     }
 
     private long findOrCreateNewResource(String email, String name, String designation, Company company) {
-        Optional<Resource> resource = getExistingResource(company.getId(), email);
+        Optional<Resource> resource = getExistingResource(email);
         if (!resource.isEmpty()) {
+            Assert.isTrue(resource.get().getCompanyId() != company.getId(), "User with email " + email + " already registered with some other company.");
             return resource.get().getId();
         }
         return createNewResource(email, name, designation,
-                UUID.randomUUID().toString(), "", company);
+                "", company, SecurePasswordGenerator.generatePassword());
     }
 
     private long createNewResource(String email, String name, String designation,
-                                   String password, String mobileNumber,
-                                   Company company) {
+                                   String mobileNumber,
+                                   Company company, final String password) {
         Resource resource = new Resource();
         resource.setCompanyId(company.getId());
         resource.setEmail(email.toLowerCase());
@@ -456,17 +467,18 @@ public class CompanyDashboardService {
         } else {
             resource.setName(name);
         }
-        resource.setPassword(password);
+        resource.setPassword(SecurePasswordGenerator.encryptPassword(password));
         Designation design = null;
         if (!Validation.isEmpty(designation)) {
             design = findOrCreateNewDesignation(designation, company.getId());
             resource.setDesignationId(design.getId());
         }
+        resource.setStatus(ResourceStatus.ACTIVE);
         resource.setCountryId(company.getCountryId());
         resource.setActive(true);
         resource.setIndividualCapacity(true);
         resourceRepo.save(resource);
-        emailService.sendEmailNewUser(resource.getEmail(), resource.getName(), resource.getPassword());
+        emailService.sendEmailNewUser(resource.getEmail(), resource.getName(), password);
 
         if (design != null && design.getRoleId() != null) {
             assignNewResourceRoleIfNotExist(resource.getId(), design.getRoleId());
@@ -506,8 +518,8 @@ public class CompanyDashboardService {
 
     public Map<String, Object> getMetadata() {
         Map<String, Object> metadata = new HashMap<>();
-        metadata.put("countries", countryRepository.findAllByActive(true));
-        metadata.put("sampleCompanies", compRepo.findAllBySample(true));
+        metadata.put("countries", countryRepository.findAllByActiveOrderByName(true));
+        metadata.put("sampleCompanies", compRepo.findAllBySampleOrderByName(true));
         return metadata;
     }
 
@@ -516,5 +528,24 @@ public class CompanyDashboardService {
         LoggedInDetails details = new LoggedInDetails();
         details.setCompany(compRepo.findProjectionById(resource.getCompanyId()));
         return details;
+    }
+
+    @Transactional
+    public CommonResp resetPassword(final String username) {
+        Assert.isTrue(!Validation.isEmpty(username), "Email is not provided.");
+        Optional<Resource> res = resourceRepo.findOneByEmailIgnoreCase(username);
+        Assert.isTrue(res.isPresent(), "There is no user registered against " + username + ".");
+        Assert.isTrue(res.get().getStatus().equals(ResourceStatus.ACTIVE),
+                "User is not active against " + username + ".");
+        Assert.isTrue(res.get().isActive(),
+                "User is not active against " + username + ".");
+        String password = SecurePasswordGenerator.generatePassword();
+        res.get().setPassword(SecurePasswordGenerator.encryptPassword(password));
+        resourceRepo.save(res.get());
+        emailService.sendEmailPasswordReset(res.get().getEmail(), res.get().getName(), password);
+        CommonResp resp = new CommonResp();
+        resp.setContext(username);
+        resp.setMessage("New password is sent through email.");
+        return resp;
     }
 }

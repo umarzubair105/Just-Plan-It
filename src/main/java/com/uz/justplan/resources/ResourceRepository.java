@@ -18,12 +18,18 @@ public interface ResourceRepository extends CrudRepository<Resource, Long>,
     List<Resource> findByIdInAndStatusAndActive(Collection<Long> ids, ResourceStatus status, boolean active);
     List<Resource> findByDesignationId(long designationId);
 
-    Optional<Resource> findByCompanyIdAndEmailIgnoreCase(long companyId, String email);
+    //Optional<Resource> findByCompanyIdAndEmailIgnoreCase(long companyId, String email);
 
-    Optional<Resource> findByCompanyIdAndEmailIgnoreCaseAndActive(
-            long companyId, String email, boolean active);
+    //Optional<Resource> findByCompanyIdAndEmailIgnoreCaseAndActive(
+    //      long companyId, String email, boolean active);
 
-    List<Resource> findByEmailIgnoreCaseAndActive(String email, boolean active);
+    List<Resource> findByEmailIgnoreCase(String email);
+
+    Optional<Resource> findOneByEmailIgnoreCase(String email);
+
+    Optional<Resource> findOneByCompanyIdAndEmailIgnoreCaseAndStatus(long companyId, String email, ResourceStatus status);
+
+    List<Resource> findByEmailIgnoreCaseAndStatus(String email, ResourceStatus status);
 
     @Query("select r from ProductResource pr, Resource r where pr.productId=:productId and pr.active=true" +
             " and pr.resourceId=r.id and r.active=true")

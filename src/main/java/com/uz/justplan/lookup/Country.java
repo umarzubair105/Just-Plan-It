@@ -9,10 +9,19 @@ public class Country extends Auditable {
     @Column(nullable = false)
     private String name;
     @Column(nullable = false, unique = true)
-    private String countryCode;
+    private String countryCode; // its of 2 length
 
+    @Column(nullable = false, unique = true)
+    private String countryCode3;
     @Column(nullable = false)
     private String phoneCode;
+
+    private String region;
+    private String subRegion;
+    private String flag;
+    private String currency;
+    private String language;
+
     @Column(nullable = false)
     private boolean active;
 

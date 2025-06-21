@@ -20,19 +20,30 @@ public class EmailService {
     private static final Log log = LogFactory.getLog(EmailService.class);
 
     @Autowired
-    private static AppProperties props;
+    private AppProperties props;
 
 
     public void sendEmailNewUser(String toEmail, String name, String password) {
         sendEmail(toEmail,
-                "Welcome to JustPlan",
+                "Welcome to " + props.getName(),
                 String.format("Dear %s, " +
                         "Here is your password %s." +
+                        "</br>" +
+                        "Regards", name, password));
+    }
+
+    public void sendEmailPasswordReset(String toEmail, String name, String password) {
+        sendEmail(toEmail,
+                "New password to " + props.getName(),
+                String.format("Dear %s, " +
+                        "Here is your password %s." +
+                        "</br>" +
                         "Regards", name, password));
     }
 
     private void sendEmail(String emailTo, String subject, String body) {
         log.info("Sending email to: " + emailTo + " with subject: " + subject + ", body: " + body);
+        log.info("Sending email app name: " + props.getName());
         log.info("Sending email from: " + props.getEmail().getFromAddress() + ", serviceKey: " + props.getEmail().getServiceKey());
 
         Email from = new Email(props.getEmail().getFromAddress());

@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface CompanyRepository extends CrudRepository<Company, Long>, ListPagingAndSortingRepository<Company, Long> {
     List<BasicProjection> findAllBySample(boolean sample);
 
+    List<BasicProjection> findAllBySampleOrderByName(boolean sample);
+
     BasicProjection findProjectionById(long id);
 
     Optional<Company> findByCodeAndActive(String code, boolean active);
