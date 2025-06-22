@@ -31,7 +31,7 @@ public interface ResourceRepository extends CrudRepository<Resource, Long>,
 
     List<Resource> findByEmailIgnoreCaseAndStatus(String email, ResourceStatus status);
 
-    @Query("select r from ProductResource pr, Resource r where pr.productId=:productId and pr.active=true" +
+    @Query("select r from ProductResource pr, Resource r where pr.productId=:productId and pr.active=true " +
             " and pr.resourceId=r.id and r.active=true")
     List<Resource> findResourcesByProductId(long productId);
 

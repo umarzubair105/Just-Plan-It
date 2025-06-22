@@ -416,6 +416,11 @@ public class CompanyDashboardService {
         long resourceId = (existingResource != null) ? existingResource.getId() : 0L;
 
         if (existingResource == null) {
+            Optional<Resource> resource = getExistingResource(email);
+            if (!resource.isEmpty()) {
+                response.setMessage("User with email " + email + " is already registered.");
+                return response;
+            }
             resourceId = createNewResource(email, Utils.getNameFromEmail(email), "",
                     "", company, SecurePasswordGenerator.generatePassword());
             response.setId(resourceId);

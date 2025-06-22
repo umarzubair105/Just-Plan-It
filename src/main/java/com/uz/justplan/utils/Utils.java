@@ -111,52 +111,16 @@ public class Utils {
     public static void main(String[] args) {
         //getcountriesdata();
         try {
-            RestTemplate restTemplate = new RestTemplate();
-            String url = "https://restcountries.com/v3.1/all?fields=name,cca2,cca3,region,flags,subregion,currencies,languages,idd";
-
-            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-            ObjectMapper mapper = new ObjectMapper();
-            Map[] countries = mapper.readValue(response.getBody(), Map[].class);
-            String sql = "insert into `country` (id, name, countryCode,countryCode3, phoneCode, region," +
-                    "subRegion,flag,currency,language,active) values ";
-            String values = " (%s,'%s','%s','%s','%s','%s','%s','%s','%s','%s',1), ";
-            int i = 1;
-            for (Map c : countries) {
-                //{flags={png=https://flagcdn.com/w320/tg.png,
-                // svg=https://flagcdn.com/tg.svg, alt=The flag of Togo is composed of five equal horizontal bands of green alternating with yellow. A red square bearing a five-pointed white star is superimposed in the canton.},
-                // name={common=Togo, official=Togolese Republic, nativeName={fra={official=République togolaise, common=Togo}}},
-                // cca2=TG, cca3=TGO, currencies={XOF={name=West African CFA franc, symbol=Fr}},
-                // region=Africa, subregion=Western Africa, languages={fra=French}}
-                //"idd": {  "root": "+2","suffixes": [
-                //                "38"]        },
-                Map name = (Map) c.get("name");
-                String cca2 = (String) c.get("cca2");
-                String cca3 = (String) c.get("cca3");
-                Map idd = (Map) c.get("idd");
-                String phoneCode = idd == null ? "" : idd.toString();
-                String region = (String) c.get("region");
-                String subregion = (String) c.get("subregion");
-                Map flags = (Map) c.get("flags");
-                Map currencies = (Map) c.get("currencies");
-                String currency = currencies == null ? "" : currencies.toString();
-                Map languages = (Map) c.get("languages");
-                String language = languages == null ? "" : languages.toString();
-                String line = String.format(values, i++,
-                        name == null ? "" : (String) name.get("common"),
-                        cca2, cca3, phoneCode, region,
-                        subregion,
-                        flags == null ? "" : (String) flags.get("png"),
-                        currency.replaceAll("'", "''"),
-                        language.replaceAll("'", "''"));
-
-                //System.out.println(c);
-                //System.out.println(line);
-                sql += line;
-            }
-            System.out.println(sql);
-
-            System.out.println("Status: " + response.getStatusCode());
-            System.out.println("Response: ");
+            LocalDate iterationStartDate = LocalDate.now();
+            System.out.println("iterationStartDate:" + iterationStartDate);
+            System.out.println("iterationStartDate BI_MONTHLY:" + getLastDateOfMonth(iterationStartDate.plusMonths(1)));
+            System.out.println("iterationStartDate MONTHLY:" + getLastDateOfMonth(iterationStartDate));
+            System.out.println("iterationStartDate QUARTERLY:" + getLastDateOfQuarter(iterationStartDate));
+            System.out.println("iterationStartDate ANNUAL:" + getLastDateOfYear(iterationStartDate));
+            System.out.println("iterationStartDate SEMI_ANNUAL:" + getLastDateOfSemiYear(iterationStartDate));
+            //System.out.println("iterationStartDate WEEKLY:"+  getLastDateOfWeek(iterationStartDate, weekends));
+            //System.out.println("iterationStartDate BI_WEEKLY:"+  getLastDateOfWeek(iterationStartDate.plusWeeks(1), weekends));
+            //System.out.println("iterationStartDate TRI_WEEKLY:"+  getLastDateOfWeek(iterationStartDate.plusWeeks(2), weekends));
             //System.out.println(response.getBody());
         } catch (Exception e) {
             e.printStackTrace();
