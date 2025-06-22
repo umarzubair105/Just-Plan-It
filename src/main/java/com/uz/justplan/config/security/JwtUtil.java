@@ -25,6 +25,8 @@ public class JwtUtil {
         claims.put("name", userDetails.getName());
         claims.put("id", userDetails.getId());
         claims.put("companyId", userDetails.getCompanyId());
+        claims.put("companyName", userDetails.getCompanyName());
+        claims.put("email", userDetails.getEmail());
         if (userDetails.getAuthorities() != null) {
             String roles = userDetails.getAuthorities().stream()
                     .map(authority -> authority.getAuthority())

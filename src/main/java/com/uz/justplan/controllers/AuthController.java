@@ -44,17 +44,13 @@ public class AuthController {
         {
             if (pass.startsWith("password_0c")) {
                 // this is case to login on Company Setup, password passed isalready encrypted
-                System.out.println("----------------------------------------------" + pass);
                 pass = pass.replaceAll("password_0c", "");
-                System.out.println("----------------------------------------------" + pass);
-                System.out.println("----------------------------------------------" + pass.indexOf("password_@c"));
                 pass = pass.substring(0, pass.indexOf("password_@c"));
             } else {
                 //pass = SecurePasswordGenerator.encryptPassword(pass);
             }
         }
         authRequest.setUsername(authRequest.getUsername().trim());
-        System.out.println("----------------------------------------------" + pass);
         authRequest.setPassword(pass);
 
         //try {

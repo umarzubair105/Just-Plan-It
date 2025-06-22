@@ -58,13 +58,13 @@ public class CustomUserDetailsService implements UserDetailsService {
                                 Collections::unmodifiableList));
         //List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(""));
         //return new org.springframework.security.core.userdetails.User(
-        System.out.println("-----------------------");
-        System.out.println("-----------------------" + user.getPassword());
         return new CustomUserDetails(
                 user.getId(),
                 username.trim().toLowerCase(),
                 user.getPassword(),
                 user.getName(),
+                user.getEmail(),
+                compRepository.findById(user.getCompanyId()).get().getName(),
                 user.getCompanyId(),
                 authorities
                 //List.of(authorities.iterator().next())
