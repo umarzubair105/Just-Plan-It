@@ -1,11 +1,13 @@
 package com.uz.justplan.controllers;
 
+import com.uz.justplan.beans.response.EpicBean;
 import com.uz.justplan.lookup.EpicDetailType;
 import com.uz.justplan.plan.Epic;
 import com.uz.justplan.plan.EpicDetail;
 import com.uz.justplan.plan.EpicDetailRepository;
 import com.uz.justplan.plan.EpicRepository;
 import com.uz.justplan.services.CompanyDashboardService;
+import com.uz.justplan.services.PlanningDashboardService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,15 +37,18 @@ public class EpicController {
     private EpicDetailRepository epicDetailRepository;
     private EpicRepository epicRepository;
     private CompanyDashboardService companyDashboardService;
+    private PlanningDashboardService planningDashboardService;
 
     @Autowired
     public EpicController(@Value("${file.upload-dir}") String uploadDir,
                           EpicDetailRepository epicDetailRepository,
                           EpicRepository epicRepository,
-                          CompanyDashboardService companyDashboardService) {
+                          CompanyDashboardService companyDashboardService,
+                          PlanningDashboardService planningDashboardService) {
         this.epicDetailRepository = epicDetailRepository;
         this.epicRepository = epicRepository;
         this.companyDashboardService = companyDashboardService;
+        this.planningDashboardService = planningDashboardService;
         this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
         try {
             Files.createDirectories(this.fileStorageLocation);
@@ -125,4 +130,12 @@ public class EpicController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @GetMapping("/findEpicByCompanyIdAndCode")
+    public EpicBean findEpicByCompanyIdAndCode(@RequestParam long companyId, @RequestParam String code) {
+        log.info("---------------findEpicByCompanyIdAndCode:" + code);
+        return planningDashboardService.findEpicByCompanyIdAndCode(companyId, code);
+    }
+
+
 }

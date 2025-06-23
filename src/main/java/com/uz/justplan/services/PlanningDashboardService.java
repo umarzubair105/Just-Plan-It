@@ -55,6 +55,19 @@ public class PlanningDashboardService {
     @Autowired
     TimeLoggingRepository timeLoggingRepository;
 
+    public EpicBean findEpicByCompanyIdAndCode(long companyId, String code) {
+        List<Epic> epics = epicRepository.findByCompanyIdAndCode(companyId, code);
+        Assert.notEmpty(epics, "There is not record found.");
+        Epic e = epics.get(0);
+        System.out.println("------------------------findEpicByCompanyIdAndCode:" + code);
+        EpicBean bean = new EpicBean(e,
+                priorityRepository.findById(e.getPriorityId()).get(),
+                null,
+                e.getRaisedByResourceId() != null ? resourceRepository.findById(e.getRaisedByResourceId()).get().getName() : null,
+                e.getComponentId() != null ? componentRepository.findById(e.getComponentId()).get().getName() : null,
+                null);
+        return bean;
+    }
     public List<EpicBean> getUnplannedEpics(long companyId, long productId) {
         List<EpicBean> beans = new ArrayList<>();
         List<Epic> unplannedEpics = epicRepository.findByProductIdAndReleaseIdIsNullAndActiveIsTrue(productId);
