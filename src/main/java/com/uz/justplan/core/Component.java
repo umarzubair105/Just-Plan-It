@@ -36,4 +36,12 @@ public class Component extends Auditable {
     public void setCompanyId(Long companyId) {
         this.companyId = companyId;
     }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 }
