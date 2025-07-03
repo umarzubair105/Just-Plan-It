@@ -1,6 +1,9 @@
 package com.uz.justplan.beans;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
+
+import java.time.LocalDate;
 
 public class AddResourceReq {
 
@@ -17,6 +20,11 @@ public class AddResourceReq {
     private String dateOfBirth;
     private String lead;
     private String dateFormat;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    //@Future(message = "First Delivery Date must be in the future")
+    private LocalDate dateOfBirthDate;
+
     public Long getCompanyId() {
         return companyId;
     }
@@ -89,4 +97,11 @@ public class AddResourceReq {
         this.dateFormat = dateFormat;
     }
 
+    public LocalDate getDateOfBirthDate() {
+        return dateOfBirthDate;
+    }
+
+    public void setDateOfBirthDate(LocalDate dateOfBirthDate) {
+        this.dateOfBirthDate = dateOfBirthDate;
+    }
 }

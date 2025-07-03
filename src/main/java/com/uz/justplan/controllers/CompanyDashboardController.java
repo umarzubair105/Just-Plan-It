@@ -34,8 +34,9 @@ public class CompanyDashboardController {
     public List<CommonResp> addEpics(@RequestBody List<AddEpicReq> list) {
         return service.addEpics(list);
     }
-    @PostMapping("/add-resource")
-    public List<CommonResp> addResource(@RequestBody AddResourceReq req) {
+
+    @PostMapping("/add-resource-multiple")
+    public List<CommonResp> addResourceMultiple(@RequestBody AddResourceReq req) {
         return service.addResourceSimple(req);
     }
 
@@ -44,6 +45,10 @@ public class CompanyDashboardController {
         return service.addResources(req);
     }
 
+    @PostMapping("/add-resource")
+    public CommonResp addResource(@RequestBody AddResourceReq req) {
+        return service.addResource(req);
+    }
     @PostMapping("/map-designation")
     public CommonResp mapDesignation(@RequestBody MapDesignationReq req) {
         return service.mapDesignation(req);

@@ -233,6 +233,56 @@ public class CompanyDashboardService {
         return resp;
     }
 
+    @Transactional
+    public CommonResp addResource(final AddResourceReq req) {
+        long companyId = req.getCompanyId();
+
+        CommonResp resp = new CommonResp();
+        if (!Validation.isValidEmail(req.getEmail())) {
+            resp.setContext(req.getEmail());
+            resp.setMessage("Invalid email: " + req.getEmail());
+            return resp;
+        }
+        Optional<Resource> modelO = resourceRepo.findOneByEmailIgnoreCase(req.getEmail().trim());
+        Resource model = null;
+        String password = null;
+        if (!modelO.isEmpty()) {
+            model = modelO.get();
+            Assert.isTrue(model.getCompanyId() != req.getCompanyId(), "User with email " + req.getEmail() + " already registered with some other company.");
+            Assert.isTrue(false, "User with email " + req.getEmail() + " already registered.");
+        } else {
+            model = new Resource();
+            model.setName(req.getName());
+            model.setEmail(req.getEmail().trim());
+            model.setActive(true);
+            model.setCompanyId(req.getCompanyId());
+            password = SecurePasswordGenerator.generatePassword();
+            model.setPassword(SecurePasswordGenerator.encryptPassword(password));
+            model.setStatus(ResourceStatus.ACTIVE);
+            resp.setMessage("Added");
+        }
+        Designation designation = null;
+        if (!Validation.isEmpty(req.getDesignation())) {
+            designation = findOrCreateNewDesignation(req.getDesignation().trim(), companyId);
+            model.setDesignationId(designation.getId());
+        }
+        if (!Validation.isEmpty(req.getMobileNumber())) {
+            model.setMobileNumber(req.getMobileNumber());
+        }
+        model.setDateOfBirth(req.getDateOfBirthDate());
+        resourceRepo.save(model);
+        if (password != null) {
+            emailService.sendEmailNewUser(model.getEmail(), model.getName(), password);
+        }
+        if (designation != null && designation.getRoleId() != null) {
+            assignNewResourceRoleIfNotExist(model.getId(), designation.getRoleId());
+            if (req.getProductId() != null) {
+                assignNewProductResourceIfNotExist(model.getId(), designation.getRoleId(), req.getProductId());
+            }
+        }
+        resp.setId(model.getId());
+        return resp;
+    }
 
     private CommonResp findOrCreateNewResource(AddResourceReq req, Map<String, Designation> designations) {
         CommonResp resp = new CommonResp();

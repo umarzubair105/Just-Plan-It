@@ -111,13 +111,12 @@ public class Utils {
     public static void main(String[] args) {
         //getcountriesdata();
         try {
-            LocalDate iterationStartDate = LocalDate.now();
-            System.out.println("iterationStartDate:" + iterationStartDate);
-            System.out.println("iterationStartDate BI_MONTHLY:" + getLastDateOfMonth(iterationStartDate.plusMonths(1)));
-            System.out.println("iterationStartDate MONTHLY:" + getLastDateOfMonth(iterationStartDate));
-            System.out.println("iterationStartDate QUARTERLY:" + getLastDateOfQuarter(iterationStartDate));
-            System.out.println("iterationStartDate ANNUAL:" + getLastDateOfYear(iterationStartDate));
-            System.out.println("iterationStartDate SEMI_ANNUAL:" + getLastDateOfSemiYear(iterationStartDate));
+            Map<Integer, String> m = new HashMap<>();
+            m.put(1, "aa");
+            m.put(100000000, "aa");
+            System.out.println("iterationStartDate SEMI_ANNUAL:" + m.get(1));
+            System.out.println("iterationStartDate SEMI_ANNUAL:" + m.get(10));
+            System.out.println("iterationStartDate SEMI_ANNUAL:" + m.get(100000000));
             //System.out.println("iterationStartDate WEEKLY:"+  getLastDateOfWeek(iterationStartDate, weekends));
             //System.out.println("iterationStartDate BI_WEEKLY:"+  getLastDateOfWeek(iterationStartDate.plusWeeks(1), weekends));
             //System.out.println("iterationStartDate TRI_WEEKLY:"+  getLastDateOfWeek(iterationStartDate.plusWeeks(2), weekends));
