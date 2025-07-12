@@ -68,6 +68,18 @@ public class PlanningDashboardService {
                 null);
         return bean;
     }
+
+    public EpicBean findEpicById(long epicId) {
+        Epic e = epicRepository.findById(epicId).get();
+        Assert.notNull(e, "There is not record found.");
+        EpicBean bean = new EpicBean(e,
+                priorityRepository.findById(e.getPriorityId()).get(),
+                null,
+                e.getRaisedByResourceId() != null ? resourceRepository.findById(e.getRaisedByResourceId()).get().getName() : null,
+                e.getComponentId() != null ? componentRepository.findById(e.getComponentId()).get().getName() : null,
+                null);
+        return bean;
+    }
     public List<EpicBean> getUnplannedEpics(long companyId, long productId) {
         List<EpicBean> beans = new ArrayList<>();
         List<Epic> unplannedEpics = epicRepository.findByProductIdAndReleaseIdIsNullAndActiveIsTrue(productId);

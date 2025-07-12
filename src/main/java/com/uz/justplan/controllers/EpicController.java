@@ -137,5 +137,10 @@ public class EpicController {
         return planningDashboardService.findEpicByCompanyIdAndCode(companyId, code);
     }
 
+    @GetMapping("/findEpicById")
+    public EpicBean findEpicById(@RequestParam long id) {
+        return planningDashboardService.findEpicById(id);
+    }
+
 
 }
