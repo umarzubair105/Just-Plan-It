@@ -18,6 +18,8 @@ public interface EpicAssignmentRepository extends CrudRepository<EpicAssignment,
             " and e.id=ee.epicId and ee.active=true")
     List<EpicAssignment> findAllByReleaseId(Long releaseId);
 
+    List<EpicAssignment> findAllByEpicIdAndActiveTrue(Long epicId);
+
 /*
     @Query("select ee from Epic e, EpicEstimate ee where e.productId=:productId and e.releaseId is null and e.active=true " +
             " and e.id=ee.epicId and ee.active=true")

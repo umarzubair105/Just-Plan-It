@@ -1,6 +1,7 @@
 package com.uz.justplan.services;
 
 import com.uz.justplan.beans.*;
+import com.uz.justplan.beans.response.ResourceRightBean;
 import com.uz.justplan.core.*;
 import com.uz.justplan.lookup.*;
 import com.uz.justplan.plan.Epic;
@@ -602,5 +603,48 @@ public class CompanyDashboardService {
         resp.setContext(username);
         resp.setMessage("New password is sent through email.");
         return resp;
+    }
+
+    public ResourceRightBean getResourceRights(long resourceId, Long productId) {
+        List<ProductResource> prs = prodResourceRepo.findByResourceIdAndActiveIsTrue(resourceId);
+        ResourceRightBean bean = new ResourceRightBean();
+        bean.setProducts(
+                prs.stream().filter(pr -> pr.getParticipationPercentTime() > 0)
+                        .map(pr -> productRepo.findById(pr.getProductId()).get())
+                        .collect(Collectors.toList()));
+
+        bean.setTeamResourceIds(
+                resourceRepo.findByLeadResourceIdAndActiveIsTrue(resourceId).stream().map(r -> r.getId())
+                        .collect(Collectors.toList()));
+
+        Resource r = resourceRepo.findById(resourceId).get();
+        bean.setLeadId(r.getLeadResourceId());
+        resourceRoleRepo.findByResourceIdAndActiveIsTrue(resourceId).forEach(rr -> {
+            Role role = roleRepo.findById(rr.getRoleId()).get();
+            if (role.getCode() == RoleEnum.PM || role.getCode() == RoleEnum.PO || role.getCode() == RoleEnum.SM) {
+                bean.setGlobalManager(true);
+            }
+            if (role.getCode() == RoleEnum.ADMIN) {
+                bean.setGlobalAdmin(true);
+            }
+            if (role.getCode() == RoleEnum.HR) {
+                bean.setGlobalHr(true);
+            }
+        });
+        if (productId != null) {
+            prs.stream().filter(pr -> pr.getParticipationPercentTime() > 0 && pr.getProductId().equals(productId)).forEach(pr -> {
+                Role role = roleRepo.findById(pr.getRoleId()).get();
+                if (role.getCode() == RoleEnum.PM || role.getCode() == RoleEnum.PO || role.getCode() == RoleEnum.SM) {
+                    bean.setProductManager(true);
+                }
+                if (role.getCode() == RoleEnum.ADMIN) {
+                    bean.setProductAdmin(true);
+                }
+                if (role.getCode() == RoleEnum.HR) {
+                    bean.setProductHr(true);
+                }
+            });
+        }
+        return bean;
     }
 }

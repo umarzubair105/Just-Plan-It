@@ -5,7 +5,9 @@ import com.uz.justplan.beans.AuthResponse;
 import com.uz.justplan.beans.CommonResp;
 import com.uz.justplan.config.security.CustomUserDetails;
 import com.uz.justplan.config.security.JwtUtil;
+import com.uz.justplan.core.ContactUs;
 import com.uz.justplan.services.CompanyDashboardService;
+import com.uz.justplan.services.EmailService;
 import com.uz.justplan.utils.Validation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,6 +33,9 @@ public class AuthController {
 
     @Autowired
     private CompanyDashboardService dashboardService;
+
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -83,5 +88,13 @@ public class AuthController {
     @PostMapping("/reset-password")
     public CommonResp resetPassword(@RequestBody AuthRequest authRequest) throws Exception {
         return dashboardService.resetPassword(authRequest.getUsername());
+    }
+
+    @PostMapping("/contact-us")
+    public CommonResp resetPassword(@RequestBody ContactUs model) throws Exception {
+        emailService.sendEmailContactUs(model);
+        CommonResp resp = new CommonResp();
+        resp.setMessage("Your inquiry is moved forward. You will be contacted shortly.");
+        return resp;
     }
 }

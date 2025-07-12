@@ -1,5 +1,6 @@
 package com.uz.justplan.services;
 
+import com.uz.justplan.beans.CommonResp;
 import com.uz.justplan.beans.ReleaseDetailBean;
 import com.uz.justplan.beans.ScheduleEpic;
 import com.uz.justplan.beans.response.EpicAssignmentBean;
@@ -20,6 +21,7 @@ import com.uz.justplan.resources.Role;
 import com.uz.justplan.resources.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -119,6 +121,8 @@ public class PlanningDashboardService {
         return beans;
     }
 
+    @Transactional
+
     public ScheduleEpic planEpic(long epicId) {
         final Epic epic = epicRepository.findById(epicId).orElseThrow(() -> new RuntimeException("Epic not found"));
         List<Release> unplannedRelease = releaseRepository.findByProductIdAndStatusAndActiveIsTrueOrderByStartDateAsc(
@@ -164,6 +168,21 @@ public class PlanningDashboardService {
             });
         }
         return scheduleEpic;
+    }
+
+    @Transactional
+    public CommonResp unplanEpic(long epicId) {
+        final Epic epic = epicRepository.findById(epicId).orElseThrow(() -> new RuntimeException("Epic not found"));
+        Assert.isTrue(epic.getReleaseId() != null, epic.getCode() + " is not part of any release.");
+        epic.setReleaseId(null); // TODO: Replace with actual release id
+        epicRepository.save(epic);
+        epicAssignmentRepository.findAllByEpicIdAndActiveTrue(epicId).forEach(assignment -> {
+            assignment.setActive(false);
+            epicAssignmentRepository.save(assignment);
+        });
+        CommonResp resp = new CommonResp();
+        resp.setMessage(epic.getCode() + " is removed from release now.");
+        return resp;
     }
 
     public ReleaseDetailBean findReleaseDetailByReleaseId(long releaseId) {

@@ -1,5 +1,6 @@
 package com.uz.justplan.controllers;
 
+import com.uz.justplan.beans.CommonResp;
 import com.uz.justplan.beans.ReleaseDetailBean;
 import com.uz.justplan.beans.ScheduleEpic;
 import com.uz.justplan.beans.response.EpicBean;
@@ -23,6 +24,11 @@ public class PlanningDashboardController {
     @PostMapping("/planEpic")
     public ScheduleEpic planEpic(@RequestParam long epicId) {
         return service.planEpic(epicId);
+    }
+
+    @PostMapping("/unplanEpic")
+    public CommonResp unplanEpic(@RequestParam long epicId) {
+        return service.unplanEpic(epicId);
     }
 
     @GetMapping("/findReleaseDetailByReleaseId")

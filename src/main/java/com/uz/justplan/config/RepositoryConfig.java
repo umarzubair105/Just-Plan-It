@@ -2,6 +2,7 @@ package com.uz.justplan.config;
 
 import com.uz.justplan.core.Company;
 import com.uz.justplan.core.Component;
+import com.uz.justplan.core.ContactUs;
 import com.uz.justplan.core.Product;
 import com.uz.justplan.lookup.Country;
 import com.uz.justplan.lookup.Priority;
@@ -24,7 +25,8 @@ public class RepositoryConfig implements RepositoryRestConfigurer {
                 ReleaseEpicAssignment.class, ReleaseStatus.class, CompanyCalendar.class, CompanyWeekend.class,
                 ResourceRole.class, Priority.class, CompanyWorkingHour.class,
                 TimeLogging.class, EpicDetail.class, EpicLink.class,
-                ProductResource.class, Resource.class, ResourceLeave.class, Role.class);
+                ProductResource.class, Resource.class, ResourceLeave.class, Role.class,
+                EpicAssignment.class, ContactUs.class);
 
     }
 

@@ -12,4 +12,6 @@ public interface ResourceRoleRepository extends CrudRepository<ResourceRole, Lon
     Optional<ResourceRole> findByResourceIdAndRoleId(long resourceId, long roleId);
 
     List<ResourceRole> findByResourceIdInAndActive(Collection<Long> resourceIds, boolean active);
+
+    List<ResourceRole> findByResourceIdAndActiveIsTrue(Long resourceId);
 }

@@ -8,6 +8,7 @@ import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
 import com.uz.justplan.config.AppProperties;
+import com.uz.justplan.core.ContactUs;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,12 @@ public class EmailService {
                         "Here is your password %s." +
                         "</br>" +
                         "Regards", name, password));
+    }
+
+    public void sendEmailContactUs(ContactUs m) {
+        sendEmail(props.getEmail().getFromAddress(),
+                String.format("Contact Us Email from: %s, Email: %s, Subject: %s", m.getName(), m.getEmail(), m.getSubject()),
+                m.getDetails());
     }
 
     private void sendEmail(String emailTo, String subject, String body) {

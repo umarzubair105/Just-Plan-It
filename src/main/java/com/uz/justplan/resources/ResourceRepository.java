@@ -35,4 +35,6 @@ public interface ResourceRepository extends CrudRepository<Resource, Long>,
             " and pr.resourceId=r.id and r.active=true")
     List<Resource> findResourcesByProductId(long productId);
 
+    List<Resource> findByLeadResourceIdAndActiveIsTrue(long leadResourceId);
+
 }

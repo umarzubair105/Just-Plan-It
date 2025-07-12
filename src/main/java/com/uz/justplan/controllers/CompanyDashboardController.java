@@ -1,12 +1,10 @@
 package com.uz.justplan.controllers;
 
 import com.uz.justplan.beans.*;
+import com.uz.justplan.beans.response.ResourceRightBean;
 import com.uz.justplan.services.CompanyDashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -52,5 +50,13 @@ public class CompanyDashboardController {
     @PostMapping("/map-designation")
     public CommonResp mapDesignation(@RequestBody MapDesignationReq req) {
         return service.mapDesignation(req);
+    }
+
+
+    @GetMapping("/get-rights")
+    public ResourceRightBean getRights(@RequestParam long resourceId, @RequestParam long productId) {
+        return service.getResourceRights(resourceId,
+                productId == 0 ? null : productId
+        );
     }
 }
