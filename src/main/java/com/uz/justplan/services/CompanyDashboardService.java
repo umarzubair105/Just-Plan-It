@@ -583,6 +583,17 @@ public class CompanyDashboardService {
         Resource resource = resourceRepo.findById(resourceId).orElseThrow(() -> new RuntimeException("Resource not found"));
         LoggedInDetails details = new LoggedInDetails();
         details.setCompany(compRepo.findProjectionById(resource.getCompanyId()));
+        Long resources = resourceRepo.countByCompanyId(resource.getCompanyId());
+        if (resources == 1) {
+            details.setRoute("/upload-resource");
+        } else {
+            Long desigMapped = designRepo.countByCompanyIdAndRoleIdIsNotNull(resource.getCompanyId());
+            if (desigMapped == 0) {
+                details.setRoute("/mapping-roles-designation");
+            } else {
+                details.setRoute("/home");
+            }
+        }
         return details;
     }
 

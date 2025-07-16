@@ -11,5 +11,7 @@ public interface DesignationRepository extends CrudRepository<Designation, Long>
         ListPagingAndSortingRepository<Designation, Long> {
     Page<Designation> findByCompanyId(long companyId, Pageable pageable);
 
+    Long countByCompanyIdAndRoleIdIsNotNull(long companyId);
+
     Optional<Designation> findByCompanyIdAndNameIgnoreCase(long companyId, String name);
 }

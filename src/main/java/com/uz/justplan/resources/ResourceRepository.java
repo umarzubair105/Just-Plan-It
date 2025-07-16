@@ -15,6 +15,8 @@ public interface ResourceRepository extends CrudRepository<Resource, Long>,
 
     List<Resource> findByCompanyIdAndActiveIsTrue(long companyId);
 
+    Long countByCompanyId(long companyId);
+
     List<Resource> findByIdInAndStatusAndActive(Collection<Long> ids, ResourceStatus status, boolean active);
     List<Resource> findByDesignationId(long designationId);
 

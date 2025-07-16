@@ -7,6 +7,7 @@ import java.util.List;
 public class LoggedInDetails {
     private BasicProjection company;
     private List<BasicProjection> products;
+    private String route;
 
     public BasicProjection getCompany() {
         return company;
@@ -22,5 +23,13 @@ public class LoggedInDetails {
 
     public void setProducts(List<BasicProjection> products) {
         this.products = products;
+    }
+
+    public String getRoute() {
+        return route;
+    }
+
+    public void setRoute(String route) {
+        this.route = route;
     }
 }
