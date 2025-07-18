@@ -617,12 +617,7 @@ public class CompanyDashboardService {
     }
 
     public ResourceRightBean getResourceRights(long resourceId, Long productId) {
-        List<ProductResource> prs = prodResourceRepo.findByResourceIdAndActiveIsTrue(resourceId);
         ResourceRightBean bean = new ResourceRightBean();
-        bean.setProducts(
-                prs.stream().filter(pr -> pr.getParticipationPercentTime() > 0)
-                        .map(pr -> productRepo.findById(pr.getProductId()).get())
-                        .collect(Collectors.toList()));
 
         bean.setTeamResourceIds(
                 resourceRepo.findByLeadResourceIdAndActiveIsTrue(resourceId).stream().map(r -> r.getId())
@@ -641,7 +636,17 @@ public class CompanyDashboardService {
             if (role.getCode() == RoleEnum.HR) {
                 bean.setGlobalHr(true);
             }
+            bean.setGlobalRoleId(role.getId());
         });
+        List<ProductResource> prs = prodResourceRepo.findByResourceIdAndActiveIsTrue(resourceId);
+        if (bean.isGlobalAdmin() || bean.isGlobalHr() || bean.isGlobalManager()) {
+            bean.setProducts(productRepo.findByCompanyIdAndActiveIsTrue(r.getCompanyId()));
+        } else {
+            bean.setProducts(
+                    prs.stream().filter(pr -> pr.getParticipationPercentTime() > 0)
+                            .map(pr -> productRepo.findById(pr.getProductId()).get())
+                            .collect(Collectors.toList()));
+        }
         if (productId != null) {
             prs.stream().filter(pr -> pr.getParticipationPercentTime() > 0 && pr.getProductId().equals(productId)).forEach(pr -> {
                 Role role = roleRepo.findById(pr.getRoleId()).get();
@@ -654,6 +659,7 @@ public class CompanyDashboardService {
                 if (role.getCode() == RoleEnum.HR) {
                     bean.setProductHr(true);
                 }
+                bean.setProductRoleId(role.getId());
             });
         }
         return bean;

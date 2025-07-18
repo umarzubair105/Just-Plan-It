@@ -54,9 +54,9 @@ public class CompanyDashboardController {
 
 
     @GetMapping("/get-rights")
-    public ResourceRightBean getRights(@RequestParam long resourceId, @RequestParam long productId) {
+    public ResourceRightBean getRights(@RequestParam long resourceId, @RequestParam(required = false) Long productId) {
         return service.getResourceRights(resourceId,
-                productId == 0 ? null : productId
+                productId
         );
     }
 }

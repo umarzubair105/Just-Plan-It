@@ -14,6 +14,8 @@ public class ResourceRightBean {
     private boolean productHr;
     private boolean productAdmin;
     private Long leadId;
+    private Long globalRoleId;
+    private Long productRoleId;
 
     public List<Long> getTeamResourceIds() {
         return teamResourceIds;
@@ -85,5 +87,21 @@ public class ResourceRightBean {
 
     public void setLeadId(Long leadId) {
         this.leadId = leadId;
+    }
+
+    public Long getGlobalRoleId() {
+        return globalRoleId;
+    }
+
+    public void setGlobalRoleId(Long globalRoleId) {
+        this.globalRoleId = globalRoleId;
+    }
+
+    public Long getProductRoleId() {
+        return productRoleId;
+    }
+
+    public void setProductRoleId(Long productRoleId) {
+        this.productRoleId = productRoleId;
     }
 }
