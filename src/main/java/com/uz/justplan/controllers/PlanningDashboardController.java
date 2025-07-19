@@ -55,4 +55,9 @@ public class PlanningDashboardController {
     public List<ReleaseDetailBean> findOldReleasesByProductId(@RequestParam long productId) {
         return service.getOldReleases(productId);
     }
+
+    @GetMapping("/findResourceDashboard")
+    public List<ReleaseDetailBean> findResourceDashboard(@RequestParam long resourceId) {
+        return service.getResourceDashboard(resourceId);
+    }
 }

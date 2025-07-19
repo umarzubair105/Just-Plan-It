@@ -4,7 +4,8 @@ public enum EpicDetailType {
 
     COMMENT("COMMENT"),
     ATTACHED_FILE("ATTACHED_FILE"),
-    REFERENCE("REFERENCE");
+    REFERENCE("REFERENCE"),
+    URL("URL");
 
     private final String value;
 

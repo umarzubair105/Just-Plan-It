@@ -618,7 +618,7 @@ public class CompanyDashboardService {
 
     public ResourceRightBean getResourceRights(long resourceId, Long productId) {
         ResourceRightBean bean = new ResourceRightBean();
-
+        bean.setResourceId(resourceId);
         bean.setTeamResourceIds(
                 resourceRepo.findByLeadResourceIdAndActiveIsTrue(resourceId).stream().map(r -> r.getId())
                         .collect(Collectors.toList()));

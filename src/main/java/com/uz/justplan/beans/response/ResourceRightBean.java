@@ -5,6 +5,7 @@ import com.uz.justplan.core.Product;
 import java.util.List;
 
 public class ResourceRightBean {
+    private long resourceId;
     private List<Product> products;
     private List<Long> teamResourceIds;
     private boolean globalManager;
@@ -103,5 +104,13 @@ public class ResourceRightBean {
 
     public void setProductRoleId(Long productRoleId) {
         this.productRoleId = productRoleId;
+    }
+
+    public long getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(long resourceId) {
+        this.resourceId = resourceId;
     }
 }

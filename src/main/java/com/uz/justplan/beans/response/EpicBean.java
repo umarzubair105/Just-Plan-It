@@ -3,8 +3,10 @@ package com.uz.justplan.beans.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.uz.justplan.lookup.Priority;
 import com.uz.justplan.plan.Epic;
+import com.uz.justplan.plan.Release;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +25,12 @@ public class EpicBean {
 
     LocalDate startDate;
     LocalDate endDate;
+    LocalDateTime createdDate, updatedDate;
+    Release release;
+    private Long createdById, updatedById;
     double valueGain;
     String dependOnEpicCode;
+    private String createdByName, updatedByName;
     String raisedByResourceName;
     String priorityName;
     String componentName;
@@ -50,6 +56,10 @@ public class EpicBean {
         this.startDate = epic.getStartDate();
         this.endDate = epic.getEndDate();
         this.componentId = epic.getComponentId();
+        this.createdById = epic.getCreatedById();
+        this.updatedById = epic.getUpdatedById();
+        this.createdDate = epic.getCreatedDate();
+        this.updatedDate = epic.getUpdatedDate();
         this.componentName = component;
         if (p != null) {
             this.priorityId = p.getId();
@@ -248,5 +258,61 @@ public class EpicBean {
 
     public void setEstimates(List<EpicEstimateBean> estimates) {
         this.estimates = estimates;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public LocalDateTime getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(LocalDateTime updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
+    public Long getCreatedById() {
+        return createdById;
+    }
+
+    public void setCreatedById(Long createdById) {
+        this.createdById = createdById;
+    }
+
+    public Long getUpdatedById() {
+        return updatedById;
+    }
+
+    public void setUpdatedById(Long updatedById) {
+        this.updatedById = updatedById;
+    }
+
+    public Release getRelease() {
+        return release;
+    }
+
+    public void setRelease(Release release) {
+        this.release = release;
+    }
+
+    public String getCreatedByName() {
+        return createdByName;
+    }
+
+    public void setCreatedByName(String createdByName) {
+        this.createdByName = createdByName;
+    }
+
+    public String getUpdatedByName() {
+        return updatedByName;
+    }
+
+    public void setUpdatedByName(String updatedByName) {
+        this.updatedByName = updatedByName;
     }
 }

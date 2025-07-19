@@ -24,6 +24,11 @@ public interface EpicRepository extends CrudRepository<Epic, Long> {
     @Query("select code from Epic where id=:id")
     Optional<String> findCodeById(long id);
 
+    @Query("select distinct e from Epic e, EpicAssignment ee where " +
+            " e.releaseId=:releaseId and e.id=ee.epicId and  ee.resourceId=:resourceId and e.active=true " +
+            " and ee.active=true")
+    List<Epic> findAllByResourceIdAndReleaseId(Long resourceId, Long releaseId);
+
     // what is issue with following query
 
 

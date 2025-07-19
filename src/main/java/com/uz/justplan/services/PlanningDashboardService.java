@@ -3,6 +3,7 @@ package com.uz.justplan.services;
 import com.uz.justplan.beans.CommonResp;
 import com.uz.justplan.beans.ReleaseDetailBean;
 import com.uz.justplan.beans.ScheduleEpic;
+import com.uz.justplan.beans.cal.ResourceCapInRelease;
 import com.uz.justplan.beans.response.EpicAssignmentBean;
 import com.uz.justplan.beans.response.EpicBean;
 import com.uz.justplan.beans.response.EpicEstimateBean;
@@ -80,6 +81,11 @@ public class PlanningDashboardService {
                 e.getRaisedByResourceId() != null ? resourceRepository.findById(e.getRaisedByResourceId()).get().getName() : null,
                 e.getComponentId() != null ? componentRepository.findById(e.getComponentId()).get().getName() : null,
                 null);
+        bean.setCreatedByName(resourceRepository.findById(e.getCreatedById()).get().getName());
+        bean.setUpdatedByName(resourceRepository.findById(e.getUpdatedById()).get().getName());
+        if (e.getReleaseId() != null) {
+            bean.setRelease(releaseRepository.findById(e.getReleaseId()).get());
+        }
         return bean;
     }
     public List<EpicBean> getUnplannedEpics(long companyId, long productId) {
@@ -243,6 +249,68 @@ public class PlanningDashboardService {
 
     public List<ReleaseDetailBean> getStartedReleases(long productId) {
         return getReleases(productId, ReleaseStatusEnum.STARTED);
+    }
+
+    public List<ReleaseDetailBean> getResourceDashboard(long resourceId) {
+        List<Release> releases = releaseRepository.findAllByResourceIdAndReleaseStatus(
+                resourceId, ReleaseStatusEnum.STARTED);
+        if (releases.isEmpty()) {
+            return new ArrayList<>();
+        }
+        Resource res = resourceRepository.findById(resourceId).get();
+        //Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+        long companyId = res.getCompanyId();
+        Map<Long, Priority> priorityMap = priorityRepository.findByCompanyIdAndActiveIsTrue(companyId).stream()
+                .collect(Collectors.toMap(Priority::getId, m -> m));
+        Map<Long, String> resourceMap = resourceRepository.findByCompanyIdAndActiveIsTrue(companyId).stream()
+                .collect(Collectors.toMap(Resource::getId, Resource::getName));
+        Map<Long, String> roleMap = roleRepository.findByCompanyIdAndActive(companyId, true).stream()
+                .collect(Collectors.toMap(Role::getId, Role::getName));
+        Map<Long, String> compMap = componentRepository.findByCompanyIdAndActiveIsTrue(companyId).stream()
+                .collect(Collectors.toMap(Component::getId, Component::getName));
+        List<ReleaseDetailBean> details = new ArrayList<>();
+        releases.forEach(release -> {
+            ReleaseDetailBean releaseBean = new ReleaseDetailBean();
+            releaseBean.setRelease(release);
+            details.add(releaseBean);
+        });
+        details.parallelStream().forEach(detail -> {
+            Release release = detail.getRelease();
+            long releaseId = release.getId();
+            List<Epic> epics = epicRepository.findAllByResourceIdAndReleaseId(resourceId, releaseId);
+            Map<Long, List<EpicAssignment>> epicAssignmentMap = epicAssignmentRepository.findAllInvolvedByResourceIdAndReleaseId(
+                            resourceId, releaseId)
+                    .stream().collect(Collectors.groupingBy(EpicAssignment::getEpicId));
+            List<EpicBean> beans = new ArrayList<>();
+            epics.parallelStream().forEach(e -> {
+                Optional<String> depEpicCode = Optional.empty();
+                if (e.getDependOnEpicId() != null) {
+                    depEpicCode = Optional.ofNullable(epicRepository.findById(e.getDependOnEpicId()).orElse(null)).map(Epic::getCode);
+                }
+                List<EpicAssignmentBean> esList = null;
+                if (epicAssignmentMap.containsKey(e.getId())) {
+                    esList = epicAssignmentMap.get(e.getId()).stream().map(ee ->
+                                    new EpicAssignmentBean(ee, roleMap.get(ee.getRoleId()),
+                                            resourceMap.get(ee.getResourceId()),
+                                            release.getStatus() != ReleaseStatusEnum.UNPLANNED && release.getStatus() != ReleaseStatusEnum.PLANNED ?
+                                                    timeLoggingRepository.findTotalMinutesByReleaseIdAndEpicIdAndResourceId(releaseId, e.getId(), ee.getResourceId()) :
+                                                    timeLoggingRepository.findTotalMinutesByEpicIdAndResourceId(e.getId(), ee.getResourceId())
+                                    ))
+                            .collect(Collectors.toList());
+                }
+
+                EpicBean bean = new EpicBean(esList, e, priorityMap.get(e.getPriorityId()),
+                        depEpicCode.isPresent() ? depEpicCode.get() : null,
+                        resourceMap.get(e.getRaisedByResourceId()),
+                        compMap.get(e.getComponentId()));
+
+                beans.add(bean);
+            });
+            detail.setEpics(beans);
+            List<ResourceCapInRelease> caps = releaseService.getResourceCapInRelease(releaseId);
+            detail.setResourceCaps(caps.stream().filter(c -> c.resourceId == resourceId).collect(Collectors.toList()));
+        });
+        return details;
     }
 
     public List<ReleaseDetailBean> getOldReleases(long productId) {
