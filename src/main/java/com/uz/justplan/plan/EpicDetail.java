@@ -1,5 +1,6 @@
 package com.uz.justplan.plan;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.uz.justplan.core.Auditable;
 import com.uz.justplan.lookup.EpicDetailType;
 import jakarta.persistence.*;
@@ -34,6 +35,7 @@ public class EpicDetail extends Auditable {
         this.detailType = detailType;
     }
 
+    @JsonIgnore
     public String getLink() {
         return link;
     }
