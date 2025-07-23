@@ -19,6 +19,7 @@ public class AddResourceReq {
     private String mobileNumber;
     private String dateOfBirth;
     private String lead;
+    private Long leadResourceId;
     private String dateFormat;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -103,5 +104,13 @@ public class AddResourceReq {
 
     public void setDateOfBirthDate(LocalDate dateOfBirthDate) {
         this.dateOfBirthDate = dateOfBirthDate;
+    }
+
+    public Long getLeadResourceId() {
+        return leadResourceId;
+    }
+
+    public void setLeadResourceId(Long leadResourceId) {
+        this.leadResourceId = leadResourceId;
     }
 }

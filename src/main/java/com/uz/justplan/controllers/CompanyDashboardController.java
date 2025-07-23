@@ -2,6 +2,7 @@ package com.uz.justplan.controllers;
 
 import com.uz.justplan.beans.*;
 import com.uz.justplan.beans.response.ResourceRightBean;
+import com.uz.justplan.resources.Resource;
 import com.uz.justplan.services.CompanyDashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +45,7 @@ public class CompanyDashboardController {
     }
 
     @PostMapping("/add-resource")
-    public CommonResp addResource(@RequestBody AddResourceReq req) {
+    public CommonResp addResource(@RequestBody Resource req) {
         return service.addResource(req);
     }
     @PostMapping("/map-designation")

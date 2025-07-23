@@ -23,7 +23,7 @@ public class RepositoryConfig implements RepositoryRestConfigurer {
         config.exposeIdsFor(Country.class, Company.class, Component.class, Product.class, Epic.class, Release.class,
                 ReleaseEpicHistory.class, Resource.class, Role.class, EpicEstimate.class, Designation.class,
                 ReleaseEpicAssignment.class, ReleaseStatus.class, CompanyCalendar.class, CompanyWeekend.class,
-                ResourceRole.class, Priority.class, CompanyWorkingHour.class,
+                Priority.class, CompanyWorkingHour.class,
                 TimeLogging.class, EpicDetail.class, EpicLink.class,
                 ProductResource.class, Resource.class, ResourceLeave.class, Role.class,
                 EpicAssignment.class, ContactUs.class);

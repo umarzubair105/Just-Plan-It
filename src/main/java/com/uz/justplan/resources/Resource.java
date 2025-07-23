@@ -18,10 +18,13 @@ public class Resource extends Auditable {
     private String mobileNumber;
     private LocalDate dateOfBirth;
     @Column(nullable = false)
-    private int countryId;
+    private Long countryId;
 
     @Column(nullable = true)
     private Long designationId;
+
+    @Column(nullable = true)
+    private Long roleId;
 
     @Column(name = "isLead", nullable = false)
     private boolean lead;
@@ -78,11 +81,11 @@ public class Resource extends Auditable {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public int getCountryId() {
+    public Long getCountryId() {
         return countryId;
     }
 
-    public void setCountryId(int countryId) {
+    public void setCountryId(Long countryId) {
         this.countryId = countryId;
     }
 
@@ -156,5 +159,13 @@ public class Resource extends Auditable {
 
     public void setStatus(ResourceStatus status) {
         this.status = status;
+    }
+
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
     }
 }

@@ -23,7 +23,6 @@ public class CompanyDashboardService {
     private CompanyRepository compRepo;
     private ResourceRepository resourceRepo;
     private ProductRepository productRepo;
-    private ResourceRoleRepository resourceRoleRepo;
     private ProductResourceRepository prodResourceRepo;
     private RoleRepository roleRepo;
     private ComponentRepository componentRepo;
@@ -39,7 +38,6 @@ public class CompanyDashboardService {
     @Autowired
     public CompanyDashboardService(final CompanyRepository compRepo,
                                    final ResourceRepository resourceRepo,
-                                   final ResourceRoleRepository resourceRoleRepo,
                                    final RoleRepository roleRepo,
                                    final CompanyWeekendRepository companyWeekendRepository,
                                    final CompanyWorkingHourRepository companyWorkingHourRepository,
@@ -53,7 +51,6 @@ public class CompanyDashboardService {
                                    final EmailService emailService) {
         this.compRepo = compRepo;
         this.resourceRepo = resourceRepo;
-        this.resourceRoleRepo = resourceRoleRepo;
         this.roleRepo = roleRepo;
         this.companyWeekendRepository = companyWeekendRepository;
         this.companyWorkingHourRepository = companyWorkingHourRepository;
@@ -87,6 +84,7 @@ public class CompanyDashboardService {
         String password = SecurePasswordGenerator.generatePassword();
         Long resourceId = createNewResource(req.getEmail(), req.getResourceName(),
                 req.getDesignation(), req.getMobileNumber(), comp, password);
+
         roleRepo.findByCompanyIdAndActive(req.getSampleCompanyId(), true)
                 .forEach(role -> {
                     final Role newRole = new Role();
@@ -98,9 +96,10 @@ public class CompanyDashboardService {
                     newRole.setActive(role.isActive());
                     roleRepo.save(newRole);
                     if (newRole.getCode().equals(RoleEnum.ADMIN)) {
-                        assignNewResourceRoleIfNotExist(resourceId, newRole.getId());
+                        addRoleIdToResource(resourceId, newRole.getId());
                     }
                 });
+
 
         companyWeekendRepository.findByCompanyIdAndActive(req.getSampleCompanyId(), true)
                 .forEach(cw -> {
@@ -206,6 +205,9 @@ public class CompanyDashboardService {
         for (AddResourceReq req : reqs) {
             responseList.add(findOrCreateNewResource(req, designations));
         }
+        for (AddResourceReq req : reqs) {
+            saveLeadResourceId(req);
+        }
 
         return responseList;
     }
@@ -221,9 +223,9 @@ public class CompanyDashboardService {
             designation.setRoleId(req.getRoleId());
             designRepo.save(designation);
             resp.setMessage("Designation updated.");
-            resourceRepo.findByDesignationId(req.getDesignationId()).forEach(
+            resourceRepo.findByDesignationIdAndActiveIsTrue(req.getDesignationId()).forEach(
                     r -> {
-                        assignNewResourceRoleIfNotExist(
+                        addRoleIdToResource(
                                 r.getId(), req.getRoleId());
                     }
             );
@@ -234,52 +236,42 @@ public class CompanyDashboardService {
         return resp;
     }
 
+    private void addRoleIdToResource(long resourceId, long roleId) {
+
+        Resource r = resourceRepo.findById(resourceId).get();
+        r.setRoleId(roleId);
+        resourceRepo.save(r);
+    }
+
     @Transactional
-    public CommonResp addResource(final AddResourceReq req) {
-        long companyId = req.getCompanyId();
+    public CommonResp addResource(final Resource model) {
 
         CommonResp resp = new CommonResp();
-        if (!Validation.isValidEmail(req.getEmail())) {
-            resp.setContext(req.getEmail());
-            resp.setMessage("Invalid email: " + req.getEmail());
+        if (!Validation.isValidEmail(model.getEmail())) {
+            resp.setContext(model.getEmail());
+            resp.setMessage("Invalid email: " + model.getEmail());
             return resp;
         }
-        Optional<Resource> modelO = resourceRepo.findOneByEmailIgnoreCase(req.getEmail().trim());
-        Resource model = null;
+        Optional<Resource> modelO = resourceRepo.findOneByEmailIgnoreCase(model.getEmail().trim());
         String password = null;
         if (!modelO.isEmpty()) {
-            model = modelO.get();
-            Assert.isTrue(model.getCompanyId() != req.getCompanyId(), "User with email " + req.getEmail() + " already registered with some other company.");
-            Assert.isTrue(false, "User with email " + req.getEmail() + " already registered.");
+            Resource existing = modelO.get();
+            Assert.isTrue(existing.getCompanyId() != model.getCompanyId(), "User with email " + model.getEmail() + " already registered with some other company.");
+            Assert.isTrue(false, "User with email " + model.getEmail() + " already registered.");
         } else {
-            model = new Resource();
-            model.setName(req.getName());
-            model.setEmail(req.getEmail().trim());
-            model.setActive(true);
-            model.setCompanyId(req.getCompanyId());
+            model.setEmail(model.getEmail().trim());
             password = SecurePasswordGenerator.generatePassword();
             model.setPassword(SecurePasswordGenerator.encryptPassword(password));
             model.setStatus(ResourceStatus.ACTIVE);
+            if (model.getCompanyId() != null) {
+                Company com = compRepo.findById(model.getCompanyId()).get();
+                model.setCountryId(com.getCountryId());
+            }
             resp.setMessage("Added");
         }
-        Designation designation = null;
-        if (!Validation.isEmpty(req.getDesignation())) {
-            designation = findOrCreateNewDesignation(req.getDesignation().trim(), companyId);
-            model.setDesignationId(designation.getId());
-        }
-        if (!Validation.isEmpty(req.getMobileNumber())) {
-            model.setMobileNumber(req.getMobileNumber());
-        }
-        model.setDateOfBirth(req.getDateOfBirthDate());
         resourceRepo.save(model);
         if (password != null) {
             emailService.sendEmailNewUser(model.getEmail(), model.getName(), password);
-        }
-        if (designation != null && designation.getRoleId() != null) {
-            assignNewResourceRoleIfNotExist(model.getId(), designation.getRoleId());
-            if (req.getProductId() != null) {
-                assignNewProductResourceIfNotExist(model.getId(), designation.getRoleId(), req.getProductId());
-            }
         }
         resp.setId(model.getId());
         return resp;
@@ -308,12 +300,16 @@ public class CompanyDashboardService {
             model.setPassword(SecurePasswordGenerator.encryptPassword(password));
             model.setStatus(ResourceStatus.ACTIVE);
             resp.setMessage("Added");
+            Designation design = null;
+            if (!Validation.isEmpty(req.getDesignation())) {
+                design = designations.get(req.getDesignation().trim().toLowerCase());
+                model.setDesignationId(design.getId());
+            }
+            if (design != null && design.getRoleId() != null) {
+                model.setRoleId(design.getRoleId());
+            }
         }
-        Designation design = null;
-        if (!Validation.isEmpty(req.getDesignation())) {
-            design = designations.get(req.getDesignation().trim().toLowerCase());
-            model.setDesignationId(design.getId());
-        }
+
         if (!Validation.isEmpty(req.getMobileNumber())) {
             model.setMobileNumber(req.getMobileNumber());
         }
@@ -327,15 +323,50 @@ public class CompanyDashboardService {
         if (password != null) {
             emailService.sendEmailNewUser(model.getEmail(), model.getName(), password);
         }
-        if (design != null && design.getRoleId() != null) {
+        /*if (design != null && design.getRoleId() != null) {
             assignNewResourceRoleIfNotExist(model.getId(), design.getRoleId());
-            if (req.getProductId() != null) {
+            *//*if (req.getProductId() != null) {
                 assignNewProductResourceIfNotExist(model.getId(), design.getRoleId(), req.getProductId());
-            }
-        }
+            }*//*
+        }*/
 
         resp.setId(model.getId());
         return resp;
+    }
+
+    private void saveLeadResourceId(AddResourceReq req) {
+        if (!Validation.isValidEmail(req.getEmail()) || !Validation.isValidEmail(req.getLead())) {
+            return;
+        }
+        Optional<Resource> resource = resourceRepo.findOneByEmailIgnoreCase(req.getEmail().trim());
+        Optional<Resource> lead = resourceRepo.findOneByEmailIgnoreCase(req.getLead().trim());
+        if (resource.isPresent() && lead.isPresent()) {
+            if (resource.get().getLeadResourceId() == null || !resource.get().getLeadResourceId().equals(lead.get().getId())) {
+                resource.get().setLeadResourceId(lead.get().getId());
+                if (!lead.get().isLead()) {
+                    lead.get().setLead(true);
+                    resourceRepo.save(lead.get());
+                }
+                resourceRepo.save(resource.get());
+            }
+        }
+    }
+
+    private void saveLeadResourceId(Resource resource, Long leaderResourceId) {
+        if (resource == null || leaderResourceId == null || leaderResourceId == 0) {
+            return;
+        }
+        Optional<Resource> lead = resourceRepo.findById(leaderResourceId);
+        if (lead.isPresent()) {
+            if (resource.getLeadResourceId() == null || !resource.getLeadResourceId().equals(lead.get().getId())) {
+                resource.setLeadResourceId(lead.get().getId());
+                if (!lead.get().isLead()) {
+                    lead.get().setLead(true);
+                    resourceRepo.save(lead.get());
+                }
+                resourceRepo.save(resource);
+            }
+        }
     }
 
     private CommonResp findOrCreateNewEpic(AddEpicReq req, Map<String, Long> components, Map<String, Long> priorities) {
@@ -478,7 +509,7 @@ public class CompanyDashboardService {
             response.setMessage("Resource is added with role.");
         } else {
             response.setId(resourceId);
-            if (roleId != null) {
+           /* if (roleId != null) {
                 Optional<ResourceRole> existingRole = resourceRoleRepo.findByResourceIdAndRoleId(resourceId, roleId);
 
                 if (existingRole.isEmpty()) {
@@ -487,7 +518,7 @@ public class CompanyDashboardService {
                 } else {
                     response.setMessage("Resource is already there with role.");
                 }
-            }
+            }*/
         }
 
         return response;
@@ -497,7 +528,7 @@ public class CompanyDashboardService {
     private Long addMissingResourceWithRole(String email, Long roleId, String designation, Company company) {
         Long resourceId = findOrCreateNewResource(email,
                 "", designation, company);
-        assignNewResourceRoleIfNotExist(resourceId, roleId);
+        addRoleIdToResource(resourceId, roleId);
         return resourceId;
     }
 
@@ -533,26 +564,18 @@ public class CompanyDashboardService {
         resource.setCountryId(company.getCountryId());
         resource.setActive(true);
         resource.setIndividualCapacity(true);
+        if (design != null && design.getRoleId() != null) {
+            resource.setRoleId(design.getRoleId());
+        }
         resourceRepo.save(resource);
         emailService.sendEmailNewUser(resource.getEmail(), resource.getName(), password);
 
-        if (design != null && design.getRoleId() != null) {
-            assignNewResourceRoleIfNotExist(resource.getId(), design.getRoleId());
-        }
+
         return resource.getId();
     }
 
     // ✅ Extracted: Assign New Role to Resource
-    private void assignNewResourceRoleIfNotExist(long resourceId, long roleId) {
-        Optional<ResourceRole> existingRole = resourceRoleRepo.findByResourceIdAndRoleId(resourceId, roleId);
-        if (existingRole.isEmpty()) {
-            ResourceRole resourceRole = new ResourceRole();
-            resourceRole.setResourceId(resourceId);
-            resourceRole.setActive(true);
-            resourceRole.setRoleId(roleId);
-            resourceRoleRepo.save(resourceRole);
-        }
-    }
+
 
     private void assignNewProductResourceIfNotExist(long resourceId, long roleId, long productId) {
         List<ProductResource> existingRole = prodResourceRepo.findByResourceId(resourceId);
@@ -625,8 +648,8 @@ public class CompanyDashboardService {
 
         Resource r = resourceRepo.findById(resourceId).get();
         bean.setLeadId(r.getLeadResourceId());
-        resourceRoleRepo.findByResourceIdAndActiveIsTrue(resourceId).forEach(rr -> {
-            Role role = roleRepo.findById(rr.getRoleId()).get();
+        if (r.getRoleId() != null) {
+            Role role = roleRepo.findById(r.getRoleId()).get();
             if (role.getCode() == RoleEnum.PM || role.getCode() == RoleEnum.PO || role.getCode() == RoleEnum.SM) {
                 bean.setGlobalManager(true);
             }
@@ -637,7 +660,7 @@ public class CompanyDashboardService {
                 bean.setGlobalHr(true);
             }
             bean.setGlobalRoleId(role.getId());
-        });
+        }
         List<ProductResource> prs = prodResourceRepo.findByResourceIdAndActiveIsTrue(resourceId);
         if (bean.isGlobalAdmin() || bean.isGlobalHr() || bean.isGlobalManager()) {
             bean.setProducts(productRepo.findByCompanyIdAndActiveIsTrue(r.getCompanyId()));

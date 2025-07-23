@@ -18,7 +18,8 @@ public interface ResourceRepository extends CrudRepository<Resource, Long>,
     Long countByCompanyId(long companyId);
 
     List<Resource> findByIdInAndStatusAndActive(Collection<Long> ids, ResourceStatus status, boolean active);
-    List<Resource> findByDesignationId(long designationId);
+
+    List<Resource> findByDesignationIdAndActiveIsTrue(long designationId);
 
     //Optional<Resource> findByCompanyIdAndEmailIgnoreCase(long companyId, String email);
 

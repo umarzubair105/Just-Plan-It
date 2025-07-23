@@ -14,7 +14,7 @@ public class AddCompanyReq {
     private String password;
     private String mobileNumber;
     @NotBlank(message = "It is required.")
-    private Integer countryId;
+    private Long countryId;
     @NotBlank(message = "It is required.")
     private Long sampleCompanyId;
 
@@ -58,11 +58,11 @@ public class AddCompanyReq {
         this.name = name;
     }
 
-    public Integer getCountryId() {
+    public Long getCountryId() {
         return countryId;
     }
 
-    public void setCountryId(Integer countryId) {
+    public void setCountryId(Long countryId) {
         this.countryId = countryId;
     }
 

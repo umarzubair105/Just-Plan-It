@@ -11,7 +11,7 @@ public interface RoleRepository extends CrudRepository<Role, Long>,
         ListPagingAndSortingRepository<Role, Long> {
     List<Role> findByCompanyIdAndActive(Long companyId, boolean active);
 
-    @Query("SELECT r FROM Role r, ResourceRole rr WHERE rr.resourceId = :resourceId" +
+    @Query("SELECT r FROM Role r, Resource rr WHERE rr.id = :resourceId" +
             " and rr.roleId=r.id and rr.active=true")
     List<Role> findRolesByResourceId(@Param("resourceId") Long resourceId);
 }

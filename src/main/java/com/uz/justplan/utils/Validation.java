@@ -9,7 +9,7 @@ public class Validation {
     private final static Pattern pattern = Pattern.compile(EMAIL_PATTERN);
 
     public static boolean isValidEmail(String email) {
-        if (email == null) {
+        if (isEmpty(email)) {
             return false;
         }
         return pattern.matcher(email).matches();

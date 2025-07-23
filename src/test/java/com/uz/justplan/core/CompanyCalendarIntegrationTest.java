@@ -36,7 +36,7 @@ public class CompanyCalendarIntegrationTest {
         Company com = new Company();
         com.setName("Name1");
         com.setSample(true);
-        com.setCountryId(1);
+        com.setCountryId(1l);
         companyRepository.saveAll(List.of(com));
     }
 

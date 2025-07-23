@@ -16,7 +16,7 @@ public class Company extends Auditable {
     private boolean sample;
 
     @Column(nullable = false)
-    private Integer countryId;
+    private Long countryId;
     @Column(nullable = false)
     private boolean active;
 
@@ -58,11 +58,11 @@ public class Company extends Auditable {
         this.sample = sample;
     }
 
-    public Integer getCountryId() {
+    public Long getCountryId() {
         return countryId;
     }
 
-    public void setCountryId(Integer countryId) {
+    public void setCountryId(Long countryId) {
         this.countryId = countryId;
     }
 
