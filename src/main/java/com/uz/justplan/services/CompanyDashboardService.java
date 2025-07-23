@@ -223,7 +223,8 @@ public class CompanyDashboardService {
             designation.setRoleId(req.getRoleId());
             designRepo.save(designation);
             resp.setMessage("Designation updated.");
-            resourceRepo.findByDesignationIdAndActiveIsTrue(req.getDesignationId()).forEach(
+            resourceRepo.findByDesignationIdAndActiveIsTrue(req.getDesignationId())
+                    .stream().filter(r -> r.getRoleId() == null).forEach(
                     r -> {
                         addRoleIdToResource(
                                 r.getId(), req.getRoleId());
