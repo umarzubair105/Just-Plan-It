@@ -5,7 +5,7 @@ import com.uz.justplan.lookup.RoleEnum;
 import jakarta.persistence.*;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"companyId", "code"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"companyId", "name"}))
 public class Role extends Auditable implements Cloneable {
     @Column(nullable = false)
     private String name;
@@ -14,9 +14,9 @@ public class Role extends Auditable implements Cloneable {
     @Enumerated(EnumType.STRING)
     private RoleEnum code;
     @Column(nullable = false)
-    private boolean taskAssignable;
+    private boolean required;
     @Column(nullable = false)
-    private boolean groupTask;
+    private boolean systemRole;
 
     @Column(nullable = false)
     private Long companyId;
@@ -42,22 +42,6 @@ public class Role extends Auditable implements Cloneable {
         this.name = name;
     }
 
-    public boolean isTaskAssignable() {
-        return taskAssignable;
-    }
-
-    public void setTaskAssignable(boolean taskAssignable) {
-        this.taskAssignable = taskAssignable;
-    }
-
-    public boolean isGroupTask() {
-        return groupTask;
-    }
-
-    public void setGroupTask(boolean groupTask) {
-        this.groupTask = groupTask;
-    }
-
     public Long getCompanyId() {
         return companyId;
     }
@@ -80,5 +64,21 @@ public class Role extends Auditable implements Cloneable {
 
     public void setCode(RoleEnum code) {
         this.code = code;
+    }
+
+    public boolean isRequired() {
+        return required;
+    }
+
+    public void setRequired(boolean required) {
+        this.required = required;
+    }
+
+    public boolean isSystemRole() {
+        return systemRole;
+    }
+
+    public void setSystemRole(boolean systemRole) {
+        this.systemRole = systemRole;
     }
 }

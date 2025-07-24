@@ -4,15 +4,7 @@ public enum RoleEnum {
     ADMIN("ADMIN"),
     HR("HR"),
     PM("PM"),
-    PO("PO"),
-    SA("SA"),
-    DBA("DBA"),
-    BSE("BSE"),
-    FSE("FSE"),
-    QAE("QAE"),
-    UID("UID"),
-    BA("BA"),
-    SM("SM");
+    TR("TR");
     private final String value;
 
     RoleEnum(String value) {

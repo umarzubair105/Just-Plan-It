@@ -89,9 +89,9 @@ public class CompanyDashboardService {
                 .forEach(role -> {
                     final Role newRole = new Role();
                     newRole.setName(role.getName());
-                    newRole.setGroupTask(role.isGroupTask());
+                    newRole.setSystemRole(role.isSystemRole());
                     newRole.setCompanyId(comp.getId());
-                    newRole.setTaskAssignable(role.isTaskAssignable());
+                    newRole.setRequired(role.isRequired());
                     newRole.setCode(role.getCode());
                     newRole.setActive(role.isActive());
                     roleRepo.save(newRole);
@@ -145,18 +145,11 @@ public class CompanyDashboardService {
                 model.setProductManagerId(
                         addMissingResourceWithRole(req.getEmailProductManager(), role.getId(),
                                 role.getName(), company));
-            } else if (role.getCode().equals(RoleEnum.PO)) {
-                model.setProductOwnerId(
-                        addMissingResourceWithRole(req.getEmailProductOwner(), role.getId(),
-                                role.getName(), company));
             }
         });
         productRepo.save(model);
         assignNewProductResourceIfNotExist(model.getProductManagerId(),
                 roles.stream().filter(role -> role.getCode().equals(RoleEnum.PM)).findFirst().get().getId(),
-                model.getId());
-        assignNewProductResourceIfNotExist(model.getProductOwnerId(),
-                roles.stream().filter(role -> role.getCode().equals(RoleEnum.PO)).findFirst().get().getId(),
                 model.getId());
         resp.setMessage("Product is added.");
         resp.setId(model.getId());
@@ -651,7 +644,7 @@ public class CompanyDashboardService {
         bean.setLeadId(r.getLeadResourceId());
         if (r.getRoleId() != null) {
             Role role = roleRepo.findById(r.getRoleId()).get();
-            if (role.getCode() == RoleEnum.PM || role.getCode() == RoleEnum.PO || role.getCode() == RoleEnum.SM) {
+            if (role.getCode() == RoleEnum.PM) {
                 bean.setGlobalManager(true);
             }
             if (role.getCode() == RoleEnum.ADMIN) {
@@ -674,7 +667,7 @@ public class CompanyDashboardService {
         if (productId != null) {
             prs.stream().filter(pr -> pr.getParticipationPercentTime() > 0 && pr.getProductId().equals(productId)).forEach(pr -> {
                 Role role = roleRepo.findById(pr.getRoleId()).get();
-                if (role.getCode() == RoleEnum.PM || role.getCode() == RoleEnum.PO || role.getCode() == RoleEnum.SM) {
+                if (role.getCode() == RoleEnum.PM) {
                     bean.setProductManager(true);
                 }
                 if (role.getCode() == RoleEnum.ADMIN) {
