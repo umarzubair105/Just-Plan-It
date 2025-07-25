@@ -5,7 +5,7 @@ import com.uz.justplan.lookup.AssignmentStatus;
 import jakarta.persistence.*;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"epicId", "resourceId", "roleId"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"epicId", "resourceId", "roleId", "releaseId", "active"}))
 public class EpicAssignment extends Auditable {
     @Column(nullable = false)
     private int estimate;

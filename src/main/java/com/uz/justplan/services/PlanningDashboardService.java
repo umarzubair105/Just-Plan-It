@@ -7,24 +7,25 @@ import com.uz.justplan.beans.cal.ResourceCapInRelease;
 import com.uz.justplan.beans.response.EpicAssignmentBean;
 import com.uz.justplan.beans.response.EpicBean;
 import com.uz.justplan.beans.response.EpicEstimateBean;
+import com.uz.justplan.beans.response.RelatedEpicDetailBean;
 import com.uz.justplan.core.Component;
 import com.uz.justplan.core.ComponentRepository;
 import com.uz.justplan.core.Product;
 import com.uz.justplan.core.ProductRepository;
-import com.uz.justplan.lookup.AssignmentStatus;
-import com.uz.justplan.lookup.Priority;
-import com.uz.justplan.lookup.PriorityRepository;
-import com.uz.justplan.lookup.ReleaseStatusEnum;
+import com.uz.justplan.lookup.*;
 import com.uz.justplan.plan.*;
 import com.uz.justplan.resources.Resource;
 import com.uz.justplan.resources.ResourceRepository;
 import com.uz.justplan.resources.Role;
 import com.uz.justplan.resources.RoleRepository;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class PlanningDashboardService {
+    private static final Log log = LogFactory.getLog(PlanningDashboardService.class);
     @Autowired
     ReleaseService releaseService;
     @Autowired
@@ -41,6 +43,8 @@ public class PlanningDashboardService {
     ProductRepository productRepository;
     @Autowired
     EpicRepository epicRepository;
+    @Autowired
+    EpicLinkRepository epicLinkRepository;
     @Autowired
     EpicEstimateRepository epicEstimateRepository;
     @Autowired
@@ -121,6 +125,7 @@ public class PlanningDashboardService {
                     resourceMap.get(e.getRaisedByResourceId()),
                     compMap.get(e.getComponentId()),
                     esList);
+            populateEpicRelatedInfo(bean);
 
             beans.add(bean);
         });
@@ -235,6 +240,7 @@ public class PlanningDashboardService {
                     depEpicCode.isPresent() ? depEpicCode.get() : null,
                     resourceMap.get(e.getRaisedByResourceId()),
                     compMap.get(e.getComponentId()));
+            populateEpicRelatedInfo(bean);
 
             beans.add(bean);
         });
@@ -308,6 +314,7 @@ public class PlanningDashboardService {
                         depEpicCode.isPresent() ? depEpicCode.get() : null,
                         resourceMap.get(e.getRaisedByResourceId()),
                         compMap.get(e.getComponentId()));
+                populateEpicRelatedInfo(bean);
 
                 beans.add(bean);
             });
@@ -383,12 +390,42 @@ public class PlanningDashboardService {
                         depEpicCode.isPresent() ? depEpicCode.get() : null,
                         resourceMap.get(e.getRaisedByResourceId()),
                         compMap.get(e.getComponentId()));
-
+                populateEpicRelatedInfo(bean);
                 beans.add(bean);
             });
             detail.setEpics(beans);
             detail.setResourceCaps(releaseService.getResourceCapInRelease(releaseId));
         });
         return details;
+    }
+
+    private void populateEpicRelatedInfo(EpicBean epic) {
+        List<EpicLink> links = epicLinkRepository.findByEpicIdAndActiveIsTrueOrderByCreatedDateAsc(epic.getId());
+        epic.setRelatedTo(new ArrayList<>());
+        epic.setDependsOn(new ArrayList<>());
+        log.info("------------------------------");
+        log.info("-----------------populateEpicRelatedInfo:" + epic.getCode() + ":" + links.size());
+        if (!links.isEmpty()) {
+            Map<Long, Epic> relatedEpics = epicRepository.findByRelatedEpicsByEpicId(epic.getId())
+                    .stream().collect(Collectors.toMap(e -> e.getId(), e -> e));
+            log.info("---------------------------populateEpicRelatedInfo:" + epic.getCode() + ":" + relatedEpics.size());
+            Map<Long, Release> relatedReleases = releaseRepository.findOfRelatedEpicReleaseEpicId(epic.getId())
+                    .stream().collect(Collectors.toMap(e -> e.getId(), e -> e));
+
+            links.forEach(l -> {
+                Epic related = relatedEpics.get(l.getLinkedEpicId());
+                log.info("----------------------------------populateEpicRelatedInfo:" + epic.getCode() + ":" + related.getCode());
+                if (related.getStatus() != EpicStatus.DELETED) {
+                    LocalDate endDate = related.getReleaseId() != null && relatedReleases.containsKey(related.getReleaseId()) ?
+                            relatedReleases.get(related.getReleaseId()).getEndDate() : null;
+                    if (l.getLinkType() == EpicLinkType.RELATED_TO) {
+                        epic.getRelatedTo().add(new RelatedEpicDetailBean(related, endDate
+                        ));
+                    } else if (l.getLinkType() == EpicLinkType.DEPEND_ON) {
+                        epic.getDependsOn().add(new RelatedEpicDetailBean(related, endDate));
+                    }
+                }
+            });
+        }
     }
 }

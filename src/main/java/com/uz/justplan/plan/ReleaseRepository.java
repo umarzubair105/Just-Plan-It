@@ -22,4 +22,11 @@ public interface ReleaseRepository extends CrudRepository<Release, Long>,
     List<Release> findAllByResourceIdAndReleaseStatus(Long resourceId, ReleaseStatusEnum releaseStatusEnum);
 
 
+    @Query("select distinct r from Epic e, EpicLink ee, Release r where " +
+            " ee.epicId=:epicId and e.id=ee.linkedEpicId and  e.active=true " +
+            " and ee.active=true and e.releaseId=r.id")
+    List<Release> findOfRelatedEpicReleaseEpicId(long epicId);
+
+
+
 }

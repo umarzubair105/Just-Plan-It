@@ -42,6 +42,9 @@ public class EpicBean {
     List<EpicEstimateBean> estimates;
     List<EpicAssignmentBean> assignments;
 
+    List<RelatedEpicDetailBean> dependsOn;
+    List<RelatedEpicDetailBean> relatedTo;
+
     public EpicBean(Epic epic, Priority p, String depEpicCode, String raisedByResource, String component,
                     List<EpicEstimateBean> estimates) {
         this.id = epic.getId();
@@ -58,6 +61,7 @@ public class EpicBean {
         this.forcefullyAdded = epic.isForcefullyAdded();
         this.startDate = epic.getStartDate();
         this.endDate = epic.getEndDate();
+        this.valueGain = epic.getValueGain();
         this.componentId = epic.getComponentId();
         this.createdById = epic.getCreatedById();
         this.updatedById = epic.getUpdatedById();
@@ -325,5 +329,21 @@ public class EpicBean {
 
     public void setStatus(EpicStatus status) {
         this.status = status;
+    }
+
+    public List<RelatedEpicDetailBean> getDependsOn() {
+        return dependsOn;
+    }
+
+    public void setDependsOn(List<RelatedEpicDetailBean> dependsOn) {
+        this.dependsOn = dependsOn;
+    }
+
+    public List<RelatedEpicDetailBean> getRelatedTo() {
+        return relatedTo;
+    }
+
+    public void setRelatedTo(List<RelatedEpicDetailBean> relatedTo) {
+        this.relatedTo = relatedTo;
     }
 }
