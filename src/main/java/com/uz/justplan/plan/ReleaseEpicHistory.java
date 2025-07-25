@@ -6,8 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
-import java.time.LocalDate;
-
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"releaseId", "epicId"}))
 public class ReleaseEpicHistory extends Auditable {
@@ -22,14 +20,7 @@ public class ReleaseEpicHistory extends Auditable {
 
     @Column(nullable = false)
     private boolean forcefullyAdded;
-    @Column(nullable = true)
-    private Long dependOnEpicId;
 
-
-    @Column(nullable = true)
-    private LocalDate startDate;
-    @Column(nullable = true)
-    private LocalDate endDate;
     @Column(nullable = false)
     private boolean active;
 
@@ -68,28 +59,12 @@ public class ReleaseEpicHistory extends Auditable {
         this.epicId = epicId;
     }
 
-    public Long getDependOnEpicId() {
-        return dependOnEpicId;
+    public boolean isForcefullyAdded() {
+        return forcefullyAdded;
     }
 
-    public void setDependOnEpicId(Long dependOnEpicId) {
-        this.dependOnEpicId = dependOnEpicId;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
+    public void setForcefullyAdded(boolean forcefullyAdded) {
+        this.forcefullyAdded = forcefullyAdded;
     }
 
     public boolean isActive() {
@@ -98,13 +73,5 @@ public class ReleaseEpicHistory extends Auditable {
 
     public void setActive(boolean active) {
         this.active = active;
-    }
-
-    public boolean isForcefullyAdded() {
-        return forcefullyAdded;
-    }
-
-    public void setForcefullyAdded(boolean forcefullyAdded) {
-        this.forcefullyAdded = forcefullyAdded;
     }
 }

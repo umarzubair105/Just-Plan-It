@@ -1,6 +1,7 @@
 package com.uz.justplan.beans.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.uz.justplan.lookup.EpicStatus;
 import com.uz.justplan.lookup.Priority;
 import com.uz.justplan.plan.Epic;
 import com.uz.justplan.plan.Release;
@@ -14,6 +15,7 @@ import java.util.List;
 public class EpicBean {
     Long id;
     String code, title, details;
+    EpicStatus status;
     Long dependOnEpicId;
     LocalDate requiredBy;
     Long priorityId;
@@ -46,6 +48,7 @@ public class EpicBean {
         this.productId = epic.getProductId();
         this.releaseId = epic.getReleaseId();
         this.code = epic.getCode();
+        this.status = epic.getStatus();
         this.active = epic.isActive();
         this.title = epic.getTitle();
         this.details = epic.getDetails();
@@ -314,5 +317,13 @@ public class EpicBean {
 
     public void setUpdatedByName(String updatedByName) {
         this.updatedByName = updatedByName;
+    }
+
+    public EpicStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(EpicStatus status) {
+        this.status = status;
     }
 }

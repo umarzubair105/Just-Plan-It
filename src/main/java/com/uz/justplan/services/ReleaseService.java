@@ -1,5 +1,6 @@
 package com.uz.justplan.services;
 
+import com.uz.justplan.beans.CommonResp;
 import com.uz.justplan.beans.cal.ResourceCapInRelease;
 import com.uz.justplan.core.CompanyRepository;
 import com.uz.justplan.core.ComponentRepository;
@@ -54,7 +55,7 @@ public class ReleaseService {
     @Autowired
     private CompanyCalendarRepository companyCalRepository;
     @Autowired
-    private CountryRepository countryRepository;
+    private ReleaseEpicHistoryRepository releaseEpicHistoryRepository;
     @Autowired
     private ReleaseRepository releaseRepository;
     @Autowired
@@ -64,6 +65,47 @@ public class ReleaseService {
     @Autowired
     private TimeLoggingRepository timeLoggingRepository;
 
+    @Transactional
+    public CommonResp startRelease(long releaseId) {
+        List<Epic> epics = epicRepo.findByReleaseIdAndActiveIsTrue(releaseId);
+        Release rel = releaseRepository.findById(releaseId).get();
+        rel.setStatus(ReleaseStatusEnum.STARTED);
+        releaseRepository.save(rel);
+        epics.stream().forEach(e -> {
+            ReleaseEpicHistory h = new ReleaseEpicHistory();
+            h.setActive(true);
+            h.setRisks(e.getRisks());
+            h.setReleaseId(releaseId);
+            h.setEpicId(e.getId());
+            h.setForcefullyAdded(e.isForcefullyAdded());
+            releaseEpicHistoryRepository.save(h);
+        });
+        CommonResp resp = new CommonResp();
+        resp.setMessage("Release is started.");
+        return resp;
+    }
+
+    @Transactional
+    public CommonResp completeRelease(long releaseId) {
+        List<Epic> epics = epicRepo.findByReleaseIdAndActiveIsTrueUsingHistory(releaseId);
+        Release rel = releaseRepository.findById(releaseId).get();
+        rel.setStatus(ReleaseStatusEnum.COMPLETED);
+        releaseRepository.save(rel);
+        epics.stream().forEach(e -> {
+            List<EpicAssignment> assignments = epicAssignmentRepository.findAllByEpicIdAndReleaseIdAndActiveTrue(
+                    e.getId(), e.getReleaseId());
+            e.setStatus(EpicStatus.RESOLVED);
+            assignments.stream().filter(a -> a.getStatus() != AssignmentStatus.COMPLETED).forEach(a -> {
+                e.setStatus(EpicStatus.REOPEN);
+                e.setReleaseId(null);
+            });
+            epicRepo.save(e);
+        });
+        CommonResp resp = new CommonResp();
+        resp.setMessage("Release is marked as completed.");
+        return resp;
+
+    }
     public List<ResourceCapInRelease> getResourceCapInRelease(long releaseId) {
         //find the release
         Release release = releaseRepository.findById(releaseId).orElse(null);

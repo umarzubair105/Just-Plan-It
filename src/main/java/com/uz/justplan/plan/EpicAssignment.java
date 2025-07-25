@@ -18,6 +18,8 @@ public class EpicAssignment extends Auditable {
     @Column(nullable = false)
     private Long resourceId;
     @Column(nullable = false)
+    private Long releaseId;
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private AssignmentStatus status;
     @Column(nullable = false)
@@ -80,5 +82,13 @@ public class EpicAssignment extends Auditable {
 
     public void setStatus(AssignmentStatus status) {
         this.status = status;
+    }
+
+    public Long getReleaseId() {
+        return releaseId;
+    }
+
+    public void setReleaseId(Long releaseId) {
+        this.releaseId = releaseId;
     }
 }

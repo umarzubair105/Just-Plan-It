@@ -14,11 +14,13 @@ public interface EpicAssignmentRepository extends CrudRepository<EpicAssignment,
     Double calculateTotalHoursByReleaseIdAndResourceIdAndRoleId(Long releaseId, Long resourceId, Long roleId);
 
 
-    @Query("select ee from Epic e, EpicAssignment ee where e.releaseId=:releaseId and e.active=true " +
+    /*@Query("select ee from Epic e, EpicAssignment ee where e.releaseId=:releaseId and e.active=true " +
             " and e.id=ee.epicId and ee.active=true")
     List<EpicAssignment> findAllByReleaseId(Long releaseId);
+*/
+    List<EpicAssignment> findAllByReleaseIdAndActiveTrue(Long releaseId);
 
-    List<EpicAssignment> findAllByEpicIdAndActiveTrue(Long epicId);
+    List<EpicAssignment> findAllByEpicIdAndReleaseIdAndActiveTrue(Long epicId, Long ReleaseId);
 
     @Query("select distinct ea from Epic e, EpicAssignment ee, EpicAssignment ea where " +
             " e.releaseId=:releaseId and e.id=ee.epicId and  ee.resourceId=:resourceId and e.active=true " +

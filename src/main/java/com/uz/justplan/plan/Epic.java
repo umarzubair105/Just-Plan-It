@@ -1,8 +1,11 @@
 package com.uz.justplan.plan;
 
 import com.uz.justplan.core.Auditable;
+import com.uz.justplan.lookup.EpicStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 import java.time.LocalDate;
 
@@ -12,6 +15,9 @@ public class Epic extends Auditable {
     private Long productId;
     @Column(nullable = false)
     private String code;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private EpicStatus status = EpicStatus.OPEN;
     @Column(nullable = false)
     private String title;
     @Column(nullable = true)
@@ -178,5 +184,13 @@ public class Epic extends Auditable {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    public EpicStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(EpicStatus status) {
+        this.status = status;
     }
 }

@@ -167,6 +167,7 @@ public class PlanningDashboardService {
                 epicAssignment.setEpicId(epic.getId());
                 epicAssignment.setResourceId(assignment.getResourceId());
                 epicAssignment.setRoleId(assignment.getRoleId());
+                epicAssignment.setReleaseId(epic.getReleaseId());
                 epicAssignment.setEstimate(assignment.getMinutes());
                 epicAssignment.setActive(true);
                 epicAssignment.setStatus(AssignmentStatus.OPEN);
@@ -180,12 +181,13 @@ public class PlanningDashboardService {
     public CommonResp unplanEpic(long epicId) {
         final Epic epic = epicRepository.findById(epicId).orElseThrow(() -> new RuntimeException("Epic not found"));
         Assert.isTrue(epic.getReleaseId() != null, epic.getCode() + " is not part of any release.");
-        epic.setReleaseId(null); // TODO: Replace with actual release id
-        epicRepository.save(epic);
-        epicAssignmentRepository.findAllByEpicIdAndActiveTrue(epicId).forEach(assignment -> {
+
+        epicAssignmentRepository.findAllByEpicIdAndReleaseIdAndActiveTrue(epicId, epic.getReleaseId()).forEach(assignment -> {
             assignment.setActive(false);
             epicAssignmentRepository.save(assignment);
         });
+        epic.setReleaseId(null); // TODO: Replace with actual release id
+        epicRepository.save(epic);
         CommonResp resp = new CommonResp();
         resp.setMessage(epic.getCode() + " is removed from release now.");
         return resp;
@@ -197,7 +199,10 @@ public class PlanningDashboardService {
         long productId = release.getProductId();
         Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
         long companyId = product.getCompanyId();
-        List<Epic> epics = epicRepository.findByReleaseIdAndActiveIsTrue(releaseId);
+        List<Epic> epics = epicRepository.findByReleaseIdAndActiveIsTrueUsingHistory(releaseId);
+        if (epics.isEmpty()) {
+            epics = epicRepository.findByReleaseIdAndActiveIsTrue(releaseId);
+        }
         Map<Long, Priority> priorityMap = priorityRepository.findByCompanyIdAndActiveIsTrue(companyId).stream()
                 .collect(Collectors.toMap(Priority::getId, m -> m));
         Map<Long, String> resourceMap = resourceRepository.findByCompanyIdAndActiveIsTrue(companyId).stream()
@@ -206,7 +211,7 @@ public class PlanningDashboardService {
                 .collect(Collectors.toMap(Role::getId, Role::getName));
         Map<Long, String> compMap = componentRepository.findByCompanyIdAndActiveIsTrue(companyId).stream()
                 .collect(Collectors.toMap(Component::getId, Component::getName));
-        Map<Long, List<EpicAssignment>> epicAssignmentMap = epicAssignmentRepository.findAllByReleaseId(releaseId)
+        Map<Long, List<EpicAssignment>> epicAssignmentMap = epicAssignmentRepository.findAllByReleaseIdAndActiveTrue(releaseId)
                 .stream().collect(Collectors.groupingBy(EpicAssignment::getEpicId));
         List<EpicBean> beans = new ArrayList<>();
         epics.parallelStream().forEach(e -> {
@@ -350,8 +355,11 @@ public class PlanningDashboardService {
         details.parallelStream().forEach(detail -> {
             Release release = detail.getRelease();
             long releaseId = release.getId();
-            List<Epic> epics = epicRepository.findByReleaseIdAndActiveIsTrue(releaseId);
-            Map<Long, List<EpicAssignment>> epicAssignmentMap = epicAssignmentRepository.findAllByReleaseId(releaseId)
+            List<Epic> epics = epicRepository.findByReleaseIdAndActiveIsTrueUsingHistory(releaseId);
+            if (epics.isEmpty()) {
+                epics = epicRepository.findByReleaseIdAndActiveIsTrue(releaseId);
+            }
+            Map<Long, List<EpicAssignment>> epicAssignmentMap = epicAssignmentRepository.findAllByReleaseIdAndActiveTrue(releaseId)
                     .stream().collect(Collectors.groupingBy(EpicAssignment::getEpicId));
             List<EpicBean> beans = new ArrayList<>();
             epics.parallelStream().forEach(e -> {

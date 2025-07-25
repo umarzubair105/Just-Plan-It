@@ -16,9 +16,6 @@ public class Product extends Auditable {
     private Long productManagerId;
 
     @Column(nullable = false)
-    private Long productOwnerId;
-
-    @Column(nullable = false)
     private Long companyId;
 
     @Column(nullable = false)
@@ -86,14 +83,6 @@ public class Product extends Auditable {
 
     public void setProductManagerId(Long productManagerId) {
         this.productManagerId = productManagerId;
-    }
-
-    public Long getProductOwnerId() {
-        return productOwnerId;
-    }
-
-    public void setProductOwnerId(Long productOwnerId) {
-        this.productOwnerId = productOwnerId;
     }
 
     public Long getCompanyId() {

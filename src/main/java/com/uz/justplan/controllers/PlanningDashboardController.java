@@ -5,6 +5,7 @@ import com.uz.justplan.beans.ReleaseDetailBean;
 import com.uz.justplan.beans.ScheduleEpic;
 import com.uz.justplan.beans.response.EpicBean;
 import com.uz.justplan.services.PlanningDashboardService;
+import com.uz.justplan.services.ReleaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +16,8 @@ import java.util.List;
 public class PlanningDashboardController {
     @Autowired
     private PlanningDashboardService service;
+    @Autowired
+    private ReleaseService releaseService;
 
     @GetMapping("/findUnplannedEpics")
     public List<EpicBean> getUnplannedEpics(@RequestParam long companyId, @RequestParam long productId) {
@@ -59,5 +62,15 @@ public class PlanningDashboardController {
     @GetMapping("/findResourceDashboard")
     public List<ReleaseDetailBean> findResourceDashboard(@RequestParam long resourceId) {
         return service.getResourceDashboard(resourceId);
+    }
+
+    @PostMapping("/startRelease")
+    public CommonResp startRelease(@RequestParam long releaseId) {
+        return releaseService.startRelease(releaseId);
+    }
+
+    @PostMapping("/completeRelease")
+    public CommonResp completeRelease(@RequestParam long releaseId) {
+        return releaseService.completeRelease(releaseId);
     }
 }
