@@ -5,7 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 
 @Entity
-public class Priority extends Auditable {
+public class Priority extends Auditable implements Cloneable {
     @Column(nullable = false)
     private String name;
     //@Column(nullable = false, unique = true)
@@ -18,6 +18,12 @@ public class Priority extends Auditable {
     @Column(nullable = false)
     private boolean active;
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Priority cloned = (Priority) super.clone();
+        cloned.setId(null);
+        return cloned;
+    }
     public String getName() {
         return name;
     }

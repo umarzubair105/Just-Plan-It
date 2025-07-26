@@ -120,6 +120,16 @@ public class CompanyDashboardService {
                         throw new RuntimeException(e);
                     }
                 });
+        priorityRepo.findByCompanyIdAndActiveIsTrue(req.getSampleCompanyId())
+                .forEach(cw -> {
+                    try {
+                        final Priority newM = (Priority) cw.clone();
+                        newM.setCompanyId(comp.getId());
+                        priorityRepo.save(newM);
+                    } catch (CloneNotSupportedException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
         //resp.setContext(comp.getCode());
         resp.setContext("password_0c" + password + "password_@c" + SecurePasswordGenerator.generatePassword());
         resp.setMessage("Company is added with code: " + comp.getCode());

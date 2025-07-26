@@ -616,6 +616,17 @@ values (11, 'Fullstack Developer', 'TM', 1, 0, 0, 1);
 insert into `role` (id, name, code, companyId, required, systemRole, active)
 values (12, 'Scrum Master', 'PM', 1, 0, 1, 1);
 
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (1, 'Blocker', 1, 1, 1);
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (2, 'Critical', 1, 2, 1);
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (3, 'High', 1, 3, 1);
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (4, 'Medium', 1, 4, 1);
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (5, 'Low', 1, 5, 1);
+
 insert into `companyweekend` (id, day, companyId, active)
 values (1, 'SATURDAY', 1, 1);
 
@@ -641,6 +652,9 @@ values (5, 480, 'Daily working minutes', 'DEFAULT', 951, null, null, null, null,
 insert into CompanyWorkingHour (id, minutes, description, scope, companyId, eventDate, dayOfWeek, startDate, endDate,
                                 recurring, active)
 values (4, 420, 'Friday working minutes', 'WEEK_DAY', 951, null, 'FRIDAY', null, null, 1, 1);
+
+update priority_seq
+set next_val=100;
 
 update `companycalendar_seq`
 set next_val=10;
