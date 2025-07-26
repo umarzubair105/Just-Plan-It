@@ -1,6 +1,7 @@
 package com.uz.justplan.beans.response;
 
 import com.uz.justplan.core.Product;
+import com.uz.justplan.lookup.CompanyType;
 
 import java.util.List;
 
@@ -17,6 +18,8 @@ public class ResourceRightBean {
     private Long leadId;
     private Long globalRoleId;
     private Long productRoleId;
+
+    private CompanyType companyType;
 
     public List<Long> getTeamResourceIds() {
         return teamResourceIds;
@@ -112,5 +115,13 @@ public class ResourceRightBean {
 
     public void setResourceId(long resourceId) {
         this.resourceId = resourceId;
+    }
+
+    public CompanyType getCompanyType() {
+        return companyType;
+    }
+
+    public void setCompanyType(CompanyType companyType) {
+        this.companyType = companyType;
     }
 }

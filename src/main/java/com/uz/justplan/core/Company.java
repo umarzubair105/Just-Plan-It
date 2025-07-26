@@ -1,7 +1,10 @@
 package com.uz.justplan.core;
 
+import com.uz.justplan.lookup.CompanyType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 import java.util.Objects;
 
@@ -17,6 +20,10 @@ public class Company extends Auditable {
 
     @Column(nullable = false)
     private Long countryId;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CompanyType type;
+
     @Column(nullable = false)
     private boolean active;
 
@@ -72,5 +79,13 @@ public class Company extends Auditable {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public CompanyType getType() {
+        return type;
+    }
+
+    public void setType(CompanyType type) {
+        this.type = type;
     }
 }

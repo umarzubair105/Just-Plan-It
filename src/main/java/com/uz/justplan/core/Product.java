@@ -37,6 +37,20 @@ public class Product extends Auditable {
     public Product() {
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        Product other = (Product) obj;
+        return getId() != null && getId().equals(other.getId()); // Compare based on ID
+    }
+
+    // ✅ Override hashCode
+    @Override
+    public int hashCode() {
+        return getId() != null ? getId().hashCode() : 0;
+    }
     public String getCode() {
         return code;
     }

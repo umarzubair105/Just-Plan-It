@@ -79,6 +79,7 @@ public class CompanyDashboardService {
         comp.setName(req.getName());
         comp.setCountryId(req.getCountryId());
         comp.setCode(Utils.generateCode());
+        comp.setType(compRepo.findById(req.getSampleCompanyId()).get().getType());
         compRepo.save(comp);
         resp.setId(comp.getId());
         String password = SecurePasswordGenerator.generatePassword();
@@ -641,6 +642,8 @@ public class CompanyDashboardService {
                         .collect(Collectors.toList()));
 
         Resource r = resourceRepo.findById(resourceId).get();
+        Company comp = compRepo.findById(r.getCompanyId()).get();
+        bean.setCompanyType(comp.getType());
         bean.setLeadId(r.getLeadResourceId());
         if (r.getRoleId() != null) {
             Role role = roleRepo.findById(r.getRoleId()).get();
@@ -679,6 +682,16 @@ public class CompanyDashboardService {
                 bean.setProductRoleId(role.getId());
             });
         }
+
+        List<Product> prodsAsPM = productRepo.findByProductManagerIdAndActiveIsTrue(resourceId);
+        prodsAsPM.forEach(p -> {
+            if (productId != null && p.getId().equals(productId)) {
+                bean.setProductManager(true);
+            }
+            if (!bean.getProducts().contains(p)) {
+                bean.getProducts().add(p);
+            }
+        });
         return bean;
     }
 }
