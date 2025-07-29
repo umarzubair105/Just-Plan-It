@@ -140,6 +140,9 @@ public class CompanyDashboardService {
     public CommonResp addProduct(final AddProductReq req) {
         System.out.println("-----req:" + req.toString() + "--------------------------------");
         CommonResp resp = new CommonResp();
+        Assert.isTrue(
+                productRepo.findByCompanyIdAndNameIgnoreCase(req.getCompanyId(), req.getName()).isEmpty()
+                , "Product with the name already exists.");
         final Product model = new Product();
         model.setActive(true);
         model.setName(req.getName());
@@ -610,7 +613,7 @@ public class CompanyDashboardService {
     public LoggedInDetails getLoggedInDetails(long resourceId) {
         Resource resource = resourceRepo.findById(resourceId).orElseThrow(() -> new RuntimeException("Resource not found"));
         LoggedInDetails details = new LoggedInDetails();
-        details.setCompany(compRepo.findProjectionById(resource.getCompanyId()));
+        details.setCompany(compRepo.findById(resource.getCompanyId()).get());
         Long resources = resourceRepo.countByCompanyId(resource.getCompanyId());
         if (resources == 1) {
             details.setRoute("/upload-resource");

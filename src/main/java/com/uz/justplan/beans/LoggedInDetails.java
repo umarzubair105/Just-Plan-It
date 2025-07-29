@@ -1,19 +1,20 @@
 package com.uz.justplan.beans;
 
 import com.uz.justplan.beans.projections.BasicProjection;
+import com.uz.justplan.core.Company;
 
 import java.util.List;
 
 public class LoggedInDetails {
-    private BasicProjection company;
+    private Company company;
     private List<BasicProjection> products;
     private String route;
 
-    public BasicProjection getCompany() {
+    public Company getCompany() {
         return company;
     }
 
-    public void setCompany(BasicProjection company) {
+    public void setCompany(Company company) {
         this.company = company;
     }
 
