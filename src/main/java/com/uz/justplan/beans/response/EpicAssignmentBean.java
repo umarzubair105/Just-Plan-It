@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.uz.justplan.lookup.AssignmentStatus;
 import com.uz.justplan.plan.EpicAssignment;
 
+import java.time.LocalDate;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class EpicAssignmentBean {
     Long id;
@@ -17,6 +19,8 @@ public class EpicAssignmentBean {
     AssignmentStatus status;
     long minutesLogged;
 
+    LocalDate expectedDeliveryDate;
+
     public EpicAssignmentBean(EpicAssignment ee, String role, String resource, Long minutesLogged) {
         this.id = ee.getId();
         this.active = ee.isActive();
@@ -27,6 +31,7 @@ public class EpicAssignmentBean {
         this.roleName = role;
         this.resourceName = resource;
         this.status = ee.getStatus();
+        this.expectedDeliveryDate = ee.getExpectedDeliveryDate();
         this.minutesLogged = minutesLogged == null ? 0 : minutesLogged.longValue();
     }
 
@@ -109,5 +114,13 @@ public class EpicAssignmentBean {
 
     public void setMinutesLogged(long minutesLogged) {
         this.minutesLogged = minutesLogged;
+    }
+
+    public LocalDate getExpectedDeliveryDate() {
+        return expectedDeliveryDate;
+    }
+
+    public void setExpectedDeliveryDate(LocalDate expectedDeliveryDate) {
+        this.expectedDeliveryDate = expectedDeliveryDate;
     }
 }

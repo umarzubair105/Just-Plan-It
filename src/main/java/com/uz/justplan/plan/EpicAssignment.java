@@ -4,6 +4,8 @@ import com.uz.justplan.core.Auditable;
 import com.uz.justplan.lookup.AssignmentStatus;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"epicId", "resourceId", "roleId", "releaseId", "active"}))
 public class EpicAssignment extends Auditable {
@@ -22,6 +24,9 @@ public class EpicAssignment extends Auditable {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private AssignmentStatus status;
+
+    @Column(nullable = true)
+    private LocalDate expectedDeliveryDate;
     @Column(nullable = false)
     private boolean active;
 
@@ -90,5 +95,13 @@ public class EpicAssignment extends Auditable {
 
     public void setReleaseId(Long releaseId) {
         this.releaseId = releaseId;
+    }
+
+    public LocalDate getExpectedDeliveryDate() {
+        return expectedDeliveryDate;
+    }
+
+    public void setExpectedDeliveryDate(LocalDate expectedDeliveryDate) {
+        this.expectedDeliveryDate = expectedDeliveryDate;
     }
 }
