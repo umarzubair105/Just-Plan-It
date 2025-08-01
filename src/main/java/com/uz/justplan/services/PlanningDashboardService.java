@@ -26,10 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -76,6 +73,29 @@ public class PlanningDashboardService {
         return bean;
     }
 
+    public List<EpicEstimateBean> findPossibleEpicEstimateByEpicId(long epicId) {
+        Epic epic = epicRepository.findById(epicId).get();
+        List<Role> roles = roleRepository.findActiveNonSystemOnlyRolesByProductId(epic.getProductId());
+        List<EpicEstimate> estimates = epicEstimateRepository.findByEpicIdAndActiveIsTrue(epicId);
+        final List<EpicEstimateBean> beans = new ArrayList<>();
+        roles.sort(Comparator.comparing(Role::getName));
+
+        roles.forEach(r -> {
+            Optional<EpicEstimate> est = estimates.stream().filter(e -> Objects.equals(e.getRoleId(), r.getId())).findFirst();
+            if (est.isPresent()) {
+                beans.add(new EpicEstimateBean(est.get(), r.getName()));
+            } else {
+                EpicEstimate epes = new EpicEstimate();
+                epes.setEstimate(0);
+                epes.setActive(true);
+                epes.setRoleId(r.getId());
+                epes.setEpicId(epicId);
+                epes.setResources(0);
+                beans.add(new EpicEstimateBean(epes, r.getName()));
+            }
+        });
+        return beans;
+    }
     public EpicBean findEpicById(long epicId) {
         Epic e = epicRepository.findById(epicId).get();
         Assert.notNull(e, "There is not record found.");

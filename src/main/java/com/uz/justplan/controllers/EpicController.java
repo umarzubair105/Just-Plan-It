@@ -1,6 +1,7 @@
 package com.uz.justplan.controllers;
 
 import com.uz.justplan.beans.response.EpicBean;
+import com.uz.justplan.beans.response.EpicEstimateBean;
 import com.uz.justplan.lookup.EpicDetailType;
 import com.uz.justplan.plan.Epic;
 import com.uz.justplan.plan.EpicDetail;
@@ -27,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Map;
 
 @RestController()
@@ -141,6 +143,12 @@ public class EpicController {
     public EpicBean findEpicById(@RequestParam long id) {
         return planningDashboardService.findEpicById(id);
     }
+
+    @GetMapping("/findPossibleEpicEstimateByEpicId")
+    public List<EpicEstimateBean> findPossibleEpicEstimateByEpicId(@RequestParam long id) {
+        return planningDashboardService.findPossibleEpicEstimateByEpicId(id);
+    }
+
 
 
 }
