@@ -90,17 +90,24 @@ public class ReleaseService {
         List<Epic> epics = epicRepo.findByReleaseIdAndActiveIsTrueUsingHistory(releaseId);
         Release rel = releaseRepository.findById(releaseId).get();
         rel.setStatus(ReleaseStatusEnum.COMPLETED);
-        releaseRepository.save(rel);
         epics.stream().forEach(e -> {
             List<EpicAssignment> assignments = epicAssignmentRepository.findAllByEpicIdAndReleaseIdAndActiveTrue(
                     e.getId(), e.getReleaseId());
             e.setStatus(EpicStatus.RESOLVED);
-            assignments.stream().filter(a -> a.getStatus() != AssignmentStatus.COMPLETED).forEach(a -> {
+            if (assignments.stream().anyMatch(a -> a.getStatus() != AssignmentStatus.COMPLETED)) {
                 e.setStatus(EpicStatus.REOPEN);
                 e.setReleaseId(null);
+            }
+            assignments.stream().filter(a -> a.getStatus() != AssignmentStatus.COMPLETED || a.getStatus() != AssignmentStatus.OVERDUE).forEach(a -> {
+                a.setStatus(AssignmentStatus.OVERDUE);
+                epicAssignmentRepository.save(a);
             });
+            if (assignments.stream().anyMatch(a -> a.getStatus() == AssignmentStatus.OVERDUE)) {
+                rel.setStatus(ReleaseStatusEnum.OVERDUE);
+            }
             epicRepo.save(e);
         });
+        releaseRepository.save(rel);
         CommonResp resp = new CommonResp();
         resp.setMessage("Release is marked as completed.");
         return resp;

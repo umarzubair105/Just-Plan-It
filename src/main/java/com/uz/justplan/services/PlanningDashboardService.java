@@ -223,6 +223,7 @@ public class PlanningDashboardService {
         Release release = releaseRepository.findById(releaseId).orElseThrow(() -> new RuntimeException("Release not found"));
         long productId = release.getProductId();
         Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+        releaseBean.setProduct(product);
         long companyId = product.getCompanyId();
         List<Epic> epics = epicRepository.findByReleaseIdAndActiveIsTrueUsingHistory(releaseId);
         if (epics.isEmpty()) {
@@ -302,6 +303,7 @@ public class PlanningDashboardService {
         List<ReleaseDetailBean> details = new ArrayList<>();
         releases.forEach(release -> {
             ReleaseDetailBean releaseBean = new ReleaseDetailBean();
+            releaseBean.setProduct(productRepository.findById(release.getProductId()).get());
             releaseBean.setRelease(release);
             details.add(releaseBean);
         });
@@ -354,6 +356,7 @@ public class PlanningDashboardService {
         List<ReleaseDetailBean> details = new ArrayList<>();
         releases.forEach(release -> {
             ReleaseDetailBean releaseBean = new ReleaseDetailBean();
+            releaseBean.setProduct(productRepository.findById(release.getProductId()).get());
             releaseBean.setRelease(release);
             details.add(releaseBean);
         });
@@ -376,6 +379,7 @@ public class PlanningDashboardService {
         List<ReleaseDetailBean> details = new ArrayList<>();
         releases.forEach(release -> {
             ReleaseDetailBean releaseBean = new ReleaseDetailBean();
+            releaseBean.setProduct(productRepository.findById(release.getProductId()).get());
             releaseBean.setRelease(release);
             details.add(releaseBean);
         });

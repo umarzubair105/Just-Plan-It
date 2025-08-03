@@ -2,14 +2,24 @@ package com.uz.justplan.beans;
 
 import com.uz.justplan.beans.cal.ResourceCapInRelease;
 import com.uz.justplan.beans.response.EpicBean;
+import com.uz.justplan.core.Product;
 import com.uz.justplan.plan.Release;
 
 import java.util.List;
 
 public class ReleaseDetailBean {
     private Release release;
+    private Product product;
     private List<ResourceCapInRelease> resourceCaps;
     private List<EpicBean> epics;
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
 
     public Release getRelease() {
         return release;

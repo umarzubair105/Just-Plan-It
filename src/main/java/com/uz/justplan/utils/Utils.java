@@ -392,8 +392,8 @@ public class Utils {
             release.setStartDate(iterationStartDate);
             release.setEndDate(iterationEndDate);
             release.setActive(true);
-            release.setName(iterationStartDate.getMonth().name() + "-" + iterationStartDate.getDayOfMonth()
-                    + " to " + iterationEndDate.getMonth().name() + "-" + iterationEndDate.getDayOfMonth());
+            release.setName(toTitleCase(iterationStartDate.getMonth().name() + "-" + iterationStartDate.getDayOfMonth()
+                    + " to " + iterationEndDate.getMonth().name() + "-" + iterationEndDate.getDayOfMonth()));
             release.setVersion(releases.size() + lastReleaseVersion + 1);
             //release.setProductId();
 
