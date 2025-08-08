@@ -1,4 +1,4 @@
-alter table country modify column phoneCode varchar (5000) not null;
+-- alter table country modify column phoneCode varchar (5000) not null;
 
 insert into `country` (id, name, countryCode, countryCode3, phoneCode, region, subRegion, flag, currency, language,
                        active)
@@ -587,85 +587,260 @@ values (201, 'Armenia', 'AM', 'ARM', '{root=+3, suffixes=[74]}', 'Asia', 'Wester
         'https://flagcdn.com/w320/tk.png', '{NZD={name=New Zealand dollar, symbol=$}}',
         '{eng=English, smo=Samoan, tkl=Tokelauan}', 1);
 
-
+-- IT Product Based Sample Company
+set
+@companyId:=1;
 insert into `company` (id, name, code, sample, countryId, active)
-values (1, 'Product based IT Services', '981101', true, 1, 1);
+values (@companyId, 'Product based IT Services', '981101', true, 170, 1);
 
 insert into `role` (id, name, code, companyId, required, systemRole, active)
-values (1, 'Product Manager', 'PM', 1, 0, 1, 1);
+values (1, 'Product Manager', 'PM', @companyId, 0, 1, 1);
 insert into `role` (id, name, code, companyId, required, systemRole, active)
-values (2, 'Product Owner', 'TM', 1, 0, 0, 1);
+values (8, 'Account Administrator', 'ADMIN', @companyId, 0, 1, 1);
 insert into `role` (id, name, code, companyId, required, systemRole, active)
-values (3, 'Business Analyst', 'TM', 1, 0, 0, 1);
+values (10, 'HR', 'HR', @companyId, 0, 1, 1);
 insert into `role` (id, name, code, companyId, required, systemRole, active)
-values (4, 'Solution Architect', 'TM', 1, 0, 0, 1);
+values (12, 'Scrum Master', 'PM', @companyId, 0, 1, 1);
 insert into `role` (id, name, code, companyId, required, systemRole, active)
-values (5, 'Backend Developer', 'TM', 1, 0, 0, 1);
+values (3, 'Business Analyst', 'TM', @companyId, 0, 0, 1);
 insert into `role` (id, name, code, companyId, required, systemRole, active)
-values (6, 'UI Developer', 'TM', 1, 0, 0, 1);
+values (4, 'Solution Architect', 'TM', @companyId, 0, 0, 1);
 insert into `role` (id, name, code, companyId, required, systemRole, active)
-values (7, 'QA Engineer', 'TM', 1, 0, 0, 1);
+values (5, 'Backend Developer', 'TM', @companyId, 0, 0, 1);
 insert into `role` (id, name, code, companyId, required, systemRole, active)
-values (8, 'Administrator', 'ADMIN', 1, 0, 1, 1);
+values (6, 'UI/UX Designer', 'TM', @companyId, 0, 0, 1);
 insert into `role` (id, name, code, companyId, required, systemRole, active)
-values (9, 'DBA', 'TM', 1, 0, 0, 1);
+values (7, 'QA Engineer', 'TM', @companyId, 0, 0, 1);
 insert into `role` (id, name, code, companyId, required, systemRole, active)
-values (10, 'HR', 'HR', 1, 0, 1, 1);
+values (9, 'Data Scientist', 'TM', @companyId, 0, 0, 1);
 insert into `role` (id, name, code, companyId, required, systemRole, active)
-values (11, 'Fullstack Developer', 'TM', 1, 0, 0, 1);
+values (11, 'Fullstack Developer', 'TM', @companyId, 0, 0, 1);
 insert into `role` (id, name, code, companyId, required, systemRole, active)
-values (12, 'Scrum Master', 'PM', 1, 0, 1, 1);
+values (12, 'DevOps Engineer', 'TM', @companyId, 0, 0, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (13, 'Frontend Developer', 'TM', @companyId, 0, 0, 1);
 
 insert into `priority` (id, name, companyId, priorityLevel, active)
-values (1, 'Blocker', 1, 1, 1);
+values (1, 'Blocker', @companyId, 1, 1);
 insert into `priority` (id, name, companyId, priorityLevel, active)
-values (2, 'Critical', 1, 2, 1);
+values (2, 'Critical', @companyId, 2, 1);
 insert into `priority` (id, name, companyId, priorityLevel, active)
-values (3, 'High', 1, 3, 1);
+values (6, 'Highest', @companyId, 3, 1);
 insert into `priority` (id, name, companyId, priorityLevel, active)
-values (4, 'Medium', 1, 4, 1);
+values (3, 'High', @companyId, 4, 1);
 insert into `priority` (id, name, companyId, priorityLevel, active)
-values (5, 'Low', 1, 5, 1);
+values (4, 'Medium', @companyId, 5, 1);
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (5, 'Low', @companyId, 6, 1);
 
 insert into `companyweekend` (id, day, companyId, active)
-values (1, 'SATURDAY', 1, 1);
+values (1, 'SATURDAY', @companyId, 1);
 
 insert into `companyweekend` (id, day, companyId, active)
-values (2, 'SUNDAY', 1, 1);
+values (2, 'SUNDAY', @companyId, 1);
+
+insert into CompanyWorkingHour (id, minutes, description, scope, companyId, eventDate, dayOfWeek, startDate, endDate,
+                                recurring, active)
+values (1, 480, 'Daily working minutes', 'DEFAULT', @companyId, null, null, null, null, 1, 1);
+
+insert into CompanyWorkingHour (id, minutes, description, scope, companyId, eventDate, dayOfWeek, startDate, endDate,
+                                recurring, active)
+values (2, 420, 'Friday working minutes', 'WEEK_DAY', @companyId, null, 'FRIDAY', null, null, 1, 1);
+
+
+-- IT Product Based Sample Company
+set
+@companyId:=2;
+insert into `company` (id, name, code, sample, countryId, active)
+values (@companyId, 'Project based IT Services', '981102', true, 170, 1);
+
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (11, 'Project Manager', 'PM', @companyId, 0, 1, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (18, 'Account Administrator', 'ADMIN', @companyId, 0, 1, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (110, 'HR', 'HR', @companyId, 0, 1, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (112, 'Scrum Master', 'PM', @companyId, 0, 1, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (13, 'Business Analyst', 'TM', @companyId, 0, 0, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (14, 'Solution Architect', 'TM', @companyId, 0, 0, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (15, 'Backend Developer', 'TM', @companyId, 0, 0, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (16, 'UI/UX Designer', 'TM', @companyId, 0, 0, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (17, 'QA Engineer', 'TM', @companyId, 0, 0, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (19, 'Data Scientist', 'TM', @companyId, 0, 0, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (111, 'Fullstack Developer', 'TM', @companyId, 0, 0, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (112, 'DevOps Engineer', 'TM', @companyId, 0, 0, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (113, 'Frontend Developer', 'TM', @companyId, 0, 0, 1);
+
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (11, 'Blocker', @companyId, 1, 1);
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (12, 'Critical', @companyId, 2, 1);
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (16, 'Highest', @companyId, 3, 1);
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (13, 'High', @companyId, 4, 1);
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (14, 'Medium', @companyId, 5, 1);
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (15, 'Low', @companyId, 6, 1);
 
 insert into `companyweekend` (id, day, companyId, active)
-values (2, 'SUNDAY', 1, 1);
+values (11, 'SATURDAY', @companyId, 1);
+
+insert into `companyweekend` (id, day, companyId, active)
+values (12, 'SUNDAY', @companyId, 1);
 
 insert into CompanyWorkingHour (id, minutes, description, scope, companyId, eventDate, dayOfWeek, startDate, endDate,
                                 recurring, active)
-values (1, 480, 'Daily working minutes', 'DEFAULT', 1, null, null, null, null, 1, 1);
+values (11, 480, 'Daily working minutes', 'DEFAULT', @companyId, null, null, null, null, 1, 1);
 
 insert into CompanyWorkingHour (id, minutes, description, scope, companyId, eventDate, dayOfWeek, startDate, endDate,
                                 recurring, active)
-values (2, 420, 'Friday working minutes', 'WEEK_DAY', 1, null, 'FRIDAY', null, null, 1, 1);
+values (12, 420, 'Friday working minutes', 'WEEK_DAY', @companyId, null, 'FRIDAY', null, null, 1, 1);
 
+
+-- Manufacturing Product Based Sample Company
+set
+@companyId:=3;
+insert into `company` (id, name, code, sample, countryId, active)
+values (@companyId, 'Manufacturing Industries', '981103', true, 170, 1);
+
+set
+@Id:=@Id:=@Id+1;
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (@Id:=@Id+1, 'Project Manager', 'PM', @companyId, 0, 1, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (@Id:=@Id+1, 'Account Administrator', 'ADMIN', @companyId, 0, 1, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (@Id:=@Id+1, 'HR', 'HR', @companyId, 0, 1, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (@Id:=@Id+1, 'Auditor', 'PM', @companyId, 0, 1, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (@Id:=@Id+1, 'Marketing Manager', 'TM', @companyId, 0, 0, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (@Id:=@Id+1, 'Business Analyst', 'TM', @companyId, 0, 0, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (@Id:=@Id+1, 'Engineer', 'TM', @companyId, 0, 0, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (@Id:=@Id+1, 'Supervisor', 'TM', @companyId, 0, 0, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (@Id:=@Id+1, 'Worker Type 1', 'TM', @companyId, 0, 0, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (@Id:=@Id+1, 'Worker Type 1', 'TM', @companyId, 0, 0, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (@Id:=@Id+1, 'Quality Checker', 'TM', @companyId, 0, 0, 1);
+
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (@Id:=@Id+1, 'Blocker', @companyId, 1, 1);
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (@Id:=@Id+1, 'Critical', @companyId, 2, 1);
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (@Id:=@Id+1, 'Highest', @companyId, 3, 1);
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (@Id:=@Id+1, 'High', @companyId, 4, 1);
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (@Id:=@Id+1, 'Medium', @companyId, 5, 1);
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (@Id:=@Id+1, 'Low', @companyId, 6, 1);
+
+insert into `companyweekend` (id, day, companyId, active)
+values (@Id:=@Id+1, 'SATURDAY', @companyId, 1);
+
+insert into `companyweekend` (id, day, companyId, active)
+values (@Id:=@Id+1, 'SUNDAY', @companyId, 1);
 
 insert into CompanyWorkingHour (id, minutes, description, scope, companyId, eventDate, dayOfWeek, startDate, endDate,
                                 recurring, active)
-values (5, 480, 'Daily working minutes', 'DEFAULT', 951, null, null, null, null, 1, 1);
+values (@Id:=@Id+1, 480, 'Daily working minutes', 'DEFAULT', @companyId, null, null, null, null, 1, 1);
 
 insert into CompanyWorkingHour (id, minutes, description, scope, companyId, eventDate, dayOfWeek, startDate, endDate,
                                 recurring, active)
-values (4, 420, 'Friday working minutes', 'WEEK_DAY', 951, null, 'FRIDAY', null, null, 1, 1);
+values (@Id:=@Id+1, 420, 'Friday working minutes', 'WEEK_DAY', @companyId, null, 'FRIDAY', null, null, 1, 1);
+
+
+-- Manufacturing Product Based Sample Company
+set
+@companyId:=4;
+insert into `company` (id, name, code, sample, countryId, active)
+values (@companyId, 'Others', '981104', true, 170, 1);
+
+set
+@Id:=@Id:=@Id+1;
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (@Id:=@Id+1, 'Project Manager', 'PM', @companyId, 0, 1, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (@Id:=@Id+1, 'Account Administrator', 'ADMIN', @companyId, 0, 1, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (@Id:=@Id+1, 'HR', 'HR', @companyId, 0, 1, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (@Id:=@Id+1, 'Auditor', 'PM', @companyId, 0, 1, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (@Id:=@Id+1, 'Marketing Manager', 'TM', @companyId, 0, 0, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (@Id:=@Id+1, 'Business Analyst', 'TM', @companyId, 0, 0, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (@Id:=@Id+1, 'Engineer', 'TM', @companyId, 0, 0, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (@Id:=@Id+1, 'Supervisor', 'TM', @companyId, 0, 0, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (@Id:=@Id+1, 'Worker Type 1', 'TM', @companyId, 0, 0, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (@Id:=@Id+1, 'Worker Type 1', 'TM', @companyId, 0, 0, 1);
+insert into `role` (id, name, code, companyId, required, systemRole, active)
+values (@Id:=@Id+1, 'Quality Checker', 'TM', @companyId, 0, 0, 1);
+
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (@Id:=@Id+1, 'Blocker', @companyId, 1, 1);
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (@Id:=@Id+1, 'Critical', @companyId, 2, 1);
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (@Id:=@Id+1, 'Highest', @companyId, 3, 1);
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (@Id:=@Id+1, 'High', @companyId, 4, 1);
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (@Id:=@Id+1, 'Medium', @companyId, 5, 1);
+insert into `priority` (id, name, companyId, priorityLevel, active)
+values (@Id:=@Id+1, 'Low', @companyId, 6, 1);
+
+insert into `companyweekend` (id, day, companyId, active)
+values (@Id:=@Id+1, 'SATURDAY', @companyId, 1);
+
+insert into `companyweekend` (id, day, companyId, active)
+values (@Id:=@Id+1, 'SUNDAY', @companyId, 1);
+
+insert into CompanyWorkingHour (id, minutes, description, scope, companyId, eventDate, dayOfWeek, startDate, endDate,
+                                recurring, active)
+values (@Id:=@Id+1, 480, 'Daily working minutes', 'DEFAULT', @companyId, null, null, null, null, 1, 1);
+
+insert into CompanyWorkingHour (id, minutes, description, scope, companyId, eventDate, dayOfWeek, startDate, endDate,
+                                recurring, active)
+values (@Id:=@Id+1, 420, 'Friday working minutes', 'WEEK_DAY', @companyId, null, 'FRIDAY', null, null, 1, 1);
+
+
 
 update priority_seq
-set next_val=100;
+set next_val=10000;
 
 update `companycalendar_seq`
-set next_val=10;
+set next_val=10000;
 
 update companyweekend_seq
-set next_val=1000;
+set next_val=10000;
 
 update country_seq
-set next_val=1000;
+set next_val=10000;
 
 update company_seq
-set next_val=1000;
+set next_val=1000 -;
 update role_seq
-set next_val=1000;
+set next_val=10000;

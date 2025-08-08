@@ -13,7 +13,7 @@ public class Country extends Auditable {
 
     @Column(nullable = false, unique = true)
     private String countryCode3;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 5000)
     private String phoneCode;
 
     private String region;
