@@ -3,6 +3,7 @@ package com.uz.justplan.lookup;
 public enum EntityType {
     COMPANY("COMPANY"),
     RELEASE("RELEASE"),
+    RESOURCE("RESOURCE"),
     PRODUCT("PRODUCT");
 
     private final String value;
