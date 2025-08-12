@@ -37,7 +37,8 @@ public class EpicBean {
     String priorityName;
     String componentName;
     int priorityLevel = 100;
-    boolean active;
+    boolean active, replicate;
+    private Long replicatedById;
 
     List<EpicEstimateBean> estimates;
     List<EpicAssignmentBean> assignments;
@@ -53,6 +54,8 @@ public class EpicBean {
         this.code = epic.getCode();
         this.status = epic.getStatus();
         this.active = epic.isActive();
+        this.replicate = epic.isReplicate();
+        this.replicatedById = epic.getReplicatedById();
         this.title = epic.getTitle();
         this.details = epic.getDetails();
         this.dependOnEpicId = epic.getDependOnEpicId();
@@ -62,6 +65,7 @@ public class EpicBean {
         this.startDate = epic.getStartDate();
         this.endDate = epic.getEndDate();
         this.valueGain = epic.getValueGain();
+        this.replicate = epic.isReplicate();
         this.componentId = epic.getComponentId();
         this.createdById = epic.getCreatedById();
         this.updatedById = epic.getUpdatedById();
@@ -81,6 +85,14 @@ public class EpicBean {
     public EpicBean(List<EpicAssignmentBean> assignments, Epic epic, Priority p, String depEpicCode, String raisedByResource, String component) {
         this(epic, p, depEpicCode, raisedByResource, component, null);
         this.assignments = assignments == null ? new ArrayList<>() : assignments;
+    }
+
+    public boolean isReplicate() {
+        return replicate;
+    }
+
+    public void setReplicate(boolean replicate) {
+        this.replicate = replicate;
     }
 
     public List<EpicAssignmentBean> getAssignments() {
@@ -345,5 +357,13 @@ public class EpicBean {
 
     public void setRelatedTo(List<RelatedEpicDetailBean> relatedTo) {
         this.relatedTo = relatedTo;
+    }
+
+    public Long getReplicatedById() {
+        return replicatedById;
+    }
+
+    public void setReplicatedById(Long replicatedById) {
+        this.replicatedById = replicatedById;
     }
 }

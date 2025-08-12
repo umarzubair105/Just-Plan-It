@@ -10,11 +10,14 @@ public class WebConfig {
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
+
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Allow CORS for all endpoints
                         .allowedOrigins("http://localhost:4200") // Allow requests from Angular
+                        .allowedOrigins("http://localhost:80") // Allow requests from Angular
+                        .allowedOrigins("http://localhost") // Allow requests from Angular
                         //.allowedOrigins("*") // Allow requests from Angular
                         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS") // Allowed HTTP methods
                         .allowedHeaders("*") // Allow all headers

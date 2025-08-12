@@ -39,6 +39,11 @@ public interface EpicRepository extends CrudRepository<Epic, Long> {
             " and ee.active=true")
     List<Epic> findAllByResourceIdAndReleaseId(Long resourceId, Long releaseId);
 
+    @Query("select distinct e from Epic e where " +
+            " e.releaseId=:releaseId and e.replicatedById=:replicatedById and e.active=true ")
+    List<Epic> findAllByReplicatedEpicIdIdAndReleaseId(Long replicatedById, Long releaseId);
+
+
     // what is issue with following query
 
 

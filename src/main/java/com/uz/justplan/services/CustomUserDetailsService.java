@@ -37,7 +37,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         String[] values = username.split(";");
         Resource user = null;
         if (values.length == 1) {
-            List<Resource> resources = resourceRepository.findByEmailIgnoreCaseAndStatus(
+            List<Resource> resources = resourceRepository.findByEmailIgnoreCaseAndStatusAndActiveIsTrue(
                     values[0], ResourceStatus.ACTIVE);
             Assert.isTrue(!resources.isEmpty(), "User does not exist..");
             Assert.isTrue(resources.size() == 1, "There are many users with the same email. Specify company code, please.");

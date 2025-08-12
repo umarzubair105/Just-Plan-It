@@ -37,6 +37,11 @@ public class Epic extends Auditable {
     @Column(nullable = false)
     private boolean active;
 
+    @Column(nullable = false)
+    private boolean replicate;
+
+    @Column(nullable = true)
+    private Long replicatedById;
 
     @Column(nullable = true)
     private Long releaseId;
@@ -192,5 +197,21 @@ public class Epic extends Auditable {
 
     public void setStatus(EpicStatus status) {
         this.status = status;
+    }
+
+    public boolean isReplicate() {
+        return replicate;
+    }
+
+    public void setReplicate(boolean replicate) {
+        this.replicate = replicate;
+    }
+
+    public Long getReplicatedById() {
+        return replicatedById;
+    }
+
+    public void setReplicatedById(Long replicatedById) {
+        this.replicatedById = replicatedById;
     }
 }

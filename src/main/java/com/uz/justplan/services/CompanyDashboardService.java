@@ -70,7 +70,7 @@ public class CompanyDashboardService {
                 compRepo.findByNameIgnoreCaseAndActive(req.getName(), true)
                         .isEmpty(), "Company already exists with the same name");
         Assert.isTrue(
-                resourceRepo.findByEmailIgnoreCase(req.getEmail()).isEmpty(),
+                resourceRepo.findOneByEmailIgnoreCaseAndActiveIsTrue(req.getEmail()).isEmpty(),
                 "This email is already registered.");
         final CommonResp resp = new CommonResp();
         final Company comp = new Company();
@@ -260,9 +260,11 @@ public class CompanyDashboardService {
             resp.setMessage("Invalid email: " + model.getEmail());
             return resp;
         }
-        Optional<Resource> modelO = resourceRepo.findOneByEmailIgnoreCase(model.getEmail().trim());
+        Optional<Resource> modelO = resourceRepo.findOneByEmailIgnoreCaseAndActiveIsTrue(model.getEmail().trim());
         String password = null;
         if (!modelO.isEmpty()) {
+            Assert.isTrue(modelO.get().getCompanyId().equals(model.getCompanyId()),
+                    "Email " + model.getEmail() + "  is already registered with some other company.");
             Resource existing = modelO.get();
             Assert.isTrue(existing.getCompanyId() != model.getCompanyId(), "User with email " + model.getEmail() + " already registered with some other company.");
             Assert.isTrue(false, "User with email " + model.getEmail() + " already registered.");
@@ -292,10 +294,13 @@ public class CompanyDashboardService {
             resp.setMessage("Invalid email: " + req.getEmail());
             return resp;
         }
-        Optional<Resource> modelO = resourceRepo.findOneByEmailIgnoreCase(req.getEmail().trim());
+        Optional<Resource> modelO = resourceRepo.findOneByEmailIgnoreCaseAndActiveIsTrue(req.getEmail().trim());
         Resource model = null;
         String password = null;
         if (!modelO.isEmpty()) {
+            Assert.isTrue(modelO.get().getCompanyId().equals(req.getCompanyId()),
+                    "Email " + model.getEmail() + "  is already registered with some other company.");
+
             model = modelO.get();
             Assert.isTrue(model.getCompanyId() != req.getCompanyId(), "User with email " + req.getEmail() + " already registered with some other company.");
             resp.setMessage("Updated");
@@ -346,9 +351,14 @@ public class CompanyDashboardService {
         if (!Validation.isValidEmail(req.getEmail()) || !Validation.isValidEmail(req.getLead())) {
             return;
         }
-        Optional<Resource> resource = resourceRepo.findOneByEmailIgnoreCase(req.getEmail().trim());
-        Optional<Resource> lead = resourceRepo.findOneByEmailIgnoreCase(req.getLead().trim());
+        Optional<Resource> resource = resourceRepo.findOneByEmailIgnoreCaseAndActiveIsTrue(req.getEmail().trim());
+        Optional<Resource> lead = resourceRepo.findOneByEmailIgnoreCaseAndActiveIsTrue(req.getLead().trim());
         if (resource.isPresent() && lead.isPresent()) {
+            Assert.isTrue(resource.get().getCompanyId().equals(req.getCompanyId()),
+                    "Email " + req.getEmail() + "  is already registered with some other company.");
+            Assert.isTrue(lead.get().getCompanyId().equals(req.getCompanyId()),
+                    "Email " + req.getLead() + "  is already registered with some other company.");
+
             if (resource.get().getLeadResourceId() == null || !resource.get().getLeadResourceId().equals(lead.get().getId())) {
                 resource.get().setLeadResourceId(lead.get().getId());
                 if (!lead.get().isLead()) {
@@ -489,7 +499,7 @@ public class CompanyDashboardService {
     }
 
     private Optional<Resource> getExistingResource(String email) {
-        return resourceRepo.findOneByEmailIgnoreCase(email.toLowerCase());
+        return resourceRepo.findOneByEmailIgnoreCaseAndActiveIsTrue(email.toLowerCase());
     }
 
     // ✅ Extracted: Processing Each Email
@@ -543,7 +553,7 @@ public class CompanyDashboardService {
     private long findOrCreateNewResource(String email, String name, String designation, Company company) {
         Optional<Resource> resource = getExistingResource(email);
         if (!resource.isEmpty()) {
-            Assert.isTrue(resource.get().getCompanyId() != company.getId(), "User with email " + email + " already registered with some other company.");
+            Assert.isTrue(resource.get().getCompanyId().equals(company.getId()), "User with email " + email + " already registered with some other company.");
             return resource.get().getId();
         }
         return createNewResource(email, name, designation,
@@ -631,7 +641,7 @@ public class CompanyDashboardService {
     @Transactional
     public CommonResp resetPassword(final String username) {
         Assert.isTrue(!Validation.isEmpty(username), "Email is not provided.");
-        Optional<Resource> res = resourceRepo.findOneByEmailIgnoreCase(username);
+        Optional<Resource> res = resourceRepo.findOneByEmailIgnoreCaseAndActiveIsTrue(username);
         Assert.isTrue(res.isPresent(), "There is no user registered against " + username + ".");
         Assert.isTrue(res.get().getStatus().equals(ResourceStatus.ACTIVE),
                 "User is not active against " + username + ".");

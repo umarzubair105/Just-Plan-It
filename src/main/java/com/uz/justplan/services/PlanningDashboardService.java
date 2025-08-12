@@ -154,10 +154,48 @@ public class PlanningDashboardService {
 
     @Transactional
 
-    public ScheduleEpic planEpic(long epicId) {
-        final Epic epic = epicRepository.findById(epicId).orElseThrow(() -> new RuntimeException("Epic not found"));
+    public ScheduleEpic planEpic(long epicIdToAssign) {
+        final Epic epic = epicRepository.findById(epicIdToAssign).orElseThrow(() -> new RuntimeException("Epic not found"));
         List<Release> unplannedRelease = releaseRepository.findByProductIdAndStatusAndActiveIsTrueOrderByStartDateAsc(
                 epic.getProductId(), ReleaseStatusEnum.UNPLANNED);
+        if (epic.isReplicate()) {
+            // check if replicated ticket is already part
+            Assert.isTrue(!unplannedRelease.isEmpty(), "Template Deliverable can be planned only for existing unplanned" +
+                    " releases. First plan deliverable for which Template is marked as 'No'.");
+            ScheduleEpic scheduleEpic = null;
+            for (Release release : unplannedRelease) {
+                if (epicRepository.findAllByReplicatedEpicIdIdAndReleaseId(epic.getId(), release.getId()).isEmpty()) {
+                    ScheduleEpic scheduleEpic2 = epicService.scheduleAndAssignEpicForcefully(epic, release);
+                    if (scheduleEpic2 == null) {
+                        continue;
+                    }
+                    scheduleEpic = scheduleEpic2;
+                    if (scheduleEpic != null && scheduleEpic.getReleaseToAddIn() != null) {
+                        final long releaseId = scheduleEpic.getReleaseToAddIn().getId();
+                        Epic newEpic = replicateEpic(epic);
+                        newEpic.setReleaseId(releaseId); // TODO: Replace with actual release id
+                        epicRepository.save(newEpic);
+                        final long epicId = newEpic.getId();
+
+                        scheduleEpic.getAssignments().forEach(assignment -> {
+                            EpicAssignment epicAssignment = new EpicAssignment();
+                            epicAssignment.setEpicId(epicId);
+                            epicAssignment.setResourceId(assignment.getResourceId());
+                            epicAssignment.setRoleId(assignment.getRoleId());
+                            epicAssignment.setReleaseId(releaseId);
+                            epicAssignment.setEstimate(assignment.getMinutes());
+                            epicAssignment.setActive(true);
+                            epicAssignment.setStatus(AssignmentStatus.OPEN);
+                            epicAssignmentRepository.save(epicAssignment);
+                        });
+
+                    }
+                }
+            }
+            Assert.notNull(scheduleEpic, "Template Deliverable is already part of Unplanned release.");
+            return scheduleEpic;
+        }
+
         Release newReleaseAddedNow = null;
         if (unplannedRelease.isEmpty()) {
             newReleaseAddedNow = releaseService.addReleases(epic.getProductId());
@@ -178,21 +216,25 @@ public class PlanningDashboardService {
                 }
             }
             if (scheduleEpic == null && newReleaseAddedNow == null) {
-                Assert.isTrue(!anyReleaseExistWithZeroAssignment, "It can not be planned m1. There is no matching release based on time and resources.");
+                Assert.isTrue(!anyReleaseExistWithZeroAssignment, "It can not be planned. There is no matching release based on time and resources." +
+                        " Either Product team is not having resource with these roles or resource time allocation is not enough.");
                 Release release = releaseService.addReleases(epic.getProductId());
                 scheduleEpic = epicService.scheduleAndAssignEpicForcefully(epic, release);
             }
-            Assert.notNull(scheduleEpic, "It can not be planned m2. There is no matching release based on time and resources.");
+            Assert.notNull(scheduleEpic, "It can not be planned because there is no matching release based on time and resources." +
+                    " Either Product team is not having resource with these roles or resource time allocation is not enough.");
         }
         if (scheduleEpic.getReleaseToAddIn() != null) {
-            epic.setReleaseId(scheduleEpic.getReleaseToAddIn().getId()); // TODO: Replace with actual release id
+            final long releaseId = scheduleEpic.getReleaseToAddIn().getId();
+            epic.setReleaseId(releaseId); // TODO: Replace with actual release id
             epicRepository.save(epic);
+            final long epicId = epic.getId();
             scheduleEpic.getAssignments().forEach(assignment -> {
                 EpicAssignment epicAssignment = new EpicAssignment();
-                epicAssignment.setEpicId(epic.getId());
+                epicAssignment.setEpicId(epicId);
                 epicAssignment.setResourceId(assignment.getResourceId());
                 epicAssignment.setRoleId(assignment.getRoleId());
-                epicAssignment.setReleaseId(epic.getReleaseId());
+                epicAssignment.setReleaseId(releaseId);
                 epicAssignment.setEstimate(assignment.getMinutes());
                 epicAssignment.setActive(true);
                 epicAssignment.setStatus(AssignmentStatus.OPEN);
@@ -200,6 +242,26 @@ public class PlanningDashboardService {
             });
         }
         return scheduleEpic;
+    }
+
+    private Epic replicateEpic(Epic epic) {
+        Epic newE = new Epic();
+        newE.setTitle(epic.getTitle());
+        newE.setReplicate(false);
+        newE.setCode(getEpicCodeForNewEpic(epic.getProductId()));
+        newE.setDetails(epic.getDetails());
+        newE.setReplicatedById(epic.getId());
+        newE.setDetails(epic.getDetails());
+        newE.setStatus(EpicStatus.OPEN);
+        newE.setRequiredBy(epic.getRequiredBy());
+        newE.setActive(true);
+        newE.setComponentId(epic.getComponentId());
+        newE.setPriorityId(epic.getPriorityId());
+        newE.setProductId(epic.getProductId());
+        newE.setValueGain(epic.getValueGain());
+        newE.setRisks(epic.getRisks());
+        epicRepository.save(newE);
+        return newE;
     }
 
     @Transactional
@@ -451,5 +513,11 @@ public class PlanningDashboardService {
                 }
             });
         }
+    }
+
+    private String getEpicCodeForNewEpic(long productId) {
+        String prodCode = productRepository.findById(productId).get().getCode();
+        long count = epicRepository.countByProductId(productId);
+        return prodCode + "-" + (count + 1);
     }
 }

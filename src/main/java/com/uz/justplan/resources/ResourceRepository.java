@@ -26,13 +26,12 @@ public interface ResourceRepository extends CrudRepository<Resource, Long>,
     //Optional<Resource> findByCompanyIdAndEmailIgnoreCaseAndActive(
     //      long companyId, String email, boolean active);
 
-    List<Resource> findByEmailIgnoreCase(String email);
 
-    Optional<Resource> findOneByEmailIgnoreCase(String email);
+    Optional<Resource> findOneByEmailIgnoreCaseAndActiveIsTrue(String email);
 
     Optional<Resource> findOneByCompanyIdAndEmailIgnoreCaseAndStatus(long companyId, String email, ResourceStatus status);
 
-    List<Resource> findByEmailIgnoreCaseAndStatus(String email, ResourceStatus status);
+    List<Resource> findByEmailIgnoreCaseAndStatusAndActiveIsTrue(String email, ResourceStatus status);
 
     @Query("select r from ProductResource pr, Resource r, Role role where pr.productId=:productId and pr.active=true " +
             " and pr.resourceId=r.id and r.active=true and pr.roleId=role.id and role.systemRole=false and r.status='ACTIVE' and role.active=true")

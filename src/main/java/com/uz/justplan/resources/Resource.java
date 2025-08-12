@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"companyId", "email"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"companyId", "email", "active"}))
 public class Resource extends Auditable {
     @Column(nullable = false)
     private String email;
@@ -17,7 +17,7 @@ public class Resource extends Auditable {
     private String password;
     private String mobileNumber;
     private LocalDate dateOfBirth;
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Long countryId;
 
     @Column(nullable = true)
