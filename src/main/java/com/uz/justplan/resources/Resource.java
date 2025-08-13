@@ -17,7 +17,7 @@ public class Resource extends Auditable {
     private String password;
     private String mobileNumber;
     private LocalDate dateOfBirth;
-    @Column(nullable = true)
+    @Column(nullable = false)
     private Long countryId;
 
     @Column(nullable = true)

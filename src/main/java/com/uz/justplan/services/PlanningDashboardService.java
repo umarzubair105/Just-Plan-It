@@ -90,7 +90,7 @@ public class PlanningDashboardService {
                 epes.setActive(true);
                 epes.setRoleId(r.getId());
                 epes.setEpicId(epicId);
-                epes.setResources(0);
+                epes.setResources(1);
                 beans.add(new EpicEstimateBean(epes, r.getName()));
             }
         });

@@ -10,6 +10,7 @@ public class AddResourceReq {
     @NotBlank(message = "It is required.")
     private Long companyId;
     private Long productId;
+    private Long countryId;
 
     @NotBlank(message = "It is required.")
     private String email;
@@ -112,5 +113,13 @@ public class AddResourceReq {
 
     public void setLeadResourceId(Long leadResourceId) {
         this.leadResourceId = leadResourceId;
+    }
+
+    public Long getCountryId() {
+        return countryId;
+    }
+
+    public void setCountryId(Long countryId) {
+        this.countryId = countryId;
     }
 }

@@ -205,6 +205,10 @@ public class CompanyDashboardService {
         }
         Map<String, Designation> designations = new HashMap<>();
         long companyId = reqs.get(0).getCompanyId();
+
+        Company com = compRepo.findById(companyId).get();
+        reqs.stream().filter(r -> r.getCountryId() == null).forEach(r -> r.setCountryId(com.getCountryId()));
+
         reqs.stream().filter(req -> !Validation.isEmpty(req.getDesignation()))
                 .map(req -> req.getDesignation().trim()).distinct().forEach(designation -> {
                     designations.put(designation.toLowerCase(), findOrCreateNewDesignation(designation, companyId));
@@ -253,7 +257,10 @@ public class CompanyDashboardService {
 
     @Transactional
     public CommonResp addResource(final Resource model) {
-
+        if (model.getCountryId() == null) {
+            Company com = compRepo.findById(model.getCompanyId()).get();
+            model.setCountryId(com.getCountryId());
+        }
         CommonResp resp = new CommonResp();
         if (!Validation.isValidEmail(model.getEmail())) {
             resp.setContext(model.getEmail());
@@ -299,7 +306,7 @@ public class CompanyDashboardService {
         String password = null;
         if (!modelO.isEmpty()) {
             Assert.isTrue(modelO.get().getCompanyId().equals(req.getCompanyId()),
-                    "Email " + model.getEmail() + "  is already registered with some other company.");
+                    "Email " + req.getEmail() + "  is already registered with some other company.");
 
             model = modelO.get();
             Assert.isTrue(model.getCompanyId() != req.getCompanyId(), "User with email " + req.getEmail() + " already registered with some other company.");
@@ -309,6 +316,7 @@ public class CompanyDashboardService {
             model.setEmail(req.getEmail().trim());
             model.setActive(true);
             model.setCompanyId(req.getCompanyId());
+            model.setCountryId(req.getCountryId());
             password = SecurePasswordGenerator.generatePassword();
             model.setPassword(SecurePasswordGenerator.encryptPassword(password));
             model.setStatus(ResourceStatus.ACTIVE);
@@ -475,6 +483,10 @@ public class CompanyDashboardService {
         // Parse email list
         String[] emails = parseEmails(req.getEmail());
 
+        if (req.getCountryId() == null) {
+            Company com = compRepo.findById(req.getCompanyId()).get();
+            req.setCountryId(com.getCountryId());
+        }
         // Fetch existing resources and company details
         Map<String, Resource> existingResources = getExistingResources(req.getCompanyId());
         Company company = compRepo.findById(req.getCompanyId()).orElseThrow(() -> new RuntimeException("Company not found"));
