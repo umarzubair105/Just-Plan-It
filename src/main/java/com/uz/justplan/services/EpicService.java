@@ -22,23 +22,24 @@ import java.util.stream.Collectors;
 @Service
 public class EpicService {
     private static final Logger log = LoggerFactory.getLogger(EpicService.class);
-    Map<Long, EpicEstimatePS> epicEstimateMap = new HashMap<>();// by epic Id
-    Map<Long, ReleaseCapPS> releaseCapMap = new HashMap<>();// by release Id
-    List<Release> unplannedReleases = null;
+    Map<Long, EpicEstimatePS> epicEstimateMap;// by epic Id
+    Map<Long, ReleaseCapPS> releaseCapMap;// by release Id
+    Map<Long, List<EpicRoleEstimatePS>> assignEpicEstimate;// epicId is key
+    ScheduleEpic scheduleEpic;
+    //List<Release> unplannedReleases = null;
     //Release checkingRelease = null;
     //Map<Long, Map<Long, Map<Long,Integer>>> releaseCapacity = new HashMap<>();// relId, roleId, resourceId - minutes
     //Map<Long, Map<Long, Integer>> releaseOccupied = new HashMap<>();
     //Map<Long, Long> scheduleEpicsAddedToRelease = new HashMap<>();// epicid - > releaseId
     //Map<Long, Long> scheduleEpicsMovedToRelease = new HashMap<>();
     //List<Long> epicsRemovedFromRelease = new ArrayList<>();
-    Map<Long, List<EpicRoleEstimatePS>> assignEpicEstimate = new HashMap<>();// epicId is key
-    ScheduleEpic scheduleEpic = new ScheduleEpic();
     @Autowired
     private ReleaseService calService;
     @Autowired
     private EpicEstimateRepository epicEstRepo;
 
     public ScheduleEpic scheduleAndAssignEpicFirstTime(Epic epic, List<Release> unplannedReleases) {
+        reset();
         scheduleEpic.setEpicId(epic.getId());
         Assert.notEmpty(unplannedReleases, "There is no unplanned release");
         for (Release release : unplannedReleases) {
@@ -52,11 +53,19 @@ public class EpicService {
     }
 
     public ScheduleEpic scheduleAndAssignEpicForcefully(Epic epic, Release release) {
+        reset();
         scheduleEpic.setEpicId(epic.getId());
         if (ifCapacityAvailableScheduleAndAssign(epic, release, true)) {
             return scheduleEpic;
         }
         return null;
+    }
+
+    private void reset() {
+        epicEstimateMap = new HashMap<>();// by epic Id
+        releaseCapMap = new HashMap<>();// by release Id
+        assignEpicEstimate = new HashMap<>();// epicId is key
+        scheduleEpic = new ScheduleEpic();
     }
 
     private void addReleaseCapIfMissing(Release release) {

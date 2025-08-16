@@ -95,10 +95,14 @@ public class ReleaseService {
                     e.getId(), e.getReleaseId());
             e.setStatus(EpicStatus.RESOLVED);
             if (assignments.stream().anyMatch(a -> a.getStatus() != AssignmentStatus.COMPLETED)) {
-                e.setStatus(EpicStatus.REOPEN);
-                e.setReleaseId(null);
+                if (e.isReplicate()) {
+                    e.setStatus(EpicStatus.OPEN);
+                } else {
+                    e.setStatus(EpicStatus.REOPEN);
+                    e.setReleaseId(null);
+                }
             }
-            assignments.stream().filter(a -> a.getStatus() != AssignmentStatus.COMPLETED || a.getStatus() != AssignmentStatus.OVERDUE).forEach(a -> {
+            assignments.stream().filter(a -> a.getStatus() != AssignmentStatus.COMPLETED && a.getStatus() != AssignmentStatus.OVERDUE).forEach(a -> {
                 a.setStatus(AssignmentStatus.OVERDUE);
                 epicAssignmentRepository.save(a);
             });
@@ -194,8 +198,8 @@ public class ReleaseService {
             int capacityForProd = (capacity / 100) * prodResource.getParticipationPercentTime();
             bean.prodBasedExtraTime = (capacityForProd / 100) * product.getOtherActivitiesPercentTime();
             bean.prodBasedAssignableTime = capacityForProd - bean.prodBasedExtraTime;
-            bean.prodBasedAssignedTime = epicAssignmentRepository.calculateTotalHoursByReleaseIdAndResourceIdAndRoleId(releaseId,
-                    prodResource.getResourceId(), prodResource.getRoleId()).intValue();
+            bean.prodBasedAssignedTime = epicAssignmentRepository.calculateTotalHoursByReleaseIdAndResourceId(releaseId,
+                    prodResource.getResourceId()).intValue();
 
             bean.loggedTime = timeLoggingRepository.findTotalMinutesByReleaseIdAndResourceId(releaseId, bean.resourceId);
             // check if capacity is more than 0 (to avoid division by zero error and to avoid adding empty bean to the list 100% capacity resources will be excluded by default in the frontend))

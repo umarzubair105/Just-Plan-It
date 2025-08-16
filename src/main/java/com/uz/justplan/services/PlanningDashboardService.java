@@ -156,14 +156,14 @@ public class PlanningDashboardService {
 
     public ScheduleEpic planEpic(long epicIdToAssign) {
         final Epic epic = epicRepository.findById(epicIdToAssign).orElseThrow(() -> new RuntimeException("Epic not found"));
-        List<Release> unplannedRelease = releaseRepository.findByProductIdAndStatusAndActiveIsTrueOrderByStartDateAsc(
+        List<Release> unplannedReleases = releaseRepository.findByProductIdAndStatusAndActiveIsTrueOrderByStartDateAsc(
                 epic.getProductId(), ReleaseStatusEnum.UNPLANNED);
         if (epic.isReplicate()) {
             // check if replicated ticket is already part
-            Assert.isTrue(!unplannedRelease.isEmpty(), "Template Deliverable can be planned only for existing unplanned" +
+            Assert.isTrue(!unplannedReleases.isEmpty(), "Template Deliverable can be planned only for existing unplanned" +
                     " releases. First plan deliverable for which Template is marked as 'No'.");
             ScheduleEpic scheduleEpic = null;
-            for (Release release : unplannedRelease) {
+            for (Release release : unplannedReleases) {
                 if (epicRepository.findAllByReplicatedEpicIdIdAndReleaseId(epic.getId(), release.getId()).isEmpty()) {
                     ScheduleEpic scheduleEpic2 = epicService.scheduleAndAssignEpicForcefully(epic, release);
                     if (scheduleEpic2 == null) {
@@ -197,16 +197,44 @@ public class PlanningDashboardService {
         }
 
         Release newReleaseAddedNow = null;
-        if (unplannedRelease.isEmpty()) {
+        if (unplannedReleases.isEmpty()) {
             newReleaseAddedNow = releaseService.addReleases(epic.getProductId());
-            unplannedRelease.add(newReleaseAddedNow);
+            unplannedReleases.add(newReleaseAddedNow);
 //            unplannedRelease = releaseRepository.findByProductIdAndStatusAndActiveIsTrueOrderByStartDateAsc(
 //                    epic.getProductId(), ReleaseStatusEnum.UNPLANNED);
         }
-        ScheduleEpic scheduleEpic = epicService.scheduleAndAssignEpicFirstTime(epic, unplannedRelease);
+        ScheduleEpic scheduleEpic = epicService.scheduleAndAssignEpicFirstTime(epic, unplannedReleases);
+        //NEW
         if (scheduleEpic == null) {
+            if (newReleaseAddedNow != null) {
+                scheduleEpic = epicService.scheduleAndAssignEpicForcefully(epic, newReleaseAddedNow);
+                Assert.notNull(scheduleEpic, "It can not be planned. There is no matching release based on time and resources." +
+                        " Either Product team is not having resource with these roles or resource time allocation is not enough to cover in a release.");
+            } else {
+                boolean anyReleaseExistWithZeroAssignment = false;
+                for (Release release : unplannedReleases) {
+                    if (epicRepository.countByReleaseIdAndActiveTrue(release.getId()) == 0) {
+                        anyReleaseExistWithZeroAssignment = true;
+                        scheduleEpic = epicService.scheduleAndAssignEpicForcefully(epic, release);
+                        if (scheduleEpic != null) {
+                            break;
+                        }
+                    }
+                }
+                if (scheduleEpic == null) {
+                    Assert.isTrue(!anyReleaseExistWithZeroAssignment, "It can not be planned. There is no matching release based on time and resources." +
+                            " Either Product team is not having resource with these roles or resource time allocation is not enough to cover in a release.");
+                    Release release = releaseService.addReleases(epic.getProductId());
+                    scheduleEpic = epicService.scheduleAndAssignEpicForcefully(epic, release);
+                    Assert.notNull(scheduleEpic, "It can not be planned because there is no matching release based on time and resources." +
+                            " Either Product team is not having resource with these roles or resource time allocation is not enough.");
+                }
+            }
+        }
+        //OLD
+        /*if (scheduleEpic == null) {
             boolean anyReleaseExistWithZeroAssignment = false;
-            for (Release release : unplannedRelease) {
+            for (Release release : unplannedReleases) {
                 if (epicRepository.countByReleaseIdAndActiveTrue(release.getId()) == 0) {
                     anyReleaseExistWithZeroAssignment = true;
                     scheduleEpic = epicService.scheduleAndAssignEpicForcefully(epic, release);
@@ -217,13 +245,13 @@ public class PlanningDashboardService {
             }
             if (scheduleEpic == null && newReleaseAddedNow == null) {
                 Assert.isTrue(!anyReleaseExistWithZeroAssignment, "It can not be planned. There is no matching release based on time and resources." +
-                        " Either Product team is not having resource with these roles or resource time allocation is not enough.");
+                        " Either Product team is not having resource with these roles or resource time allocation is not enough to cover in a release.");
                 Release release = releaseService.addReleases(epic.getProductId());
                 scheduleEpic = epicService.scheduleAndAssignEpicForcefully(epic, release);
             }
             Assert.notNull(scheduleEpic, "It can not be planned because there is no matching release based on time and resources." +
                     " Either Product team is not having resource with these roles or resource time allocation is not enough.");
-        }
+        }*/
         if (scheduleEpic.getReleaseToAddIn() != null) {
             final long releaseId = scheduleEpic.getReleaseToAddIn().getId();
             epic.setReleaseId(releaseId); // TODO: Replace with actual release id
