@@ -10,6 +10,7 @@ import java.util.List;
 public class AppProperties {
     private String name;
     private String version;
+    private String production;
     private List<String> features;
 
     private Email email;
@@ -44,6 +45,14 @@ public class AppProperties {
 
     public void setEmail(Email email) {
         this.email = email;
+    }
+
+    public String getProduction() {
+        return production;
+    }
+
+    public void setProduction(String production) {
+        this.production = production;
     }
 
     public static class Email {

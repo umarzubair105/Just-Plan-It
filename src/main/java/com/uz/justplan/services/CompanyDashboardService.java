@@ -34,6 +34,7 @@ public class CompanyDashboardService {
     private CountryRepository countryRepository;
 
     private EmailService emailService;
+    private SecurePasswordGenerator passwordGenerator;
 
     @Autowired
     public CompanyDashboardService(final CompanyRepository compRepo,
@@ -48,7 +49,8 @@ public class CompanyDashboardService {
                                    final DesignationRepository designRepo,
                                    final ProductResourceRepository prodResourceRepo,
                                    final CountryRepository countryRepository,
-                                   final EmailService emailService) {
+                                   final EmailService emailService,
+                                   final SecurePasswordGenerator passwordGenerator) {
         this.compRepo = compRepo;
         this.resourceRepo = resourceRepo;
         this.roleRepo = roleRepo;
@@ -62,6 +64,7 @@ public class CompanyDashboardService {
         this.prodResourceRepo = prodResourceRepo;
         this.countryRepository = countryRepository;
         this.emailService = emailService;
+        this.passwordGenerator = passwordGenerator;
     }
 
     @Transactional
@@ -82,7 +85,7 @@ public class CompanyDashboardService {
         comp.setType(compRepo.findById(req.getSampleCompanyId()).get().getType());
         compRepo.save(comp);
         resp.setId(comp.getId());
-        String password = SecurePasswordGenerator.generatePassword();
+        String password = passwordGenerator.generatePassword();
         Long resourceId = createNewResource(req.getEmail(), req.getResourceName(),
                 req.getDesignation(), req.getMobileNumber(), comp, password);
 
@@ -131,7 +134,7 @@ public class CompanyDashboardService {
                     }
                 });
         //resp.setContext(comp.getCode());
-        resp.setContext("password_0c" + password + "password_@c" + SecurePasswordGenerator.generatePassword());
+        resp.setContext("password_0c" + password + "password_@c" + passwordGenerator.generatePassword());
         resp.setMessage("Company is added with code: " + comp.getCode());
         return resp;
     }
@@ -286,7 +289,7 @@ public class CompanyDashboardService {
             Assert.isTrue(false, "User with email " + model.getEmail() + " already registered.");
         } else {
             model.setEmail(model.getEmail().trim());
-            password = SecurePasswordGenerator.generatePassword();
+            password = passwordGenerator.generatePassword();
             model.setPassword(SecurePasswordGenerator.encryptPassword(password));
             model.setStatus(ResourceStatus.ACTIVE);
             if (model.getCompanyId() != null) {
@@ -326,7 +329,7 @@ public class CompanyDashboardService {
             model.setActive(true);
             model.setCompanyId(req.getCompanyId());
             model.setCountryId(req.getCountryId());
-            password = SecurePasswordGenerator.generatePassword();
+            password = passwordGenerator.generatePassword();
             model.setPassword(SecurePasswordGenerator.encryptPassword(password));
             model.setStatus(ResourceStatus.ACTIVE);
             resp.setMessage("Added");
@@ -543,7 +546,7 @@ public class CompanyDashboardService {
                 return response;
             }
             resourceId = createNewResource(email, Utils.getNameFromEmail(email), "",
-                    "", company, SecurePasswordGenerator.generatePassword());
+                    "", company, passwordGenerator.generatePassword());
             response.setId(resourceId);
             response.setMessage("Resource is added with role.");
         } else {
@@ -578,7 +581,7 @@ public class CompanyDashboardService {
             return resource.get().getId();
         }
         return createNewResource(email, name, designation,
-                "", company, SecurePasswordGenerator.generatePassword());
+                "", company, passwordGenerator.generatePassword());
     }
 
     private long createNewResource(String email, String name, String designation,
@@ -668,7 +671,7 @@ public class CompanyDashboardService {
                 "User is not active against " + username + ".");
         Assert.isTrue(res.get().isActive(),
                 "User is not active against " + username + ".");
-        String password = SecurePasswordGenerator.generatePassword();
+        String password = passwordGenerator.generatePassword();
         res.get().setPassword(SecurePasswordGenerator.encryptPassword(password));
         resourceRepo.save(res.get());
         emailService.sendEmailPasswordReset(res.get().getEmail(), res.get().getName(), password);

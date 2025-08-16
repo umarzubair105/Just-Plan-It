@@ -1,12 +1,16 @@
 package com.uz.justplan.utils;
 
+import com.uz.justplan.config.AppProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@Service
 public class SecurePasswordGenerator {
     private static final String UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final String LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
@@ -17,8 +21,25 @@ public class SecurePasswordGenerator {
     private static final String ALL = UPPERCASE + LOWERCASE + DIGITS + SYMBOLS;
 
     private static final SecureRandom random = new SecureRandom();
+    @Autowired
+    private AppProperties props;
 
-    public static String generatePassword() {
+    public static void main(String[] args) {
+        //String password = generatePassword();
+        //System.out.println("Generated Password: " + password);
+    }
+
+    private static char getRandomChar(final String characters) {
+        return characters.charAt(random.nextInt(characters.length()));
+    }
+
+
+    public static String encryptPassword(final String plainPassword) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        return encoder.encode(plainPassword);
+    }
+
+    public String generatePassword() {
         /*if (length < 4) {
             throw new IllegalArgumentException("Password length must be at least 4 to include all character sets.");
         }*/
@@ -44,24 +65,10 @@ public class SecurePasswordGenerator {
         for (char c : passwordChars) {
             password.append(c);
         }
-
-        //return password.toString();
-        return "12345";
-    }
-
-    private static char getRandomChar(final String characters) {
-        return characters.charAt(random.nextInt(characters.length()));
-    }
-
-
-    public static String encryptPassword(final String plainPassword) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        return encoder.encode(plainPassword);
-    }
-
-    public static void main(String[] args) {
-        String password = generatePassword();
-        System.out.println("Generated Password: " + password);
+        if (props.getProduction() != null && "false".equalsIgnoreCase(props.getProduction().trim())) {
+            return "12345";
+        }
+        return password.toString();
     }
 }
 
