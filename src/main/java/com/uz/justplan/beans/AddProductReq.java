@@ -15,6 +15,7 @@ public class AddProductReq {
     private String name;
     private String code;
     private String emailProductManager;
+    private Long productManagerId;
     private String emailProductOwner;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -100,6 +101,14 @@ public class AddProductReq {
 
     public void setEmailProductOwner(String emailProductOwner) {
         this.emailProductOwner = emailProductOwner;
+    }
+
+    public Long getProductManagerId() {
+        return productManagerId;
+    }
+
+    public void setProductManagerId(Long productManagerId) {
+        this.productManagerId = productManagerId;
     }
 
     @Override

@@ -154,13 +154,22 @@ public class CompanyDashboardService {
         model.setOtherActivitiesPercentTime(req.getOtherActivitiesPercentTime());
         Company company = compRepo.findById(req.getCompanyId()).orElseThrow(() -> new RuntimeException("Company not found"));
         List<Role> roles = roleRepo.findByCompanyIdAndActive(req.getCompanyId(), true);
-        roles.forEach(role -> {
-            if (role.getCode().equals(RoleEnum.PM)) {
-                model.setProductManagerId(
-                        addMissingResourceWithRole(req.getEmailProductManager(), role.getId(),
-                                role.getName(), company));
-            }
-        });
+        if (req.getProductManagerId() != null) {
+            model.setProductManagerId(req.getProductManagerId());
+            roles.forEach(role -> {
+                if (role.getCode().equals(RoleEnum.PM)) {
+                    addRoleIdToResource(req.getProductManagerId(), role.getId());
+                }
+            });
+        } else {
+            roles.forEach(role -> {
+                if (role.getCode().equals(RoleEnum.PM)) {
+                    model.setProductManagerId(
+                            addMissingResourceWithRole(req.getEmailProductManager(), role.getId(),
+                                    role.getName(), company));
+                }
+            });
+        }
         productRepo.save(model);
         assignNewProductResourceIfNotExist(model.getProductManagerId(),
                 roles.stream().filter(role -> role.getCode().equals(RoleEnum.PM)).findFirst().get().getId(),
