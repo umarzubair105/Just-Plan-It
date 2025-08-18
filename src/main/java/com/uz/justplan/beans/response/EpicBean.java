@@ -366,4 +366,5 @@ public class EpicBean {
     public void setReplicatedById(Long replicatedById) {
         this.replicatedById = replicatedById;
     }
+
 }

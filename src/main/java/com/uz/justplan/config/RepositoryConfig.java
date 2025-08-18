@@ -26,7 +26,7 @@ public class RepositoryConfig implements RepositoryRestConfigurer {
                 Priority.class, CompanyWorkingHour.class,
                 TimeLogging.class, EpicDetail.class, EpicLink.class,
                 ProductResource.class, Resource.class, ResourceLeave.class, Role.class,
-                EpicAssignment.class, ContactUs.class);
+                EpicAssignment.class, ContactUs.class, ReleaseResource.class);
 
     }
 

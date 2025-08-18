@@ -456,6 +456,7 @@ public class CompanyDashboardService {
         Component model = new Component();
         model.setName(name);
         model.setCompanyId(companyId);
+        model.setActive(true);
         componentRepo.save(model);
         return model.getId();
     }
