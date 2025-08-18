@@ -64,6 +64,8 @@ public class ReleaseService {
     private ReleaseWorkingDayRepository releaseWorkingDayRepository;
     @Autowired
     private TimeLoggingRepository timeLoggingRepository;
+    @Autowired
+    ReleaseResourceRepository releaseResourceRepository;
 
     @Transactional
     public CommonResp startRelease(long releaseId) {
@@ -80,6 +82,18 @@ public class ReleaseService {
             h.setForcefullyAdded(e.isForcefullyAdded());
             releaseEpicHistoryRepository.save(h);
         });
+
+        prodResourceRepo.findPRWithNonSystemOnlyRolesByProductId(rel.getProductId())
+                .stream().filter(pr -> pr.getParticipationPercentTime() > 0).forEach(pr -> {
+                    ReleaseResource rr = new ReleaseResource();
+                    rr.setReleaseId(releaseId);
+                    rr.setResourceId(pr.getResourceId());
+                    rr.setRoleId(pr.getRoleId());
+                    rr.setParticipationPercentTime(pr.getParticipationPercentTime());
+                    rr.setActive(pr.isActive());
+                    releaseResourceRepository.save(rr);
+                });
+
         CommonResp resp = new CommonResp();
         resp.setMessage("Release is started.");
         return resp;
@@ -131,16 +145,32 @@ public class ReleaseService {
         //find the role in company
         Map<Long, Role> roleMap = roleRepo.findByCompanyIdAndActive(product.getCompanyId(), true)
                 .stream().collect(Collectors.toMap(Role::getId, Function.identity()));
-        // find the resources in the product with ParticipationPercentTime>0
-        List<ProductResource> proResources = prodResourceRepo.findByProductIdAndActive(release.getProductId(), true)
-                .stream().filter(pr -> pr.getParticipationPercentTime() > 0).collect(Collectors.toList());
+        List<ProductResource> proResources = null;
+        if (release.getStatus() == ReleaseStatusEnum.UNPLANNED
+                || release.getStatus() == ReleaseStatusEnum.PLANNED) {
+            // find the resources in the product with ParticipationPercentTime>0
+            //List<ProductResource> proResources = prodResourceRepo.findByProductIdAndActive(release.getProductId(), true)
+            proResources = prodResourceRepo.findPRWithNonSystemOnlyRolesByProductId(release.getProductId())
+                    .stream().filter(pr -> pr.getParticipationPercentTime() > 0).collect(Collectors.toList());
+        } else {
+            // find resource using assignment for release, because user might not be in current define team
+            proResources = releaseResourceRepository.findByReleaseIdAndActiveIsTrue(releaseId).stream()
+                    .map(rr -> {
+                        ProductResource pr = new ProductResource();
+                        pr.setResourceId(rr.getResourceId());
+                        pr.setRoleId(rr.getRoleId());
+                        pr.setParticipationPercentTime(rr.getParticipationPercentTime());
+                        pr.setActive(rr.isActive());
+                        return pr;
+                    }).collect(Collectors.toList());
+        }
         if (proResources == null || proResources.isEmpty()) {
             throw new IllegalArgumentException("No resources found for the product");
         }
         //find the resources in product resources
-        Map<Long, Resource> resourceMap = resourceRepo.findByIdInAndStatusAndActive(
+        Map<Long, Resource> resourceMap = resourceRepo.findByIdIn(
                 proResources.stream().mapToLong(ProductResource::getResourceId).boxed()
-                        .distinct().collect(Collectors.toList()), ResourceStatus.ACTIVE, true)
+                        .distinct().collect(Collectors.toList()))
                 .stream().collect(Collectors.toMap(Resource::getId, Function.identity()));
         // find Roles of resources
         //List<ResourceRole> resRoles = resourceRoleRepo.findByResourceIdInAndActive(
@@ -156,6 +186,7 @@ public class ReleaseService {
                 .findReleaseWorkingDayByReleaseIdAndActive(releaseId, true);
         //             .filter(Objects::nonNull)
         List<ResourceCapInRelease> beans = new ArrayList<>();
+
 
         for (ProductResource prodResource : proResources) {
             ResourceCapInRelease bean = new ResourceCapInRelease();

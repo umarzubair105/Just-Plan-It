@@ -849,3 +849,4 @@ update company_seq
 set next_val=1000;
 update role_seq
 set next_val=10000;
+commit;

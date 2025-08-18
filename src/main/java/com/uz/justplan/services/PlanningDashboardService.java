@@ -59,6 +59,7 @@ public class PlanningDashboardService {
     @Autowired
     TimeLoggingRepository timeLoggingRepository;
 
+
     public EpicBean findEpicByCompanyIdAndCode(long companyId, String code) {
         List<Epic> epics = epicRepository.findByCompanyIdAndCode(companyId, code);
         Assert.notEmpty(epics, "There is not record found.");

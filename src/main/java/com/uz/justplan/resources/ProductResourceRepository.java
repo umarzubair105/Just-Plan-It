@@ -1,5 +1,6 @@
 package com.uz.justplan.resources;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.ListPagingAndSortingRepository;
 
@@ -13,6 +14,11 @@ public interface ProductResourceRepository extends CrudRepository<ProductResourc
     List<ProductResource> findByResourceIdInAndActiveIsTrue(Collection<Long> resourceId);
 
     List<ProductResource> findByProductIdAndActive(long productId, boolean active);
+
+
+    @Query("select distinct pr from ProductResource pr, Resource r, Role role where pr.productId=:productId and pr.active=true " +
+            " and pr.resourceId=r.id and r.active=true and pr.roleId=role.id and role.systemRole=false and role.active=true")
+    List<ProductResource> findPRWithNonSystemOnlyRolesByProductId(long productId);
 
     List<ProductResource> findByResourceIdAndActiveIsTrue(long resourceId);
 

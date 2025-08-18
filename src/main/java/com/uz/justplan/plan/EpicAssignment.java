@@ -7,7 +7,11 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"epicId", "resourceId", "roleId", "releaseId", "active"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"epicId", "resourceId", "roleId", "releaseId", "active"}),
+        indexes = {
+                @Index(name = "idx_epic_assignment_resource", columnList = "resourceId"),
+                @Index(name = "idx_epic_assignment_release", columnList = "releaseId")
+        })
 public class EpicAssignment extends Auditable {
     @Column(nullable = false)
     private int estimate;
