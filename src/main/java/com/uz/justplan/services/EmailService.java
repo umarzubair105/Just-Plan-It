@@ -1,12 +1,9 @@
 package com.uz.justplan.services;
 
-import com.sendgrid.Method;
-import com.sendgrid.Request;
-import com.sendgrid.Response;
-import com.sendgrid.SendGrid;
-import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.objects.Content;
-import com.sendgrid.helpers.mail.objects.Email;
+import com.resend.Resend;
+import com.resend.core.exception.ResendException;
+import com.resend.services.emails.model.CreateEmailOptions;
+import com.resend.services.emails.model.CreateEmailResponse;
 import com.uz.justplan.config.AppProperties;
 import com.uz.justplan.core.ContactUs;
 import org.apache.commons.logging.Log;
@@ -53,7 +50,39 @@ public class EmailService {
         log.info("Sending email app name: " + props.getName());
         log.info("Sending email from: " + props.getEmail().getFromAddress() + ", serviceKey: " + props.getEmail().getServiceKey());
 
-        Email from = new Email(props.getEmail().getFromAddress());
+        Resend resend = new Resend("re_djWFM4MA_MDa7kfWq1TrWLewV5D99qasr");
+
+        CreateEmailOptions params = CreateEmailOptions.builder()
+                .from("Acme <umarzubair@projecthaven.com>")
+                .to("umarzubair@gmail.com")
+                .subject("it works!")
+                .html("<strong>hello world</strong>")
+                .build();
+
+        try {
+            CreateEmailResponse data = resend.emails().send(params);
+            System.out.println(data.getId());
+            log.info("Sent-------------------" + data.getId());
+            log.info("Sent-------------------" + data.toString());
+        } catch (ResendException e) {
+            log.error(e.getMessage(), e);
+            //e.printStackTrace();
+        }
+/*
+
+        Resend resend = new Resend("••••••••••••••••••••••••••••••••••••");
+
+        SendEmailRequest sendEmailRequest = SendEmailRequest.builder()
+                .from("onboarding@resend.dev")
+                .to("umarzubair@gmail.com")
+                .subject("Hello World")
+                .html("<p>Congrats on sending your <strong>first email</strong>!</p>")
+                .build();
+
+        SendEmailResponse data = resend.emails().send(sendEmailRequest);
+*/
+
+        /*Email from = new Email(props.getEmail().getFromAddress());
         Email to = new Email(emailTo);
         Content content = new Content("text/plain", body);
         Mail mail = new Mail(from, subject, to, content);
@@ -71,6 +100,8 @@ public class EmailService {
             log.info("Headers: " + response.getHeaders());
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
-        }
+        }*/
     }
+
+    //private String
 }
