@@ -1,7 +1,6 @@
 package com.uz.justplan.services;
 
 import com.resend.Resend;
-import com.resend.core.exception.ResendException;
 import com.resend.services.emails.model.CreateEmailOptions;
 import com.resend.services.emails.model.CreateEmailResponse;
 import com.uz.justplan.config.AppProperties;
@@ -52,19 +51,20 @@ public class EmailService {
 
         Resend resend = new Resend("re_djWFM4MA_MDa7kfWq1TrWLewV5D99qasr");
 
-        CreateEmailOptions params = CreateEmailOptions.builder()
-                .from("Acme <umarzubair@projecthaven.com>")
-                .to("umarzubair@gmail.com")
-                .subject("it works!")
-                .html("<strong>hello world</strong>")
-                .build();
 
         try {
+            CreateEmailOptions params = CreateEmailOptions.builder()
+                    .from("Acme <umarzubair@projecthaven.com>")
+                    .to("umarzubair@gmail.com")
+                    .subject("it works!")
+                    .html("<strong>hello world</strong>")
+                    .build();
+
             CreateEmailResponse data = resend.emails().send(params);
             System.out.println(data.getId());
             log.info("Sent-------------------" + data.getId());
             log.info("Sent-------------------" + data.toString());
-        } catch (ResendException e) {
+        } catch (Exception e) {//| ResendException
             log.error(e.getMessage(), e);
             //e.printStackTrace();
         }

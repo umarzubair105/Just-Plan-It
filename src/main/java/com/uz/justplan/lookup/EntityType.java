@@ -4,7 +4,8 @@ public enum EntityType {
     COMPANY("COMPANY"),
     RELEASE("RELEASE"),
     RESOURCE("RESOURCE"),
-    PRODUCT("PRODUCT");
+    PRODUCT("PRODUCT"),
+    CONCERN("CONCERN");
 
     private final String value;
 

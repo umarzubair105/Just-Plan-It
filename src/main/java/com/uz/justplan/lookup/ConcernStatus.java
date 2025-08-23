@@ -1,13 +1,14 @@
 package com.uz.justplan.lookup;
 
-public enum EntityDetailType {
-    ATTACHED_FILE("ATTACHED_FILE"),
-    URL("URL"),
-    DISCUSSION("DISCUSSION");
+public enum ConcernStatus {
+    OPEN("OPEN"),
+    ANSWERED("ANSWERED"),
+    RESOLVED("RESOLVED"),
+    CLOSED("CLOSED");
 
     private final String value;
 
-    EntityDetailType(String value) {
+    ConcernStatus(String value) {
         this.value = value;
     }
 
