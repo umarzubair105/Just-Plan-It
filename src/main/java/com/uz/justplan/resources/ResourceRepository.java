@@ -15,6 +15,9 @@ public interface ResourceRepository extends CrudRepository<Resource, Long>,
 
     List<Resource> findByCompanyIdAndActiveIsTrue(long companyId);
 
+    @Query("select count(1) from Resource r left join Role role on r.roleId=role.id where r.companyId=:companyId and r.active=true " +
+            " and (r.roleId is null or role.systemRole=false) and r.status='ACTIVE' ")
+    Long countByCompanyIdAndRoleIdIsNotSystemUser(long companyId);
     Long countByCompanyId(long companyId);
 
     List<Resource> findByIdInAndStatusAndActive(Collection<Long> ids, ResourceStatus status, boolean active);

@@ -18,4 +18,6 @@ public interface RoleRepository extends CrudRepository<Role, Long>,
     @Query("select distinct role from ProductResource pr, Resource r, Role role where pr.productId=:productId and pr.active=true " +
             " and pr.resourceId=r.id and r.active=true and pr.roleId=role.id and role.systemRole=false and r.status='ACTIVE' and role.active=true")
     List<Role> findActiveNonSystemOnlyRolesByProductId(long productId);
+
+    List<Role> findByCompanyIdAndActiveIsTrueAndSystemRoleIsTrue(Long companyId);
 }

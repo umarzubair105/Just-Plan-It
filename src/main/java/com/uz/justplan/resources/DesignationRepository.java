@@ -13,5 +13,7 @@ public interface DesignationRepository extends CrudRepository<Designation, Long>
 
     Long countByCompanyIdAndRoleIdIsNotNull(long companyId);
 
+    Long countByCompanyId(long companyId);
+
     Optional<Designation> findByCompanyIdAndNameIgnoreCase(long companyId, String name);
 }

@@ -28,5 +28,7 @@ public interface ReleaseRepository extends CrudRepository<Release, Long>,
     List<Release> findOfRelatedEpicReleaseEpicId(long epicId);
 
 
+    Long countByProductIdAndStatusAndActiveIsTrue(long productId, ReleaseStatusEnum status);
+
 
 }

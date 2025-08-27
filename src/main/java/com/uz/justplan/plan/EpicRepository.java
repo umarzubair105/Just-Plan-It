@@ -31,6 +31,8 @@ public interface EpicRepository extends CrudRepository<Epic, Long> {
 
     Long countByProductId(Long productId);
 
+    Long countByProductIdAndReleaseIdIsNullAndActiveIsTrue(Long productId);
+
     @Query("select code from Epic where id=:id")
     Optional<String> findCodeById(long id);
 

@@ -15,6 +15,13 @@ public interface ProductResourceRepository extends CrudRepository<ProductResourc
 
     List<ProductResource> findByProductIdAndActive(long productId, boolean active);
 
+    Long countByProductIdAndActiveIsTrue(long productId);
+
+    @Query("select count(1) from ProductResource pr, Resource r, Role role where pr.productId=:productId and pr.active=true " +
+            " and pr.resourceId=r.id and r.active=true and pr.roleId=role.id and role.systemRole=false and role.active=true" +
+            " and pr.participationPercentTime>0 ")
+    Long findCountWithNonSystemOnlyRolesByProductIdWithParticipationPercentTime(long productId);
+
 
     @Query("select distinct pr from ProductResource pr, Resource r, Role role where pr.productId=:productId and pr.active=true " +
             " and pr.resourceId=r.id and r.active=true and pr.roleId=role.id and role.systemRole=false and role.active=true")

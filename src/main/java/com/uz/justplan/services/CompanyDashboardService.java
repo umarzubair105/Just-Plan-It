@@ -157,7 +157,7 @@ public class CompanyDashboardService {
         model.setOtherActivitiesPercentTime(req.getOtherActivitiesPercentTime());
         Company company = compRepo.findById(req.getCompanyId()).orElseThrow(() -> new RuntimeException("Company not found"));
         List<Role> roles = roleRepo.findByCompanyIdAndActive(req.getCompanyId(), true);
-        if (req.getProductManagerId() != null) {
+        if (req.getProductManagerId() != null && req.getProductManagerId() > 0) {
             model.setProductManagerId(req.getProductManagerId());
             roles.forEach(role -> {
                 if (role.getCode().equals(RoleEnum.PM)) {
@@ -650,7 +650,8 @@ public class CompanyDashboardService {
         LoggedInDetails details = new LoggedInDetails();
         details.setCompany(compRepo.findById(resource.getCompanyId()).get());
         Long resources = resourceRepo.countByCompanyId(resource.getCompanyId());
-        if (resources == 1) {
+        details.setRoute("/home");
+/*        if (resources == 1) {
             details.setRoute("/upload-resource");
         } else {
             Long desigMapped = designRepo.countByCompanyIdAndRoleIdIsNotNull(resource.getCompanyId());
@@ -659,7 +660,7 @@ public class CompanyDashboardService {
             } else {
                 details.setRoute("/home");
             }
-        }
+        }*/
         return details;
     }
 

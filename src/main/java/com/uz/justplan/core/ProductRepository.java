@@ -12,5 +12,7 @@ public interface ProductRepository extends CrudRepository<Product, Long>,
 
     Optional<Product> findByCompanyIdAndNameIgnoreCase(long companyId, String name);
 
+    Long countByCompanyId(long companyId);
+
     List<Product> findByProductManagerIdAndActiveIsTrue(long resourceId);
 }
